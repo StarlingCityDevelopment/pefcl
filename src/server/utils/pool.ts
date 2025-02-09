@@ -21,9 +21,9 @@ export const sequelize = new Sequelize({
   password: config.password,
   database: config.database,
   pool: {
-    max: 5,
+    max: 300,
     min: 0,
-    acquire: 30000,
+    acquire: 200000,
     idle: 60000,
   },
   sync: {
