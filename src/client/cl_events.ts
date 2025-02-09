@@ -20,7 +20,8 @@ import { RegisterNuiProxy } from 'cl_utils';
 import API from './cl_api';
 import config from './cl_config';
 
-const npwdExports = global.exports['npwd'];
+const lbPhoneExports = global.exports['lb-phone'];
+const lbTabletExports = global.exports['lb-tablet'];
 
 const useFrameworkIntegration = config.frameworkIntegration?.enabled;
 let hasNUILoaded = false;
@@ -55,8 +56,12 @@ const SendBankUIMessage = (app: string, method: string, data: unknown) => {
     data,
   });
 
-  if (GetResourceState('npwd') === 'started') {
-    npwdExports.sendNPWDMessage(app, method, data);
+  if (GetResourceState('lb-phone') === 'started') {
+    lbPhoneExports.SendCustomAppMessage(app, method, data);
+  }
+
+  if (GetResourceState('lb-tablet') === 'started') {
+    lbTabletExports.SendCustomAppMessage(app, method, data);
   }
 };
 

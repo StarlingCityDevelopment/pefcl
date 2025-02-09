@@ -9,14 +9,13 @@ import { Badge } from '@mui/material';
 import theme from '@utils/theme';
 import React, { ReactNode } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { externalAppConfig } from 'npwd.config';
 import { useTranslation } from 'react-i18next';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
 import { Atom } from 'jotai';
 import { totalUnpaidInvoicesAtom } from '@data/invoices';
 import BadgeAtom from '@components/ui/BadgeAtom';
 
-export const FooterHeight = '5rem';
+export const FooterHeight = '6.5rem';
+
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -49,7 +48,8 @@ const ListItemContainer = styled.li<{ isActive: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  padding-top: 1rem;
+  align-items: flex-start;
 
   padding: ${theme.spacing(1)};
   border-radius: ${theme.spacing(1)};
@@ -118,19 +118,16 @@ const ListItem = ({ to, icon, label, amount, countAtom }: ListItemProps) => {
 
 const MobileFooter = () => {
   const { t } = useTranslation();
-  const settings = useGlobalSettings();
-  const prefix = settings.isMobile ? externalAppConfig().path : '';
-
   return (
     <Container>
       <List>
-        <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to={`${prefix}/dashboard`} />
-        <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to={`${prefix}/accounts`} />
-        <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to={`${prefix}/transfer`} />
+        <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to={`/mobile/dashboard`} />
+        <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to={`/mobile/accounts`} />
+        <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to={`/mobile/transfer`} />
         <ListItem
           icon={<ReceiptRounded />}
           label={t('Invoices')}
-          to={`${prefix}/invoices`}
+          to={`/mobile/invoices`}
           countAtom={totalUnpaidInvoicesAtom}
         />
       </List>

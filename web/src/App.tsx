@@ -26,6 +26,9 @@ import Dashboard from './views/dashboard/Dashboard';
 import Transactions from './views/transactions/Transactions';
 import Transfer from './views/transfer/Transfer';
 import CardsView from './views/Cards/CardsView';
+import MobileApp from './views/Mobile/Mobile';
+import { useLBPhoneSettings } from '@hooks/useLBPhoneSettings';
+import { useLBTabletSettings } from '@hooks/useLBTabletSettings';
 
 dayjs.extend(updateLocale);
 
@@ -53,9 +56,14 @@ const App: React.FC = () => {
   const setRawAccounts = useSetAtom(rawAccountAtom);
   const setAccounts = useSetAtom(accountsAtom);
   const setTransactions = useSetAtom(transactionBaseAtom);
-  const [hasLoaded, setHasLoaded] = useState(process.env.NODE_ENV === 'development');
   const [isAtmVisible, setIsAtmVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  const LBPhoneSettings = useLBPhoneSettings();
+  const LBTabletSettings = useLBTabletSettings();
+  const isMobile = window.location.hash.includes('/mobile');
+
+  const [hasLoaded, setHasLoaded] = useState(process.env.NODE_ENV === 'development' || isMobile);
 
   useNuiEvent('PEFCL', UserEvents.Loaded, () => setHasLoaded(true));
   useNuiEvent('PEFCL', UserEvents.Unloaded, () => {
@@ -81,12 +89,18 @@ const App: React.FC = () => {
   useExitListener(isVisible);
 
   useEffect(() => {
-    i18n.changeLanguage(config?.general?.language).catch((e) => console.error(e));
-  }, [i18n, config]);
+    i18n
+      .changeLanguage(
+        LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language,
+      )
+      .catch((e) => console.error(e));
+  }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
 
   useEffect(() => {
-    dayjs.locale(config?.general?.language ?? 'en');
-  }, [i18n, config]);
+    dayjs.locale(
+      LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language ?? 'en',
+    );
+  }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
 
   if (!hasLoaded) {
     return null;
@@ -115,6 +129,14 @@ const App: React.FC = () => {
 
       <React.Suspense fallback={null}>
         <ATM />
+      </React.Suspense>
+
+      <React.Suspense fallback={null}>
+        <Route path="/mobile" component={MobileApp} />
+      </React.Suspense>
+
+      <React.Suspense fallback={null}>
+        <Route path="/tablet" component={MobileApp} />
       </React.Suspense>
 
       {/* We don't need to show any fallback for the update component since it doesn't render anything anyway. */}

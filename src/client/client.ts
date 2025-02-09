@@ -3,7 +3,7 @@ import './cl_events';
 import './cl_exports';
 import './cl_integrations';
 import './cl_blips';
-import { GeneralEvents } from '@typings/Events';
+import { GeneralEvents, Broadcasts } from '@typings/Events';
 import { RegisterNuiCB } from '@project-error/pe-utils';
 import { createInvoice, giveCash } from './functions';
 import config from './cl_config';
@@ -11,6 +11,8 @@ import config from './cl_config';
 let isAtmOpen = false;
 let isBankOpen = false;
 const useFrameworkIntegration = config.frameworkIntegration?.enabled;
+const resourceName = GetCurrentResourceName();
+const Delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const setBankIsOpen = (bool: boolean) => {
   if (isBankOpen === bool) {
@@ -100,3 +102,65 @@ if (!useFrameworkIntegration) {
   RegisterCommand('giveCash', giveCash, false);
   RegisterCommand('createInvoice', createInvoice, false);
 }
+
+const addMobileApp = async (lbProduct: string) => {
+  if (lbProduct === 'lb-tablet') {
+    const lbTabletExports = global.exports['lb-tablet'];
+
+    await lbTabletExports.AddCustomApp({
+      identifier: 'pefcl',
+      name: 'Banking',
+      description: 'Manage your financials with Fleeca Banking',
+      developer: 'Fleeca',
+      defaultApp: false, // OPTIONAL if set to true, app should be added without having to download it,
+      size: 59812, // OPTIONAL in kb
+      images: [
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_1.png`,
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_2.png`,
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_3.png`,
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_4.png`,
+      ], // OPTIONAL array of images for the app on the app store
+      ui: `https://cfx-nui-${resourceName}/web/dist/index.html#/mobile/dashboard`, // -- this is the path to the HTML file
+      icon: `https://cfx-nui-${resourceName}/web/dist/media/app.png`, // -- OPTIONAL app icon
+    });
+  } else if (lbProduct === 'lb-phone') {
+    const lbPhoneExports = global.exports['lb-phone'];
+
+    await lbPhoneExports.AddCustomApp({
+      identifier: 'pefcl',
+      name: 'Banking',
+      description: 'Manage your financials with Fleeca Banking',
+      developer: 'Fleeca',
+      defaultApp: false, // OPTIONAL if set to true, app should be added without having to download it,
+      size: 59812, // OPTIONAL in kb
+      images: [
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_1.png`,
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_2.png`,
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_3.png`,
+        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_4.png`,
+      ], // OPTIONAL array of images for the app on the app store
+      ui: `https://cfx-nui-${resourceName}/web/dist/index.html#/mobile/dashboard`, // -- this is the path to the HTML file
+      icon: `https://cfx-nui-${resourceName}/web/dist/media/app.png`, // -- OPTIONAL app icon
+    });
+  }
+};
+
+on(`onResourceStart`, async (resName: string) => {
+  if (resName === 'lb-phone') {
+    addMobileApp(resName);
+  }
+
+  if (resName === 'lb-tablet') {
+    addMobileApp(resName);
+  }
+});
+
+(async () => {
+  if (GetResourceState('lb-phone') != 'started') return;
+  addMobileApp('lb-phone');
+})();
+
+(async () => {
+  if (GetResourceState('lb-tablet') != 'started') return;
+  addMobileApp('lb-tablet');
+})();

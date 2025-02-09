@@ -11,16 +11,27 @@ import { getI18nResourcesNamespaced } from './i18nResourceHelpers';
 dayjs.extend(updateLocale);
 dayjs.extend(localizedFormat);
 
+const getLBPhoneSettings = async () => {
+  return window.GetSettings != null ? await window.GetSettings() : null;
+};
+
+const getLBTabletSettings = async () => {
+  return window.GetSettings != null ? await window.GetSettings() : null;
+};
+
 const load = async () => {
   const config = await getConfig();
-  const language = config.general.language ?? 'en';
+  const LBPhoneSettings = await getLBPhoneSettings();
+  const LBTabletSettings = await getLBTabletSettings();
+  const language =
+    LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config.general.language ?? 'en';
   const resources = getI18nResourcesNamespaced('translation');
 
   await i18n
     .use(initReactI18next)
     .init({
       resources,
-      lng: config.general.language,
+      lng: language,
       fallbackLng: 'en',
     })
     .then(() => {})

@@ -68,24 +68,6 @@ module.exports = (env, options) => ({
     ],
   },
   plugins: [
-    new ModuleFederationPlugin({
-      name: 'pefcl',
-      filename: 'remoteEntry.js',
-      exposes: {
-        './config': './npwd.config.ts',
-      },
-      shared: {
-        ...deps,
-        react: {
-          singleton: true,
-          requiredVersion: deps.react,
-        },
-        'react-dom': {
-          singleton: true,
-          requiredVersion: deps['react-dom'],
-        },
-      },
-    }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
       chunks: ['main'],

@@ -1,7 +1,10 @@
+import { LBSettings } from '@typings/LBAddons';
+
 declare global {
   interface Window {
     invokeNative(): void;
     GetParentResourceName?: () => string;
+    GetSettings?: () => Promise<LBSettings>;
   }
 }
 

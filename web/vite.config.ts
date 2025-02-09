@@ -17,9 +17,6 @@ export default defineConfig({
     federation({
       name,
       filename: 'remoteEntry.js',
-      exposes: {
-        './config': './npwd.config.ts',
-      },
       shared: ['react', 'react-dom', '@emotion/react', 'react-router-dom', 'jotai'],
     }),
     topLevelAwait({
@@ -40,7 +37,6 @@ export default defineConfig({
       '@locales': path.resolve(__dirname, '../locales/'),
       '@data': path.resolve(__dirname, './src/data/'),
       '@shared': path.resolve(__dirname, '../shared'),
-      'npwd.config': path.resolve(__dirname, './npwd.config.ts'),
     },
   },
   base: './',
