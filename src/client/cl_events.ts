@@ -75,6 +75,15 @@ onNet(Broadcasts.NewAccountBalance, (balance: number) => {
 
 onNet(Broadcasts.NewTransaction, (payload: Transaction) => {
   SendBankUIMessage('PEFCL', Broadcasts.NewTransaction, payload);
+  if (GetResourceState('lb-phone') === 'started') {
+    lbPhoneExports.SendNotification({
+      app: 'pefcl',
+      title: 'New Transaction',
+      content:
+        (payload.type === 'Outgoing' ? 'You sent money' : 'You received money') +
+        `: $${payload.amount}`,
+    });
+  }
 });
 
 onNet(Broadcasts.UpdatedAccount, (payload: Account) => {
