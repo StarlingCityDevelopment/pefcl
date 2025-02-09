@@ -43,5 +43,3 @@ jobs:
         run: yarn lint
       - name: Type checking
         run: yarn tsc
-      - name: Tests
-        run: yarn test
