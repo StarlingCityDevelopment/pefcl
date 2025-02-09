@@ -75,4 +75,4 @@ const Root = () => (
   </HashRouter>
 );
 
-ReactDOM.render(<Root />, document.getElementById('mobile-app'));
+createRoot(<Root />, document.getElementById('mobile-app'));

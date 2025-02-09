@@ -11,7 +11,7 @@ import { NuiProvider } from 'react-fivem-hooks';
 import { I18nextProvider } from 'react-i18next';
 import { GlobalSettingsProvider } from '@hooks/useGlobalSettings';
 
-ReactDOM.render(
+createRoot(
   <React.StrictMode>
     <NuiProvider>
       <GlobalSettingsProvider isMobile={false}>
