@@ -3,11 +3,11 @@ import { Button, ButtonProps } from '@mui/material';
 import styled from '@emotion/styled';
 
 interface IconLabelButtonProps extends ButtonProps {
-  icon: JSX.Element;
+  icon: React.ReactElement;
 }
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: JSX.Element;
+  icon: React.ReactElement;
 }
 
 const IconLabelButton: React.FC<IconLabelButtonProps> = ({ children, icon, ...props }) => (

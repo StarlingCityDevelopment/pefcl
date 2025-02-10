@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Sidebar from './Sidebar';
 import { Heading2, Heading5 } from './ui/Typography/Headings';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 const Container = styled.div`
   display: flex;

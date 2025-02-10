@@ -2,7 +2,7 @@ import React from 'react';
 import { InputAdornment, StandardTextFieldProps, TextField } from '@mui/material';
 
 interface IconTextFieldProps extends StandardTextFieldProps {
-  icon: JSX.Element;
+  icon: React.ReactElement;
 }
 
 const IconTextField: React.FC<IconTextFieldProps> = ({ icon, ...props }) => (

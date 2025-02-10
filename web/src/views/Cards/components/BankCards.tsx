@@ -15,7 +15,7 @@ import { fetchNui } from '@utils/fetchNui';
 import { CardEvents } from '@typings/Events';
 import { useAtom } from 'jotai';
 import { cardsAtom } from '@data/cards';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import Button from '@components/ui/Button';
 import AccountSelect from '@components/AccountSelect';
 import Summary from '@components/Summary';

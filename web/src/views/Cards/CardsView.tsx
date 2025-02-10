@@ -8,7 +8,7 @@ import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import theme from '@utils/theme';
 import BankCards from './components/BankCards';
 import { selectedAccountIdAtom } from '@data/cards';

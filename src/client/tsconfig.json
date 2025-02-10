@@ -11,6 +11,7 @@
     "types": ["@citizenfx/client", "@types/node"],
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "paths": {
       "@typings/*": ["../../typings/*"],
       "@locales/*": ["../../locales/*"]

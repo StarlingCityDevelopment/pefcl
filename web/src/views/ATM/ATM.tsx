@@ -9,10 +9,10 @@ import { defaultWithdrawOptions } from '@utils/constants';
 import { formatMoney } from '@utils/currency';
 import { fetchNui } from '@utils/fetchNui';
 import theme from '@utils/theme';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import React, { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useNuiEvent } from '@hooks/useNuiEvent';
 import { Card, InventoryCard } from '@typings/BankCard';
 import { useKeyDown } from '@hooks/useKeyPress';
@@ -75,7 +75,7 @@ const ATM = () => {
   const [account, setAccount] = useState<Account>();
   const [isOpen, setIsOpen] = useState(false);
 
-  useNuiEvent('PEFCL', 'setVisibleATM', (data) => setIsOpen(data));
+  useNuiEvent('PEFCL', 'setVisibleATM', (data) => setIsOpen(data as boolean));
   const initialStatus: BankState = isCardsEnabled ? 'select-card' : 'withdraw';
 
   const [selectedCard, setSelectedCard] = useState<InventoryCard>();

@@ -2,11 +2,11 @@ import styled from '@emotion/styled';
 import { Settings } from '@mui/icons-material';
 import { Fab, Stack, Typography } from '@mui/material';
 import theme from '@utils/theme';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 import Button from './ui/Button';
 
-const Container = styled(motion.div)`
+const Container = styled(motion.div)<{ children?: React.ReactNode }>`
   width: 100%;
   padding: 1rem;
   position: absolute;

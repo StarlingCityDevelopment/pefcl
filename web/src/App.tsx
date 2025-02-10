@@ -82,8 +82,8 @@ const App: React.FC = () => {
     };
   }, []);
 
-  useNuiEvent('PEFCL', 'setVisible', (data) => setIsVisible(data));
-  useNuiEvent('PEFCL', 'setVisibleATM', (data) => setIsAtmVisible(data));
+  useNuiEvent('PEFCL', 'setVisible', (data) => setIsVisible(data as boolean));
+  useNuiEvent('PEFCL', 'setVisibleATM', (data) => setIsAtmVisible(data as boolean));
 
   const { i18n } = useTranslation();
   useExitListener(isVisible);
