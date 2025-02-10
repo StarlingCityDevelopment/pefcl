@@ -1,5 +1,5 @@
 import { RegisterNuiCB } from '@project-error/pe-utils';
-import { Account } from '@typings/Account';
+import { Account, AccountType } from '@typings/Account';
 import {
   AccountEvents,
   ExternalAccountEvents,
@@ -77,14 +77,16 @@ onNet(Broadcasts.NewAccountBalance, (balance: number) => {
 onNet(Broadcasts.NewTransaction, (payload: Transaction) => {
   SendBankUIMessage('PEFCL', Broadcasts.NewTransaction, payload);
   if (GetResourceState('lb-phone') === 'started') {
-    lbPhoneExports.SendNotification({
-      app: 'pefcl',
-      title: translations.t('New Transaction'),
-      content:
-        (payload.type === TransactionType.Outgoing
-          ? translations.t('Removed')
-          : translations.t('Received')) + `: ${translations.t('$')}${payload.amount}`,
-    });
+    if (payload?.toAccount?.isDefault) {
+      lbPhoneExports.SendNotification({
+        app: 'pefcl',
+        title: translations.t('New Transaction'),
+        content:
+          (payload.type === TransactionType.Outgoing
+            ? translations.t('Removed')
+            : translations.t('Received')) + `: ${translations.t('$')}${payload.amount}`,
+      });
+    }
   }
 });
 
