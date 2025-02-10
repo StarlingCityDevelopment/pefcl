@@ -27,6 +27,7 @@ import Transactions from './views/transactions/Transactions';
 import Transfer from './views/transfer/Transfer';
 import CardsView from './views/Cards/CardsView';
 import MobileApp from './views/Mobile/Mobile';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
 import { useLBPhoneSettings } from '@hooks/useLBPhoneSettings';
 import { useLBTabletSettings } from '@hooks/useLBTabletSettings';
 
@@ -58,10 +59,9 @@ const App: React.FC = () => {
   const setTransactions = useSetAtom(transactionBaseAtom);
   const [isAtmVisible, setIsAtmVisible] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-
+  const { isMobile } = useGlobalSettings();
   const LBPhoneSettings = useLBPhoneSettings();
   const LBTabletSettings = useLBTabletSettings();
-  const isMobile = window.location.hash.includes('/mobile');
 
   const [hasLoaded, setHasLoaded] = useState(process.env.NODE_ENV === 'development' || isMobile);
 

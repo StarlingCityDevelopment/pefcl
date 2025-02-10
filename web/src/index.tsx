@@ -11,6 +11,8 @@ import { NuiProvider } from 'react-fivem-hooks';
 import { I18nextProvider } from 'react-i18next';
 import { GlobalSettingsProvider } from '@hooks/useGlobalSettings';
 
+const isMobile = window.location.hash.includes('/mobile');
+
 const container = document.getElementById('root');
 if (!container) {
   throw new Error('Failed to find the root element');
@@ -21,7 +23,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <NuiProvider>
-      <GlobalSettingsProvider isMobile={false}>
+      <GlobalSettingsProvider isMobile={isMobile}>
         <I18nextProvider i18n={i18n}>
           <HashRouter>
             <ThemeProvider theme={theme}>
