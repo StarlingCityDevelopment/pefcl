@@ -49,7 +49,7 @@ const ListItemContainer = styled.li<{ isActive: boolean }>`
   flex-direction: column;
   justify-content: center;
   padding-top: 1rem;
-  align-items: flex-start;
+  align-items: center;
 
   padding: ${theme.spacing(1)};
   border-radius: ${theme.spacing(1)};
