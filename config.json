@@ -8,7 +8,8 @@
     "enabled": false,
     "resource": "your-resource",
     "syncInitialBankBalance": true,
-    "isCardsEnabled": false
+    "isCardsEnabled": false,
+    "maxPlayerDistance": 10.0
   },
   "database": {
     "profileQueries": true

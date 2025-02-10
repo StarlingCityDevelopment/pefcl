@@ -34,16 +34,36 @@ export class UserController {
 
   @NetPromise(UserEvents.GetUsers)
   async getUsers(_req: Request<void>, res: Response<OnlineUser[]>) {
+    const src = source;
+
     await new Promise((resolve) => {
       setImmediate(resolve);
     });
 
+    const srcPed = GetPlayerPed(src.toString());
+    const srcCoords = GetEntityCoords(srcPed);
+    const maxDistance = config.frameworkIntegration?.maxPlayerDistance ?? 10;
+
     const users = this._userService.getAllUsers();
-    const list: OnlineUser[] = Array.from(users.values()).map((user) => ({
-      name: user.name,
-      source: user.getSource(),
-      identifier: user.getIdentifier(),
-    }));
+    let list: OnlineUser[] = [];
+
+    for (const user of users.values()) {
+      const ped = GetPlayerPed(user.getSource().toString());
+      const coords = GetEntityCoords(ped);
+      const distance = Math.hypot(
+        coords[0] - srcCoords[0],
+        coords[1] - srcCoords[1],
+        coords[2] - srcCoords[2],
+      );
+
+      if (distance > maxDistance) continue;
+
+      list.push({
+        name: user.name,
+        source: user.getSource(),
+        identifier: user.getIdentifier(),
+      });
+    }
 
     res({ status: 'ok', data: list });
   }

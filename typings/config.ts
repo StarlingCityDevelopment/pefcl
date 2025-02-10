@@ -35,6 +35,7 @@ export interface ResourceConfig {
     resource: string;
     syncInitialBankBalance: boolean;
     isCardsEnabled: boolean;
+    maxPlayerDistance: number;
   };
   database: {
     profileQueries: boolean;
