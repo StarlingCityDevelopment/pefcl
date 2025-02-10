@@ -13,12 +13,12 @@
 
 ## LB-Phone Integration
 <img src="https://i.gyazo.com/e25f07a1a5d77d8e2804c6aaafddd532.png" width="30%" align="left">
-<img src="https://i.gyazo.com/3c08ed7ea6d2d1b049c8ae323bb43200.png" width="30%" align="left">
+<img src="https://i.gyazo.com/544800ce325a9a99a8737232577c8e09.png" width="30%" align="left">
 <img src="https://i.gyazo.com/f8301522c7af28b21720e780ce22b577.png" width="30%" style="">
 
 ## LB-Tablet Integration
 <img src="https://i.gyazo.com/1dde565a890e5329003e141d6fa6976c.png" width="45%" align="left">
-<img src="https://i.gyazo.com/a3abd50beb5db7aa0f89cede9da742b0.png" width="45%" style="">
+<img src="https://i.gyazo.com/9da9ea3db6dbf3c6a0bbb98afc1396b2.png" width="45%" style="">
 
 
 ### Installation
