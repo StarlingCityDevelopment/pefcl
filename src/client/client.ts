@@ -22,8 +22,6 @@ export const setBankIsOpen = (bool: boolean) => {
   isBankOpen = bool;
   SendNUIMessage({ app: 'PEFCL', method: 'setVisible', data: bool });
 
-  console.log('setBankIsOpen', bool);
-
   SetNuiFocus(bool, bool);
 };
 
