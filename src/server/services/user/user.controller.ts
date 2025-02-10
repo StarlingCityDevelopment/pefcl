@@ -45,7 +45,7 @@ export class UserController {
     const maxDistance = config.frameworkIntegration?.maxPlayerDistance ?? 10;
 
     const users = this._userService.getAllUsers();
-    let list: OnlineUser[] = [];
+    const list: OnlineUser[] = [];
 
     for (const user of users.values()) {
       const ped = GetPlayerPed(user.getSource().toString());
