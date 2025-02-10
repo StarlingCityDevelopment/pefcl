@@ -12,7 +12,6 @@ let isAtmOpen = false;
 let isBankOpen = false;
 const useFrameworkIntegration = config.frameworkIntegration?.enabled;
 const resourceName = GetCurrentResourceName();
-const Delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const setBankIsOpen = (bool: boolean) => {
   if (isBankOpen === bool) {
