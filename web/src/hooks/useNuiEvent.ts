@@ -22,8 +22,12 @@ type NuiHandlerSignature<T> = (data: T) => void;
  *
  **/
 
-export const useNuiEvent = <T = any>(app: string, action: string, handler: (data: T) => void) => {
-  const savedHandler: MutableRefObject<NuiHandlerSignature<T>> = useRef(noop);
+export const useNuiEvent = <T = unknown>(
+  app: string,
+  action: string,
+  handler: (data: T) => void,
+) => {
+  const savedHandler = useRef<NuiHandlerSignature<T>>(noop as NuiHandlerSignature<T>);
 
   // When handler value changes set mutable ref to handler val
   useEffect(() => {

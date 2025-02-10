@@ -104,14 +104,6 @@ const ATM = () => {
 
   useKeyDown(['Escape'], handleBack);
 
-  const handleVisibility = (isOpen: boolean) => {
-    setIsOpen(isOpen);
-
-    if (!isOpen) {
-      handleClose();
-    }
-  };
-
   useEffect(() => {
     const updateCards = async () => {
       try {

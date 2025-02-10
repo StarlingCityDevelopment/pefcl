@@ -12,7 +12,11 @@ import { I18nextProvider } from 'react-i18next';
 import { GlobalSettingsProvider } from '@hooks/useGlobalSettings';
 
 const container = document.getElementById('root');
-const root = createRoot(container!);
+if (!container) {
+  throw new Error('Failed to find the root element');
+}
+
+const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
