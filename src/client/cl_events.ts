@@ -77,7 +77,6 @@ onNet(Broadcasts.NewAccountBalance, (balance: number) => {
 onNet(Broadcasts.NewTransaction, (payload: Transaction) => {
   SendBankUIMessage('PEFCL', Broadcasts.NewTransaction, payload);
   if (GetResourceState('lb-phone') === 'started') {
-    console.log(JSON.stringify(payload));
     if (
       (payload?.type == TransactionType.Incoming &&
         payload?.toAccount?.type === AccountType.Personal) ||
