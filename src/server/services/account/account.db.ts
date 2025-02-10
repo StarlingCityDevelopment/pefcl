@@ -2,7 +2,7 @@ import { CreateAccountInput } from '@typings/Account';
 import { ExternalAccountDB } from '@services/accountExternal/externalAccount.db';
 import { singleton } from 'tsyringe';
 import { AccountModel } from './account.model';
-import { LOCK, Transaction } from 'sequelize/types';
+import { Transaction } from 'sequelize/types';
 
 export interface RemoveFromSharedAccountInput {
   accountId: number;
