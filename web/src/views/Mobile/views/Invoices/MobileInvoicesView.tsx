@@ -3,12 +3,16 @@ import { Heading2, Heading5 } from '@components/ui/Typography/Headings';
 import { invoicesAtom } from '@data/invoices';
 import { Box, Stack, Typography } from '@mui/material';
 import { useAtom } from 'jotai';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const MobileInvoicesView = () => {
   const { t } = useTranslation();
-  const [invoices] = useAtom(invoicesAtom);
+  const [invoices, setInvoices] = useAtom(invoicesAtom);
+
+  useEffect(() => {
+    setInvoices();
+  });
 
   const hasInvoices = (invoices?.invoices?.length ?? 0) > 0;
 
