@@ -20,6 +20,7 @@ import {
   CreateCardInput,
   InventoryCard,
   UpdateCardPinInput,
+  DeleteCardInput,
 } from '@server/../../typings/BankCard';
 import { AccountDB } from '../account/account.db';
 import { PIN_CODE_LENGTH } from '@shared/constants';
@@ -151,7 +152,7 @@ export class CardService {
     }
   }
 
-  async deleteCard(req: Request<BlockCardInput>) {
+  async deleteCard(req: Request<DeleteCardInput>) {
     this.validateCardsConfig();
     logger.silly('Deleting card ..');
     logger.silly(req.data);

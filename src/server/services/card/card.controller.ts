@@ -57,7 +57,7 @@ export class CardController {
   @NetPromise(CardEvents.Delete)
   async deleteCard(req: Request<DeleteCardInput>, res: Response<boolean>) {
     try {
-      const isDeleted = await this.cardService.blockCard(req);
+      const isDeleted = await this.cardService.deleteCard(req);
       res({ status: 'ok', data: isDeleted });
     } catch (error) {
       res({ status: 'error', errorMsg: error.message });
