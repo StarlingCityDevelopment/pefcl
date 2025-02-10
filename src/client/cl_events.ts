@@ -94,8 +94,17 @@ onNet(Broadcasts.UpdatedAccount, (payload: Account) => {
   SendBankUIMessage('PEFCL', Broadcasts.UpdatedAccount, payload);
 });
 
-onNet(Broadcasts.NewInvoice, (payload: Invoice) => {
+onNet(Broadcasts.NewInvoice, (payload: Invoice, isReceiver: boolean) => {
   SendBankUIMessage('PEFCL', Broadcasts.NewInvoice, payload);
+  if (GetResourceState('lb-phone') === 'started') {
+    if (isReceiver) {
+      lbPhoneExports.SendNotification({
+        app: 'pefcl',
+        title: translations.t('New Invoice'),
+        content: payload.message,
+      });
+    }
+  }
 });
 
 onNet(Broadcasts.NewSharedUser, () => {

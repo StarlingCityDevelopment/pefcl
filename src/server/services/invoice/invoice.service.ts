@@ -79,8 +79,8 @@ export class InvoiceService {
     const toUser = this._userService.getUserByIdentifier(data.toIdentifier);
     const fromUser = this._userService.getUserByIdentifier(data.fromIdentifier);
 
-    toUser && emitNet(Broadcasts.NewInvoice, toUser.getSource(), invoice);
-    fromUser && emitNet(Broadcasts.NewInvoice, fromUser.getSource(), invoice);
+    toUser && emitNet(Broadcasts.NewInvoice, toUser.getSource(), invoice.dataValues, true);
+    fromUser && emitNet(Broadcasts.NewInvoice, fromUser.getSource(), invoice.dataValues, false);
 
     return invoice;
   }
