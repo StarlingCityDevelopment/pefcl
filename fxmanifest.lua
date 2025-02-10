@@ -2,7 +2,7 @@ fx_version "cerulean"
 
 description "Financing resource. Accounts, Cash, Invoices, Transactions."
 author "Project Error"
-version '1.0.0'
+version '2.0.1'
 repository 'https://github.com/project-error/fivem-react-boilerplate-lua'
 
 lua54 'yes'
