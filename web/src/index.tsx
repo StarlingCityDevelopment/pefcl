@@ -1,17 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { ThemeProvider } from '@mui/material';
 import theme from './utils/theme';
-import { HashRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router';
 import i18n from './utils/i18n';
 import { SnackbarProvider } from 'notistack';
 import { NuiProvider } from 'react-fivem-hooks';
 import { I18nextProvider } from 'react-i18next';
 import { GlobalSettingsProvider } from '@hooks/useGlobalSettings';
 
-createRoot(
+const container = document.getElementById('root');
+const root = createRoot(container!);
+
+root.render(
   <React.StrictMode>
     <NuiProvider>
       <GlobalSettingsProvider isMobile={false}>
@@ -29,5 +32,4 @@ createRoot(
       </GlobalSettingsProvider>
     </NuiProvider>
   </React.StrictMode>,
-  document.getElementById('root'),
 );

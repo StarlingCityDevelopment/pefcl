@@ -53,7 +53,7 @@ export class TransactionDB {
             },
           },
         ],
-      },
+      } as any,
     });
   }
 
@@ -91,7 +91,7 @@ export class TransactionDB {
             },
           },
         ],
-      },
+      } as any,
       limit: input.limit ?? 10,
       offset: input.offset,
       order: [['createdAt', 'DESC']],
@@ -136,7 +136,7 @@ export class TransactionDB {
             },
           },
         ],
-      },
+      } as any,
       include: [
         { model: AccountModel, as: 'toAccount' },
         { model: AccountModel, as: 'fromAccount' },

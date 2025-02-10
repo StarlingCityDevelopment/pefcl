@@ -13,7 +13,7 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import { useSetAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router';
 import './App.css';
 import { useConfig } from './hooks/useConfig';
 import theme from './utils/theme';
@@ -114,14 +114,16 @@ const App: React.FC = () => {
         {!isAtmVisible && isVisible && (
           <Container>
             <Content>
-              <Route path="/" exact component={Dashboard} />
-              <Route path="/accounts" component={Accounts} />
-              <Route path="/transactions" component={Transactions} />
-              <Route path="/invoices" component={Invoices} />
-              <Route path="/transfer" component={Transfer} />
-              <Route path="/deposit" component={Deposit} />
-              <Route path="/withdraw" component={Withdraw} />
-              <Route path="/cards" component={CardsView} />
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="accounts" element={<Accounts />} />
+                <Route path="transactions" element={<Transactions />} />
+                <Route path="invoices" element={<Invoices />} />
+                <Route path="transfer" element={<Transfer />} />
+                <Route path="deposit" element={<Deposit />} />
+                <Route path="withdraw" element={<Withdraw />} />
+                <Route path="cards" element={<CardsView />} />
+              </Routes>
             </Content>
           </Container>
         )}
@@ -131,16 +133,18 @@ const App: React.FC = () => {
         <ATM />
       </React.Suspense>
 
-      <React.Suspense fallback={null}>
-        <Route path="/mobile" component={MobileApp} />
-      </React.Suspense>
+      {isMobile && (
+        <React.Suspense fallback={null}>
+          <Routes>
+            <Route path="*" element={<MobileApp />} />
+          </Routes>
+        </React.Suspense>
+      )}
 
+      {/* No fallback needed for BroadcastsWrapper as it renders nothing visible */}
       <React.Suspense fallback={null}>
-        <Route path="/tablet" component={MobileApp} />
+        <BroadcastsWrapper />
       </React.Suspense>
-
-      {/* We don't need to show any fallback for the update component since it doesn't render anything anyway. */}
-      <React.Suspense fallback={null}>{<BroadcastsWrapper />}</React.Suspense>
     </>
   );
 };

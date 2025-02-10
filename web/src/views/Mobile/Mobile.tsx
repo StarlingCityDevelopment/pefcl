@@ -6,7 +6,6 @@ import MobileFooter, { FooterHeight } from './Components/MobileFooter';
 import MobileRoutes from './Routes';
 import { Box } from '@mui/system';
 import { Heading6 } from '@components/ui/Typography/Headings';
-import { MemoryRouter } from 'react-router-dom';
 import { CircularProgress, Stack } from '@mui/material';
 
 const Container = styled.div`

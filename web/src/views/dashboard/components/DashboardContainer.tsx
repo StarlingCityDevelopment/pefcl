@@ -3,7 +3,7 @@ import { CircularProgress, Stack } from '@mui/material';
 import { Atom, useAtom } from 'jotai';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import Button from '@ui/Button';
 import { Heading5 } from '@ui/Typography/Headings';
 import theme from '../../../utils/theme';
@@ -56,6 +56,7 @@ const Title = styled(Heading5)`
 
 interface DashboardContainerProps {
   title: string;
+  children?: React.ReactNode;
   totalAtom: Atom<number>;
   viewAllRoute: string;
 }
@@ -68,7 +69,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
 }) => {
   const [total] = useAtom(totalAtom);
   const { t } = useTranslation();
-  const { push } = useHistory();
+  const navigate = useNavigate();
 
   return (
     <Container>
@@ -81,7 +82,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
         <Content>{children}</Content>
 
         <Stack justifyContent="flex-end" alignItems="flex-end">
-          <Button onClick={() => push(viewAllRoute)}>{t('View all')}</Button>
+          <Button onClick={() => navigate(viewAllRoute)}>{t('View all')}</Button>
         </Stack>
       </Stack>
     </Container>

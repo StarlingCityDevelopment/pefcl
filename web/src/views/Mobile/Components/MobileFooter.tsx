@@ -8,7 +8,7 @@ import {
 import { Badge } from '@mui/material';
 import theme from '@utils/theme';
 import React, { ReactNode } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useMatch } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Atom } from 'jotai';
 import { totalUnpaidInvoicesAtom } from '@data/invoices';
@@ -95,11 +95,11 @@ interface ListItemProps {
   countAtom?: Atom<number>;
 }
 const ListItem = ({ to, icon, label, amount, countAtom }: ListItemProps) => {
-  const match = useRouteMatch(to);
+  const match = useMatch(to);
 
   return (
     <Link to={to}>
-      <ListItemContainer isActive={match?.url === to}>
+      <ListItemContainer isActive={Boolean(match)}>
         {countAtom ? (
           <BadgeAtom color="error" countAtom={countAtom}>
             {icon}
@@ -121,13 +121,13 @@ const MobileFooter = () => {
   return (
     <Container>
       <List>
-        <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to={`/mobile/dashboard`} />
-        <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to={`/mobile/accounts`} />
-        <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to={`/mobile/transfer`} />
+        <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to="../mobile/dashboard" />
+        <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to="../mobile/accounts" />
+        <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to="../mobile/transfer" />
         <ListItem
           icon={<ReceiptRounded />}
           label={t('Invoices')}
-          to={`/mobile/invoices`}
+          to="../mobile/invoices"
           countAtom={totalUnpaidInvoicesAtom}
         />
       </List>

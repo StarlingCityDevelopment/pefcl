@@ -13,7 +13,7 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const Content = styled(motion.div)`
+const Content = styled(motion.div)<{ children?: React.ReactNode }>`
   position: relative;
   padding: 2rem;
   flex: 1;
@@ -42,7 +42,7 @@ const pageVariants = {
   },
 };
 
-const Layout: React.FC<{ title?: string }> = ({ children, title }) => {
+const Layout: React.FC<React.PropsWithChildren<{ title?: string }>> = ({ children, title }) => {
   const { t } = useTranslation();
   return (
     <Container>

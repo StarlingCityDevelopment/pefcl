@@ -1,4 +1,3 @@
-import React from 'react';
 import { InputBase, Select as BaseSelect, SelectProps as BaseSelectProps } from '@mui/material';
 import styled from '@emotion/styled';
 import theme from '@utils/theme';
@@ -20,9 +19,10 @@ const SelectIcon = styled(ArrowDropDownRounded)`
   margin-right: 0.5rem;
 `;
 
-interface SelectProps extends BaseSelectProps<string> {
+type SelectProps = BaseSelectProps<string> & {
   label?: string;
-}
+};
+
 const Select = (props: SelectProps) => {
   return (
     <BaseSelect

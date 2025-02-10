@@ -12,7 +12,7 @@ import {
 import styled from '@emotion/styled';
 import theme from '@utils/theme';
 import { Badge } from '@mui/material';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link, useMatch } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Atom } from 'jotai';
 import { totalUnpaidInvoicesAtom } from '@data/invoices';
@@ -75,11 +75,11 @@ interface ListItemProps {
   countAtom?: Atom<number>;
 }
 const ListItem = ({ to, icon, label, amount, countAtom }: ListItemProps) => {
-  const match = useRouteMatch();
+  const match = useMatch(to);
 
   return (
     <Link to={to}>
-      <ListItemContainer isActive={match.url === to}>
+      <ListItemContainer isActive={!!match}>
         {countAtom ? (
           <BadgeAtom color="error" countAtom={countAtom}>
             {icon}
@@ -102,21 +102,21 @@ const Sidebar = () => {
 
   return (
     <List>
-      <ListItem to="/" icon={<DashboardRounded />} label={t('Dashboard')} />
-      <ListItem to="/accounts" icon={<AccountBalanceRounded />} label={t('Accounts')} />
-      <ListItem to="/transfer" icon={<SwapHoriz />} label={t('Transfer')} />
-      <ListItem to="/transactions" icon={<Paid />} label={t('Transactions')} />
+      <ListItem to="../" icon={<DashboardRounded />} label={t('Dashboard')} />
+      <ListItem to="../accounts" icon={<AccountBalanceRounded />} label={t('Accounts')} />
+      <ListItem to="../transfer" icon={<SwapHoriz />} label={t('Transfer')} />
+      <ListItem to="../transactions" icon={<Paid />} label={t('Transactions')} />
       <ListItem
-        to="/invoices"
+        to="../invoices"
         icon={<Receipt />}
         label={t('Invoices')}
         countAtom={totalUnpaidInvoicesAtom}
       />
-      <ListItem to="/deposit" icon={<Add />} label={t('Deposit')} />
-      <ListItem to="/withdraw" icon={<Remove />} label={t('Withdraw')} />
+      <ListItem to="../deposit" icon={<Add />} label={t('Deposit')} />
+      <ListItem to="../withdraw" icon={<Remove />} label={t('Withdraw')} />
 
       {config.frameworkIntegration.isCardsEnabled && (
-        <ListItem to="/cards" icon={<CreditCardRounded />} label={t('Cards')} />
+        <ListItem to="../cards" icon={<CreditCardRounded />} label={t('Cards')} />
       )}
     </List>
   );

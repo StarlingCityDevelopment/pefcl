@@ -1,5 +1,5 @@
 export const resourceName = 'pefcl';
-export const DATABASE_PREFIX = 'pefcl_';
+export const DATABASE_PREFIX = 'banking_new_';
 export const DEFAULT_CLEARING_NUMBER = 920;
 
 export const MS_ONE_DAY = 1000 * 60 * 60 * 24;

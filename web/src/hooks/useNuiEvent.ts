@@ -34,10 +34,8 @@ export const useNuiEvent = <T = any>(app: string, action: string, handler: (data
     const eventListener = (event: MessageEvent<NuiMessageData<T>>) => {
       const { method: eventAction, app: tgtApp, data } = event.data;
 
-      if (savedHandler.current && savedHandler.current.call) {
-        if (eventAction === action && tgtApp === app) {
-          savedHandler.current(data);
-        }
+      if (eventAction === action && tgtApp === app) {
+        savedHandler.current(data);
       }
     };
 

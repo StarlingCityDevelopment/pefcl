@@ -3,7 +3,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Resource } from 'i18next';
 import { ReactElement, ReactNode, Suspense } from 'react';
-import { HashRouter, Router } from 'react-router-dom';
+import { Router } from 'react-router';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { SnackbarProvider } from 'notistack';
@@ -15,7 +15,11 @@ const theme = createTheme({
 });
 
 const renderWithRouter = (history: MemoryHistory) => (ui: ReactNode) => {
-  return <Router history={history}>{ui}</Router>;
+  return (
+    <Router navigator={history} location={history.location}>
+      {ui}
+    </Router>
+  );
 };
 
 const renderWithTheme = (ui: ReactNode) => {
@@ -32,7 +36,6 @@ const renderWithSnackbar = (ui: ReactNode) => {
 
 type RenderWithProvidersOptions = {
   resources?: Resource;
-  router?: Partial<HashRouter>;
   history?: MemoryHistory;
 };
 export const renderWithProviders = (ui: ReactElement, options?: RenderWithProvidersOptions) => {

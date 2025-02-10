@@ -17,7 +17,7 @@ export default defineConfig({
     federation({
       name,
       filename: 'remoteEntry.js',
-      shared: ['react', 'react-dom', '@emotion/react', 'react-router-dom', 'jotai'],
+      shared: ['react', 'react-dom', '@emotion/react', 'react-router', 'jotai'],
     }),
     topLevelAwait({
       // The export name of top-level await promise for each chunk module
