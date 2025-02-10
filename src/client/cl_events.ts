@@ -14,9 +14,10 @@ import {
   CardEvents,
 } from '@typings/Events';
 import { Invoice } from '@typings/Invoice';
-import { Transaction } from '@typings/Transaction';
+import { Transaction, TransactionType } from '@typings/Transaction';
 import { OnlineUser } from '@typings/user';
 import { RegisterNuiProxy } from 'cl_utils';
+import { translations } from 'i18n';
 import API from './cl_api';
 import config from './cl_config';
 
@@ -78,10 +79,11 @@ onNet(Broadcasts.NewTransaction, (payload: Transaction) => {
   if (GetResourceState('lb-phone') === 'started') {
     lbPhoneExports.SendNotification({
       app: 'pefcl',
-      title: 'New Transaction',
+      title: translations.t('New Transaction'),
       content:
-        (payload.type === 'Outgoing' ? 'You sent money' : 'You received money') +
-        `: $${payload.amount}`,
+        (payload.type === TransactionType.Outgoing
+          ? translations.t('Removed')
+          : translations.t('Received')) + `: ${translations.t('$')}${payload.amount}`,
     });
   }
 });
