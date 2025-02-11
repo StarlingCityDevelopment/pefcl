@@ -21,13 +21,17 @@
 <img src="https://i.gyazo.com/9da9ea3db6dbf3c6a0bbb98afc1396b2.png" width="45%" style="">
 
 
+### Framework Bridges
+QBX | https://github.com/DevX32/qbx_pefcl
+QB-Core | https://github.com/project-error/qb-pefcl
+ESX | https://github.com/project-error/pefcl-esx
+
+
 ### Installation
 https://projecterror.dev/docs/pefcl/installation
 
-
 ### Configuration
 https://projecterror.dev/docs/pefcl/configuration
-
 
 ### Developers
 https://projecterror.dev/docs/pefcl/developers/introduction
