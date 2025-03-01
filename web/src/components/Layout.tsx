@@ -11,6 +11,7 @@ const Container = styled.div`
   display: flex;
   position: relative;
   height: 100%;
+  transform: translateZ(0);
 `;
 
 const Content = styled(motion.div)<{ children?: React.ReactNode }>`

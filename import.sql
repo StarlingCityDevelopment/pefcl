@@ -99,3 +99,20 @@ CREATE TABLE `pefcl_transactions` (
   CONSTRAINT `pefcl_transactions_ibfk_1` FOREIGN KEY (`toAccountId`) REFERENCES `pefcl_accounts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `pefcl_transactions_ibfk_2` FOREIGN KEY (`fromAccountId`) REFERENCES `pefcl_accounts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `pefcl_cards` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`holder` VARCHAR(255) NULL DEFAULT NULL,
+	`holderCitizenId` VARCHAR(255) NULL DEFAULT NULL,
+	`isBlocked` TINYINT(1) NULL DEFAULT '0',
+	`number` VARCHAR(255) NULL DEFAULT NULL,
+	`pin` INT(11) NULL DEFAULT '1234',
+	`createdAt` DATETIME NULL DEFAULT NULL,
+	`updatedAt` DATETIME NOT NULL,
+	`accountId` INT(11) NULL DEFAULT NULL,
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `accountId` (`accountId`) USING BTREE,
+	CONSTRAINT `pefcl_ibfk_1` FOREIGN KEY (`accountId`) REFERENCES `pefcl_accounts` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+	CONSTRAINT `pefcl_ibfk_2` FOREIGN KEY (`accountId`) REFERENCES `pefcl_accounts` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

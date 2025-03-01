@@ -13,7 +13,7 @@ const Container = styled.div`
   background: ${theme.palette.background.default};
   overflow: auto;
   height: 100%;
-  padding-top: 42px;
+  padding-top: 58px;
   padding-bottom: ${FooterHeight};
 `;
 
