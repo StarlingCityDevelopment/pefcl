@@ -118,7 +118,7 @@ const App: React.FC = () => {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="accounts" element={<Accounts />} />
                 <Route path="transactions" element={<Transactions />} />
-                <Route path="invoices" element={<Invoices />} />
+                {/* <Route path="invoices" element={<Invoices />} /> */}
                 <Route path="transfer" element={<Transfer />} />
                 <Route path="deposit" element={<Deposit />} />
                 <Route path="withdraw" element={<Withdraw />} />

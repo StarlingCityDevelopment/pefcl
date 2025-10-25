@@ -7,6 +7,7 @@ import {
   ExternalAccountEvents,
   GeneralEvents,
   InvoiceEvents,
+  NUIEvents,
   SharedAccountEvents,
   TransactionEvents,
   UserEvents,
@@ -69,13 +70,27 @@ const createEndpoint = (eventName: string): [string, RequestHandler] => {
 if (isMocking) {
   const app = express();
   const port = 3005;
-  app.use(cors());
+  app.use(
+    cors({
+      origin: '*',
+      methods: ['GET', 'POST'],
+    }),
+  );
   app.use(bodyParser.json());
 
   app.post('/', (_req, res) => {
     res.send('This is a mocked version of the Fivem Server. Available endpoints are unknown :p');
   });
 
+  // NUI
+  app.post(...createEndpoint(NUIEvents.Loaded));
+  app.post(...createEndpoint(NUIEvents.Unloaded));
+  app.post(...createEndpoint(NUIEvents.SetCardId));
+  app.post(...createEndpoint(NUIEvents.SetCards));
+
+  app.post(...createEndpoint(UserEvents.Loaded));
+  app.post(...createEndpoint(UserEvents.Unloaded));
+  app.post(...createEndpoint(UserEvents.LoadClient));
   app.post(...createEndpoint(UserEvents.GetUsers));
   app.post(...createEndpoint(AccountEvents.GetAccounts));
   app.post(...createEndpoint(AccountEvents.GetAtmAccount));
@@ -111,7 +126,7 @@ if (isMocking) {
     mainLogger.child({ module: 'server' }).debug(`[MOCKSERVER]: listening on port: ${port}`);
 
     emit('onServerResourceStart', mockedResourceName);
-    global.source = 2;
+    global.source = 3;
 
     /* Load user with framework Integration */
     if (config.frameworkIntegration?.enabled) {

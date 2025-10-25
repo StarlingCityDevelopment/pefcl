@@ -77,7 +77,6 @@ export class UserController {
   @Event('playerJoining')
   playerJoining() {
     if (config.frameworkIntegration?.enabled) return;
-
     const _source = global.source;
     this._userService.loadStandalonePlayer({ source: _source });
   }

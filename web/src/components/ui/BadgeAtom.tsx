@@ -7,20 +7,23 @@ interface BadgeAtomProps extends BadgeProps {
   countAtom: Atom<number>;
 }
 
-const BadgeAtomContent = ({ countAtom, children }: BadgeAtomProps) => {
+const BadgeAtomContent = ({ countAtom, children, ...badgeProps }: BadgeAtomProps) => {
   const [amount] = useAtom(countAtom);
 
   return (
-    <Badge color="error" badgeContent={amount}>
+    <Badge badgeContent={amount} {...badgeProps}>
       {children}
     </Badge>
   );
 };
 
-const BadgeAtom = (props: BadgeAtomProps) => {
+const BadgeAtom = ({ countAtom, children, ...badgeProps }: BadgeAtomProps) => {
+  // Ensure countAtom is not forwarded to the MUI Badge (or underlying DOM) via props spread
   return (
-    <React.Suspense fallback={<Badge badgeContent={'..'} {...props} />}>
-      <BadgeAtomContent {...props} />
+    <React.Suspense fallback={<Badge badgeContent={'..'} {...badgeProps} />}>
+      <BadgeAtomContent countAtom={countAtom} {...badgeProps}>
+        {children}
+      </BadgeAtomContent>
     </React.Suspense>
   );
 };

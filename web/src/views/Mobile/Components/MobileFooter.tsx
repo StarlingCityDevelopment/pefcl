@@ -124,12 +124,12 @@ const MobileFooter = () => {
         <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to="../mobile/dashboard" />
         <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to="../mobile/accounts" />
         <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to="../mobile/transfer" />
-        <ListItem
+        {/* <ListItem
           icon={<ReceiptRounded />}
           label={t('Invoices')}
           to="../mobile/invoices"
           countAtom={totalUnpaidInvoicesAtom}
-        />
+        /> */}
       </List>
     </Container>
   );

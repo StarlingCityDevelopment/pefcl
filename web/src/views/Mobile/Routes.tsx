@@ -11,7 +11,7 @@ const MobileRoutes = () => {
       <Route path="mobile/accounts" element={<MobileAccountsView />} />
       <Route path="mobile/dashboard" element={<MobileDashboardView />} />
       <Route path="mobile/transfer" element={<MobileTransferView />} />
-      <Route path="mobile/invoices" element={<MobileInvoicesView />} />
+      {/* <Route path="mobile/invoices" element={<MobileInvoicesView />} /> */}
     </Routes>
   );
 };

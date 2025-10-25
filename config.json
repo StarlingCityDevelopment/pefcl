@@ -1,46 +1,58 @@
 {
   "general": {
-    "language": "en",
+    "language": "fr",
     "currency": "USD",
     "identifierType": "license"
   },
   "frameworkIntegration": {
-    "enabled": false,
-    "resource": "your-resource",
+    "enabled": true,
+    "resource": "qbx_pefcl",
     "syncInitialBankBalance": true,
-    "isCardsEnabled": false,
-    "maxPlayerDistance": 10.0
+    "isCardsEnabled": true,
+    "maxPlayerDistance": 5.0
   },
   "database": {
     "profileQueries": true
   },
   "prices": {
-    "newAccount": 1000
+    "newAccount": 125
   },
   "cash": {
-    "startAmount": 2000
+    "startAmount": 0
   },
   "accounts": {
-    "firstAccountStartBalance": 2500,
-    "otherAccountStartBalance": 500,
+    "firstAccountStartBalance": 750,
+    "otherAccountStartBalance": 0,
     "clearingNumber": 920,
     "maximumNumberOfAccounts": 3
   },
   "cards": {
-    "cost": 4500,
-    "maxCardsPerAccount": 2
+    "cost": 75,
+    "maxCardsPerAccount": 3
   },
   "atms": {
     "distance": 5.0,
-    "props": [-870868698, -1126237515, 506770882, -1364697528],
-    "withdrawOptions": [500, 1000, 1500, 3000, 5000, 7500]
+    "props": [
+      -870868698,
+      -1126237515,
+      506770882,
+      -1364697528
+    ],
+    "withdrawOptions": [
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500
+    ]
   },
   "bankBlips": {
-    "enabled": true,
+    "enabled": false,
     "name": "Bank",
     "colour": 2,
     "icon": 108,
-    "scale": 0.55,
+    "scale": 0.65,
     "display": 4,
     "shortRange": true,
     "coords": [
@@ -89,7 +101,7 @@
   "target": {
     "type": "qtarget",
     "debug": false,
-    "enabled": true,
+    "enabled": false,
     "bankZones": [
       {
         "position": {
@@ -174,18 +186,6 @@
         "heading": 250,
         "minZ": 104.49,
         "maxZ": 108.49
-      },
-      {
-        "position": {
-          "x": -111.98,
-          "y": 6470.56,
-          "z": 31.63
-        },
-        "length": 6.6,
-        "width": 2,
-        "heading": 45,
-        "minZ": 29.43,
-        "maxZ": 33.43
       }
     ]
   },

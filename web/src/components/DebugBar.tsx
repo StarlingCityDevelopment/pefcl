@@ -5,6 +5,7 @@ import theme from '@utils/theme';
 import { AnimatePresence, motion } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 import Button from './ui/Button';
+import { data } from 'react-router';
 
 const Container = styled(motion.div)<{ children?: React.ReactNode }>`
   width: 100%;
@@ -28,19 +29,19 @@ const Devbar = () => {
 
   useEffect(() => {
     if (isBankOpen) {
-      window.postMessage({ type: 'setVisible', payload: true });
-      window.postMessage({ type: 'setVisibleATM', payload: false });
+      window.postMessage({ app: 'PEFCL', method: 'setVisible', data: true });
+      window.postMessage({ app: 'PEFCL', method: 'setVisibleATM', data: false });
     } else {
-      window.postMessage({ type: 'setVisible', payload: false });
+      window.postMessage({ app: 'PEFCL', method: 'setVisible', data: false });
     }
   }, [isBankOpen]);
 
   useEffect(() => {
     if (isAtmOpen) {
-      window.postMessage({ type: 'setVisible', payload: false });
-      window.postMessage({ type: 'setVisibleATM', payload: true });
+      window.postMessage({ app: 'PEFCL', method: 'setVisible', data: false });
+      window.postMessage({ app: 'PEFCL', method: 'setVisibleATM', data: true });
     } else {
-      window.postMessage({ type: 'setVisibleATM', payload: false });
+      window.postMessage({ app: 'PEFCL', method: 'setVisibleATM', data: false });
     }
   }, [isAtmOpen]);
 

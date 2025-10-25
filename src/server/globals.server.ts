@@ -7,7 +7,7 @@ export const mockedResourceName = 'pefcl';
 
 // TODO: Move this into package
 const convars = {
-  mysql_connection_string: 'mysql://root:root@127.0.0.1/QBCoreFramework_E05901?charset=utf8mb4',
+  mysql_connection_string: 'mysql://root@127.0.0.1/pefcl?charset=utf8mb4',
 };
 
 const players: any = {
@@ -65,7 +65,7 @@ if (isMocking) {
   };
 
   global.exports = () => ({
-    'your-resource': {
+    qbx_pefcl: {
       addCash: () => {
         console.log('global.server.ts: Adding cash ..');
         throw new Error('adding cash');
@@ -73,6 +73,10 @@ if (isMocking) {
       getCash: () => {
         console.log('global.server.ts: Getting cash ..');
         return 2500;
+      },
+      getBank: () => {
+        console.log('global.server.ts: Getting bank ..');
+        return 5000;
       },
       removeCash: () => {
         console.log('global.server.ts: Removing cash ..');

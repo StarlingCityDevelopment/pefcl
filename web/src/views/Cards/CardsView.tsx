@@ -12,7 +12,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import theme from '@utils/theme';
 import BankCards from './components/BankCards';
 import { selectedAccountIdAtom } from '@data/cards';
-import { AccountType } from '@typings/Account';
 
 const Container = styled.div`
   overflow: auto;
@@ -59,17 +58,8 @@ const CardsView = () => {
 
         <CardContainer>
           {accounts.map((account) => (
-            <div
-              key={account.id}
-              onClick={() =>
-                account.type !== AccountType.Shared && setSelectedAccountId(account.id)
-              }
-            >
-              <AccountCard
-                account={account}
-                selected={account.id === selectedAccountId}
-                isDisabled={account.type === AccountType.Shared}
-              />
+            <div key={account.id} onClick={() => setSelectedAccountId(account.id)}>
+              <AccountCard account={account} selected={account.id === selectedAccountId} />
             </div>
           ))}
         </CardContainer>

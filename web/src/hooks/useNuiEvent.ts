@@ -38,6 +38,8 @@ export const useNuiEvent = <T = unknown>(
     const eventListener = (event: MessageEvent<NuiMessageData<T>>) => {
       const { method: eventAction, app: tgtApp, data } = event.data;
 
+      console.log(`Event Action: ${eventAction}, Target App: ${tgtApp}, Data:`, data);
+
       if (eventAction === action && tgtApp === app) {
         savedHandler.current(data);
       }
