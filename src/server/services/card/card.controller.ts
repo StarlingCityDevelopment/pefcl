@@ -44,6 +44,16 @@ export class CardController {
     }
   }
 
+  @NetPromise(CardEvents.OrderShared)
+  async orderSharedAccount(req: Request<CreateCardInput>, res: Response<Card | null>) {
+    try {
+      const result = await this.cardService.orderSharedCard(req);
+      res({ status: 'ok', data: result });
+    } catch (error) {
+      res({ status: 'error', errorMsg: error.message });
+    }
+  }
+
   @NetPromise(CardEvents.Block)
   async blockCard(req: Request<BlockCardInput>, res: Response<boolean>) {
     try {

@@ -21,6 +21,7 @@ import AccountSelect from '@components/AccountSelect';
 import Summary from '@components/Summary';
 import { accountsAtom } from '@data/accounts';
 import PinField from '@components/ui/Fields/PinField';
+import { AccountRole, AccountType } from '@typings/Account';
 
 const CreateCard = styled.div`
   cursor: pointer;
@@ -93,6 +94,10 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
     cards: { cost, maxCardsPerAccount },
   } = useConfig();
 
+  const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
+  const selectedCard = cards.find((card) => card.id === selectedCardId);
+  const isAffordable = (selectedAccount?.balance ?? 0) > cost;
+
   useEffect(() => {
     updateCards(accountId);
   }, [accountId, updateCards]);
@@ -114,7 +119,34 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
     setError('');
     setIsLoading(true);
     try {
-      const newCard = await fetchNui<Card, CreateCardInput>(CardEvents.OrderPersonal, {
+      const account = accounts.find((acc) => acc.id === accountId);
+
+      if (!account) {
+        setError(t('Please select a valid account to pay from.'));
+        setIsLoading(false);
+        return;
+      }
+
+      const accountRole = account.role;
+
+      if (accountRole !== AccountRole.Admin && accountRole !== AccountRole.Owner) {
+        setError(t('Contributors cannot use money in shared accounts.'));
+        setIsLoading(false);
+        return;
+      }
+
+      const accountType = account.type;
+
+      if (accountType === undefined || accountType === null) {
+        setError(t('Selected account has an invalid account type.'));
+        setIsLoading(false);
+        return;
+      }
+
+      const cardEvent =
+        accountType === AccountType.Personal ? CardEvents.OrderPersonal : CardEvents.OrderShared;
+
+      const newCard = await fetchNui<Card, CreateCardInput>(cardEvent, {
         accountId,
         paymentAccountId: selectedAccountId,
         pin: parseInt(pin, 10),
@@ -134,10 +166,6 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
 
     setIsLoading(false);
   };
-
-  const selectedAccount = accounts.find((acc) => acc.id === selectedAccountId);
-  const selectedCard = cards.find((card) => card.id === selectedCardId);
-  const isAffordable = (selectedAccount?.balance ?? 0) > cost;
 
   return (
     <Stack direction="row" spacing={4} height="100%">

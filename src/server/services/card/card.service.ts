@@ -24,7 +24,11 @@ import {
 } from '@server/../../typings/BankCard';
 import { AccountDB } from '../account/account.db';
 import { PIN_CODE_LENGTH } from '@shared/constants';
-import { GetATMAccountResponse, GetATMAccountInput } from '@server/../../typings/Account';
+import {
+  GetATMAccountResponse,
+  GetATMAccountInput,
+  AccountRole,
+} from '@server/../../typings/Account';
 import { CardEvents } from '@server/../../typings/Events';
 import { getFrameworkExports } from '@server/utils/frameworkIntegration';
 
@@ -213,8 +217,9 @@ export class CardService {
     }
   }
 
-  async orderPersonalCard(req: Request<CreateCardInput>): Promise<Card | null> {
+  async orderSharedCard(req: Request<CreateCardInput>): Promise<Card | null> {
     this.validateCardsConfig();
+
     logger.silly('Ordering new card ..');
     logger.silly(req.data);
 
@@ -234,6 +239,87 @@ export class CardService {
     }
 
     const t = await sequelize.transaction();
+
+    try {
+      const sharedAccount = (await this.accountService.handleGetMyAccounts(req.source)).find(
+        (acc) =>
+          acc.id === accountId &&
+          acc.type === 'shared' &&
+          (acc.role === AccountRole.Admin || acc.role === AccountRole.Owner),
+      );
+
+      const paymentAccount = await this.accountService.getAuthorizedAccount(
+        req.source,
+        paymentAccountId,
+      );
+
+      if (!sharedAccount || !paymentAccount) {
+        throw new Error(GenericErrors.NotFound);
+      }
+
+      const card = await this.cardDB.create(
+        {
+          pin: pin,
+          holder: sharedAccount.accountName,
+          holderCitizenId: sharedAccount.ownerIdentifier,
+          accountId: sharedAccount.id,
+        },
+        t,
+      );
+
+      if (paymentAccount.getDataValue('balance') < newCardCost) {
+        throw new Error(BalanceErrors.InsufficentFunds);
+      }
+
+      this.accountService.removeMoneyByAccountNumber({
+        ...req,
+        data: {
+          amount: newCardCost,
+          message: i18next.t('Ordered new card'),
+          accountNumber: paymentAccount.getDataValue('number'),
+        },
+      });
+
+      t.afterCommit(() => {
+        logger.silly(`Emitting ${CardEvents.NewCard}`);
+        emit(CardEvents.NewCard, { ...card.toJSON() });
+      });
+
+      this.giveCard(req.source, card.toJSON());
+
+      t.commit();
+      logger.silly('Ordered new card.');
+      return card.toJSON();
+    } catch (error: unknown) {
+      logger.error(error);
+      t.rollback();
+      throw new Error(i18next.t('Failed to create new account'));
+    }
+  }
+
+  async orderPersonalCard(req: Request<CreateCardInput>): Promise<Card | null> {
+    this.validateCardsConfig();
+
+    logger.silly('Ordering new card ..');
+    logger.silly(req.data);
+
+    const user = this.userService.getUser(req.source);
+    const { accountId, paymentAccountId, pin } = req.data;
+
+    const newCardCost = config.cards?.cost;
+
+    if (!newCardCost) {
+      logger.error('Missing "cards.cost" in config.json');
+      throw new Error(CardErrors.MissingConfigCost);
+    }
+
+    if (pin.toString().length !== PIN_CODE_LENGTH) {
+      logger.error('Pin is wrong length, should be: ' + PIN_CODE_LENGTH);
+      throw new Error(GenericErrors.BadInput);
+    }
+
+    const t = await sequelize.transaction();
+
     try {
       const account = await this.accountService.getAuthorizedAccount(req.source, accountId);
       const paymentAccount = await this.accountService.getAuthorizedAccount(

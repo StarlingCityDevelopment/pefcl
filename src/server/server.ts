@@ -117,6 +117,7 @@ if (isMocking) {
   // Cards
   app.post(...createEndpoint(CardEvents.Get));
   app.post(...createEndpoint(CardEvents.OrderPersonal));
+  app.post(...createEndpoint(CardEvents.OrderShared));
   app.post(...createEndpoint(CardEvents.UpdatePin));
   app.post(...createEndpoint(CardEvents.Block));
   app.post(...createEndpoint(CardEvents.Delete));
