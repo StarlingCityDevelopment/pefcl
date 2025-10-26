@@ -105,6 +105,10 @@ const ATM = () => {
   useKeyDown(['Escape'], handleBack);
 
   useEffect(() => {
+    if (!isOpen) {
+      handleClose();
+    }
+
     const updateCards = async () => {
       try {
         const cards = await fetchNui<InventoryCard[]>(CardEvents.GetInventoryCards);
@@ -120,9 +124,8 @@ const ATM = () => {
         }
       }
     };
-
     isCardsEnabled && isOpen && updateCards();
-  }, [t, isCardsEnabled, isOpen]);
+  }, [t, handleClose, isCardsEnabled, isOpen]);
 
   const input = {
     cardId: selectedCard?.id ?? 0,
