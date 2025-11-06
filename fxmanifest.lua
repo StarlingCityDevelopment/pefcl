@@ -16,8 +16,8 @@ ui_page 'web/dist/index.html'
 
 client_script {
  "src/dist/client.js",
- "src/client/lua/interaction.lua"
-} 
+ "interaction.lua"
+}
 server_script "src/dist/server.js"
 
 files {
