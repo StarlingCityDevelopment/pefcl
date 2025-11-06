@@ -142,22 +142,33 @@ const addMobileApp = async (lbProduct: string) => {
   }
 };
 
-on(`onResourceStart`, async (resName: string) => {
-  if (resName === 'lb-phone') {
-    addMobileApp(resName);
-  }
+const sleep = async (ms = 1000) => new Promise((resolve) => setTimeout(resolve, ms));
 
+on('onClientResourceStart', async (resName: string) => {
+  if (resName === 'lb-phone') {
+    addMobileApp('lb-phone');
+  }
   if (resName === 'lb-tablet') {
-    addMobileApp(resName);
+    addMobileApp('lb-tablet');
   }
 });
 
 (async () => {
-  if (GetResourceState('lb-phone') != 'started') return;
-  addMobileApp('lb-phone');
-})();
+  const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
-(async () => {
-  if (GetResourceState('lb-tablet') != 'started') return;
-  addMobileApp('lb-tablet');
+  const waitForStartAndAdd = async (resName: string) => {
+    const start = Date.now();
+    while (GetResourceState(resName) !== 'started' && Date.now() - start < TIMEOUT_MS) {
+      await sleep(1000);
+    }
+
+    if (GetResourceState(resName) === 'started') {
+      addMobileApp(resName);
+    } else {
+      console.warn(`pefcl: timed out waiting for resource "${resName}" after ${TIMEOUT_MS}ms`);
+    }
+  };
+
+  waitForStartAndAdd('lb-phone');
+  waitForStartAndAdd('lb-tablet');
 })();

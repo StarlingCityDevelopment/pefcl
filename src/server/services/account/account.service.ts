@@ -620,7 +620,7 @@ export class AccountService {
 
     try {
       let fromAccount = undefined;
-      const account = await this._accountDB.getDefaultAccountByIdentifier(user.getIdentifier());
+      const account = await this._accountDB.getUniqueAccountByIdentifier(user.getIdentifier());
 
       if (!account) {
         throw new ServerError(GenericErrors.NotFound);
@@ -628,7 +628,7 @@ export class AccountService {
 
       if (fromIdentifier) {
         logger.silly(`Adding money from ${fromIdentifier} ..`);
-        fromAccount = await this._accountDB.getDefaultAccountByIdentifier(fromIdentifier);
+        fromAccount = await this._accountDB.getUniqueAccountByIdentifier(fromIdentifier);
         if (!fromAccount) {
           throw new ServerError(GenericErrors.NotFound);
         }
@@ -661,7 +661,7 @@ export class AccountService {
     const t = await sequelize.transaction();
     try {
       let fromAccount = undefined;
-      const account = await this._accountDB.getDefaultAccountByIdentifier(identifier ?? '');
+      const account = await this._accountDB.getUniqueAccountByIdentifier(identifier ?? '');
 
       if (!account) {
         throw new ServerError(GenericErrors.NotFound);
@@ -669,7 +669,7 @@ export class AccountService {
 
       if (fromIdentifier) {
         logger.silly(`Adding money from ${fromIdentifier} ..`);
-        fromAccount = await this._accountDB.getDefaultAccountByIdentifier(fromIdentifier);
+        fromAccount = await this._accountDB.getUniqueAccountByIdentifier(fromIdentifier);
         if (!fromAccount) {
           throw new ServerError(GenericErrors.NotFound);
         }
@@ -737,14 +737,14 @@ export class AccountService {
     const t = await sequelize.transaction();
     try {
       let toAccount = undefined;
-      const account = await this._accountDB.getDefaultAccountByIdentifier(user.getIdentifier());
+      const account = await this._accountDB.getUniqueAccountByIdentifier(user.getIdentifier());
       if (!account) {
         throw new ServerError(GenericErrors.NotFound);
       }
 
       if (toIdentifier) {
         logger.silly(`Adding money to ${toIdentifier} ..`);
-        toAccount = await this._accountDB.getDefaultAccountByIdentifier(toIdentifier);
+        toAccount = await this._accountDB.getUniqueAccountByIdentifier(toIdentifier);
         if (!toAccount) {
           throw new ServerError(GenericErrors.NotFound);
         }
@@ -785,14 +785,14 @@ export class AccountService {
     const t = await sequelize.transaction();
     try {
       let toAccount = undefined;
-      const account = await this._accountDB.getDefaultAccountByIdentifier(identifier ?? '');
+      const account = await this._accountDB.getUniqueAccountByIdentifier(identifier ?? '');
       if (!account) {
         throw new ServerError(GenericErrors.NotFound);
       }
 
       if (toIdentifier) {
         logger.silly(`Adding money to ${toIdentifier} ..`);
-        toAccount = await this._accountDB.getDefaultAccountByIdentifier(toIdentifier);
+        toAccount = await this._accountDB.getUniqueAccountByIdentifier(toIdentifier);
         if (!toAccount) {
           throw new ServerError(GenericErrors.NotFound);
         }
@@ -854,7 +854,7 @@ export class AccountService {
     logger.silly(`Setting money to ${amount} for ${req.source} ..`);
 
     const user = this._userService.getUser(req.source);
-    const account = await this._accountDB.getDefaultAccountByIdentifier(user.getIdentifier());
+    const account = await this._accountDB.getUniqueAccountByIdentifier(user.getIdentifier());
     await account?.update({ balance: amount });
   }
 
@@ -862,7 +862,7 @@ export class AccountService {
     const { amount, identifier } = req.data;
     logger.silly(`Setting money by identifier to ${amount} for ${identifier} ..`);
 
-    const account = await this._accountDB.getDefaultAccountByIdentifier(identifier);
+    const account = await this._accountDB.getUniqueAccountByIdentifier(identifier);
     await account?.update({ balance: amount });
   }
 
@@ -1006,7 +1006,7 @@ export class AccountService {
   }
 
   async getBankBalanceByIdentifier(identifier: string) {
-    const account = await this._accountDB.getDefaultAccountByIdentifier(identifier ?? '');
+    const account = await this._accountDB.getUniqueAccountByIdentifier(identifier ?? '');
     if (!account) {
       throw new ServerError(GenericErrors.NotFound);
     }
