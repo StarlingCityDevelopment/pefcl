@@ -15,11 +15,11 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref }}
 
-      - name: Setup Node and Yarn Cache
+      - name: Setup Node and Bun Cache
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'yarn'
+          cache: 'bun'
 
       - name: Get variables
         id: get_vars
@@ -30,25 +30,25 @@ jobs:
           echo "::set-output name=VERSION_TAG::$(echo ${GITHUB_REF/refs\/tags\//})"
 
       - name: Install main deps
-        run: yarn --frozen-lockfile --ignore-scripts
+        run: bun install --frozen-lockfile --no-scripts
 
       - name: Translations
         env:
           LOCALAZY_READ_KEY: a8269809765126758267-f01743c76d6e9e434d7b4c6322938eefce8d82a559b57efc2acfcf4531d46089
-        run: yarn translations:pull
+        run: bun translations:pull
 
       - name: Install src deps
         working-directory: src
-        run: yarn --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Install web deps
         working-directory: web
-        run: yarn --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Create release
         run: |
           chmod +x "./scripts/release.sh"
-          yarn release
+          bun release
 
       - name: Create Release & Changelog
         uses: 'marvinpinto/action-automatic-releases@v1.2.1'

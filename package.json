@@ -8,36 +8,35 @@
   "scripts": {
     "format": "prettier --write .",
     "prepare": "husky install",
-    "postinstall": "husky install && yarn setup",
-    "translations:generate": "yarn i18next",
+    "postinstall": "husky install && bun setup",
+    "translations:generate": "bun i18next",
     "translations:generate-index": "node ./scripts/generateLocales.js",
     "translations:pull": "localazy download && node ./scripts/generateLocales.js",
     "translations:push": "localazy upload -w $LOCALAZY_WRITE_KEY -r $LOCALAZY_READ_KEY",
-    "setup": "yarn nx run-many --target=setup --all && yarn translations:pull && yarn translations:generate-index",
-    "build": "yarn nx run-many --target=build --all",
-    "lint": "yarn nx run-many --target=lint --all",
-    "tsc": "yarn nx run-many --target=tsc --all",
-    "dev": "yarn nx run-many --target=dev --all",
-    "dev:ingame": "yarn nx run-many --target=dev:ingame --all",
-    "dev:mobile": "yarn nx run-many --target=dev:mobile --all",
-    "pre-release": "yarn build && sh ./scripts/prerelease.sh",
-    "release": "yarn build && sh ./scripts/release.sh"
+    "setup": "bun nx run-many --target=setup --all && bun translations:pull && bun translations:generate-index",
+    "build": "bun nx run-many --target=build --all",
+    "lint": "bun nx run-many --target=lint --all",
+    "tsc": "bun nx run-many --target=tsc --all",
+    "dev": "bun nx run-many --target=dev --all",
+    "dev:ingame": "bun nx run-many --target=dev:ingame --all",
+    "dev:mobile": "bun nx run-many --target=dev:mobile --all",
+    "pre-release": "bun build && sh ./scripts/prerelease.sh",
+    "release": "bun build && sh ./scripts/release.sh"
   },
   "devDependencies": {
     "@citizenfx/client": "^2.0.5754-1",
-    "@commitlint/cli": "^16.0.2",
-    "@commitlint/config-conventional": "^16.0.0",
-    "@localazy/cli": "^1.6.0",
-    "@types/node": "^18.6.1",
+    "@commitlint/cli": "^16.3.0",
+    "@commitlint/config-conventional": "^16.2.4",
+    "@localazy/cli": "^1.7.16",
+    "@types/node": "^18.19.130",
     "axios": "^0.26.1",
     "husky": "^7.0.4",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.22",
     "nx": "14.4.3",
-    "prettier": "^2.5.1",
-    "pretty-quick": "^3.1.3"
+    "prettier": "^2.8.8",
+    "pretty-quick": "^3.3.1"
   },
   "dependencies": {
-    "i18next-parser": "^9.1.0"
-  },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+    "i18next-parser": "^9.3.0"
+  }
 }
