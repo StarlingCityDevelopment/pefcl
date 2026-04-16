@@ -13,6 +13,7 @@ import Select from './ui/Select';
 import Button from './ui/Button';
 import { Box } from '@mui/system';
 import AddExternalAccountModal from './Modals/AddExternalAccount';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
 
 // Prefix to namespace external account IDs so they never collide with internal ones
 const EXT_PREFIX = 'ext-';
@@ -125,6 +126,8 @@ const AccountSelect = ({
     setIsExternalOpen(true);
   };
 
+  const { isMobile } = useGlobalSettings();
+
   return (
     <div>
       <React.Suspense fallback={null}>
@@ -172,6 +175,7 @@ const AccountSelect = ({
           );
         }}
         MenuProps={{
+          disablePortal: isMobile,
           PaperProps: {
             sx: {
               maxHeight: '300px',

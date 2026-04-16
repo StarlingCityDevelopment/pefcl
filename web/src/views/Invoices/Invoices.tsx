@@ -10,6 +10,8 @@ import { GetInvoicesResponse, Invoice } from '@typings/Invoice';
 import { InvoiceEvents } from '@typings/Events';
 import { fetchNui } from '@utils/fetchNui';
 import { DEFAULT_PAGINATION_LIMIT } from '@utils/constants';
+import { useAtom } from 'jotai';
+import { invoicesAtom } from '@data/invoices';
 
 const NoInvoicesText = styled(Heading3)`
   padding-top: 4rem;
@@ -26,9 +28,8 @@ const InvoicesContainer = styled(Stack)`
 
 const Invoices = () => {
   const { t } = useTranslation();
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [total, setTotal] = useState(0);
-  const [limit, setLimit] = useState(DEFAULT_PAGINATION_LIMIT);
+  const [invoicesData, updateInvoices] = useAtom(invoicesAtom);
+  const { invoices, total, limit } = invoicesData;
   const pages = Math.ceil(total / limit);
   const [page, setPage] = useState(1);
 
@@ -40,19 +41,11 @@ const Invoices = () => {
   };
 
   useEffect(() => {
-    fetchNui<GetInvoicesResponse>(InvoiceEvents.Get, {
+    updateInvoices({
       limit,
       offset,
-    }).then((res) => {
-      if (!res) {
-        return;
-      }
-
-      setLimit(res.limit);
-      setTotal(res.total);
-      setInvoices(res.invoices);
     });
-  }, [limit, offset]);
+  }, [limit, offset, updateInvoices]);
 
   return (
     <Layout title={t('Invoices')}>

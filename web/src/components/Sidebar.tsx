@@ -132,6 +132,7 @@ const Sidebar = () => {
         <ListItem to="../accounts" icon={<AccountBalanceRounded />} label={t('Accounts')} />
         <ListItem to="../transfer" icon={<SwapHoriz />} label={t('Transfer')} />
         <ListItem to="../transactions" icon={<Paid />} label={t('Transactions')} />
+        <ListItem to="../invoices" icon={<Receipt />} label={t('Invoices')} />
         <ListItem to="../deposit" icon={<Add />} label={t('Deposit Cash')} />
         <ListItem to="../withdraw" icon={<Remove />} label={t('Withdraw Cash')} />
 

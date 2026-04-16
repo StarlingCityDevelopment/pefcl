@@ -35,6 +35,16 @@ export const seedDatabase = async () => {
       type: AccountType.Personal,
       role: AccountRole.Owner,
     },
+    {
+      id: 3,
+      accountName: 'Business Account',
+      number: '920, 2000-3000-4000',
+      balance: 100000,
+      isDefault: true,
+      ownerIdentifier: 'license:mock-repair-shop',
+      type: AccountType.Personal,
+      role: AccountRole.Owner,
+    },
   ]);
 
   // Seed Cash

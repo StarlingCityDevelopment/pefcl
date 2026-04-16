@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import theme from '@utils/theme';
 import { ArrowDropDownRounded } from '@mui/icons-material';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
 
 const InputContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isFocused',
@@ -51,6 +52,7 @@ type SelectProps = BaseSelectProps<any> & {
 
 const Select = (props: SelectProps) => {
   const [isFocused, setIsFocused] = React.useState(false);
+  const { isMobile } = useGlobalSettings();
 
   return (
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
@@ -87,6 +89,7 @@ const Select = (props: SelectProps) => {
             />
           )}
           MenuProps={{
+            disablePortal: isMobile,
             PaperProps: {
               sx: {
                 bgcolor: '#141416',

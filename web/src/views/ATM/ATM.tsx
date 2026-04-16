@@ -87,7 +87,10 @@ const ATM = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useNuiEvent('PEFCL', 'setVisibleATM', (data) => setIsOpen(data as boolean));
-  const initialStatus: BankState = isCardsEnabled ? 'select-card' : 'withdraw';
+  const initialStatus = React.useMemo<BankState>(
+    () => (isCardsEnabled ? 'select-card' : 'withdraw'),
+    [isCardsEnabled],
+  );
 
   const [selectedCard, setSelectedCard] = useState<InventoryCard>();
   const [cards, setCards] = useState<InventoryCard[]>([]);
@@ -98,20 +101,20 @@ const ATM = () => {
 
   const withdrawOptions = config?.atms?.withdrawOptions ?? defaultWithdrawOptions;
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     setError('');
     setPin('');
     setAccount(undefined);
     setState(initialStatus);
-  };
+  }, [initialStatus]);
 
-  const handleBack = () => {
+  const handleBack = React.useCallback(() => {
     setError('');
     setPin('');
     if (state === 'enter-pin') {
       setState('select-card');
     }
-  };
+  }, [state]);
 
   useKeyDown(['Escape'], handleBack);
 

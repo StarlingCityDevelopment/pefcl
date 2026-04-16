@@ -77,7 +77,11 @@ export class InvoiceController {
   @Export(ServerExports.PayInvoice)
   @NetPromise(InvoiceEvents.PayInvoice)
   async payInvoice(req: Request<PayInvoiceInput>, res: Response<any>) {
-    await this._InvoiceService.payInvoice(req);
-    return res({ status: 'ok', data: {} });
+    try {
+      await this._InvoiceService.payInvoice(req);
+      return res({ status: 'ok', data: {} });
+    } catch (error) {
+      return res({ status: 'error', errorMsg: error.message });
+    }
   }
 }

@@ -43,10 +43,10 @@ export class InvoiceDB {
     return await InvoiceModel.create({ ...input, expiresAt });
   }
 
-  async payInvoice(invoiceId: number): Promise<number> {
+  async payInvoice(invoiceId: number, transaction?: Transaction): Promise<number> {
     const [result] = await InvoiceModel.update(
       { status: InvoiceStatus.PAID },
-      { where: { id: invoiceId } },
+      { where: { id: invoiceId }, transaction },
     );
     return result;
   }

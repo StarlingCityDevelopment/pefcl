@@ -107,6 +107,12 @@ export class InvoiceService {
       }
 
       if (!invoice || !fromAccount || !toAccount) {
+        logger.error(
+          `Payment failed: invoice=${!!invoice}, fromAccount=${!!fromAccount}, toAccount=${!!toAccount}`,
+        );
+        logger.error(
+          `fromAccountId=${req.data.fromAccountId}, toAccountIdentifier=${toAccountIdentifier}`,
+        );
         throw new ServerError(GenericErrors.NotFound);
       }
 
@@ -128,7 +134,7 @@ export class InvoiceService {
         toAccount,
         transaction: t,
       });
-      await this._invoiceDB.payInvoice(req.data.invoiceId);
+      await this._invoiceDB.payInvoice(req.data.invoiceId, t);
 
       await this.transactionService.handleCreateTransaction(
         {
@@ -156,10 +162,17 @@ export class InvoiceService {
         t,
       );
 
-      t.commit();
+      await t.commit();
+
+      const fromIdentifier = invoice.getDataValue('fromIdentifier');
+      const fromUser = this._userService.getUserByIdentifier(fromIdentifier);
+      if (fromUser) {
+        emitNet(Broadcasts.NewInvoice, fromUser.getSource());
+      }
     } catch (err) {
       t.rollback();
       logger.error(err);
+      throw err;
     }
   }
 }

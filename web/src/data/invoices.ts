@@ -33,7 +33,7 @@ const isLoadedAtom = atom(false);
 const invoicesAtomRaw = atom<GetInvoicesResponse>(initialState);
 export const invoicesAtom = atom<
   Promise<GetInvoicesResponse>,
-  GetInvoicesResponse | undefined,
+  GetInvoicesInput | undefined,
   Promise<void>
 >(
   async (get) => {
@@ -48,7 +48,8 @@ export const invoicesAtom = atom<
   },
   async (get, set, by?) => {
     const currentSettings = get(invoicesAtomRaw);
-    const data = by ?? (await getInvoices(currentSettings));
+    const input = by ?? { limit: currentSettings.limit, offset: currentSettings.offset };
+    const data = await getInvoices(input);
     set(invoicesAtomRaw, data);
     set(isLoadedAtom, true);
   },

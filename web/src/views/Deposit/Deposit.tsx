@@ -12,7 +12,7 @@ import { ATMInput } from '@typings/Account';
 import { AccountEvents } from '@typings/Events';
 import { formatMoney } from '@utils/currency';
 import { useAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from '@hooks/useMutation';
 import { cashAtom } from '@data/cash';
@@ -45,10 +45,6 @@ const Deposit = () => {
   });
 
   const isButtonDisabled = !isValidNewBalance || !isValidTransaction || isLoading;
-
-  useEffect(() => {
-    updateCash();
-  }, []);
 
   const handleDeposit = () => {
     if (!selectedAccountId) return;
