@@ -1,57 +1,46 @@
 import styled from '@emotion/styled';
-import { CircularProgress, Stack } from '@mui/material';
+import { CircularProgress, Stack, Box } from '@mui/material';
 import { Atom, useAtom } from 'jotai';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import Button from '@ui/Button';
-import { Heading5 } from '@ui/Typography/Headings';
+import { Heading6 } from '@ui/Typography/Headings';
 import theme from '../../../utils/theme';
 
 const Container = styled.div`
-  padding: ${theme.spacing(3)};
-  border-radius: ${theme.spacing(2)};
-  background-color: ${theme.palette.background.paper};
+  padding: 1.25rem;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
 `;
 
-const LoadingContainer = styled(Container)``;
+const Header = styled(Stack)`
+  padding: 0 0.25rem;
+`;
 
-const Total = styled.div`
+const TotalBadge = styled.div`
+  background: rgba(255, 255, 255, 0.04);
+  color: ${theme.palette.text.secondary};
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 0.6875rem;
+  font-weight: 600;
   display: flex;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-
-  height: 2rem;
-  padding: 0 0.73rem;
-
-  border-radius: ${theme.spacing(1)};
-  font-weight: ${theme.typography.fontWeightBold};
-  background-color: ${theme.palette.background.light4};
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 `;
 
 const Content = styled.div`
-  ::-webkit-scrollbar {
-    width: 0.25rem;
-  }
-
-  ::-webkit-scrollbar-track {
-    background-color: ${theme.palette.background.dark4};
-    border-radius: 2rem;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    border-radius: 2rem;
-    background-color: #80cae24a;
-  }
-
-  padding-right: 12px;
-  max-height: 16rem;
-  overflow: auto;
-`;
-
-const Title = styled(Heading5)`
-  color: ${theme.palette.primary.dark};
+  flex: 1;
+  max-height: 22rem;
+  overflow-y: auto;
+  padding-right: 2px;
 `;
 
 interface DashboardContainerProps {
@@ -73,34 +62,64 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
 
   return (
     <Container>
-      <Stack spacing={3}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Title>{title}</Title>
-          <Total>{total}</Total>
+      <Header direction="row" justifyContent="space-between" alignItems="center">
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Heading6
+            sx={{
+              fontWeight: 600,
+              fontSize: '0.6875rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              color: theme.palette.text.secondary,
+            }}
+          >
+            {title}
+          </Heading6>
+          <TotalBadge>{total}</TotalBadge>
         </Stack>
+        <Button
+          size="small"
+          variant="text"
+          onClick={() => navigate(viewAllRoute)}
+          sx={{
+            fontSize: '0.75rem',
+            padding: '4px 8px',
+            color: theme.palette.primary.main,
+            '&:hover': {
+              background: 'rgba(59, 130, 246, 0.06)',
+            },
+          }}
+        >
+          {t('View all')}
+        </Button>
+      </Header>
 
-        <Content>{children}</Content>
-
-        <Stack justifyContent="flex-end" alignItems="flex-end">
-          <Button onClick={() => navigate(viewAllRoute)}>{t('View all')}</Button>
-        </Stack>
-      </Stack>
+      <Content>
+        <Stack spacing={0.75}>{children}</Stack>
+      </Content>
     </Container>
   );
 };
 
 export const DashboardContainerFallback: React.FC<{ title: string }> = ({ title }) => {
   return (
-    <LoadingContainer>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Heading5>{title}</Heading5>
-        <Total>0</Total>
-      </Stack>
-
-      <Stack p={8} alignItems="center">
-        <CircularProgress />
-      </Stack>
-    </LoadingContainer>
+    <Container>
+      <Header direction="row" justifyContent="space-between" alignItems="center">
+        <Heading6
+          sx={{
+            fontWeight: 600,
+            fontSize: '0.6875rem',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+          }}
+        >
+          {title}
+        </Heading6>
+      </Header>
+      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 4 }}>
+        <CircularProgress size={20} thickness={2.5} sx={{ color: 'rgba(255, 255, 255, 0.15)' }} />
+      </Box>
+    </Container>
   );
 };
 

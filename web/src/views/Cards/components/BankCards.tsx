@@ -1,12 +1,12 @@
 import { PreHeading } from '@components/ui/Typography/BodyText';
-import { Heading1 } from '@components/ui/Typography/Headings';
+import { Heading4, Heading6 } from '@components/ui/Typography/Headings';
 import React, { useEffect, useState } from 'react';
 import BankCard from '@components/BankCard';
 import { AddRounded, ErrorRounded, InfoRounded } from '@mui/icons-material';
-import { Alert, Backdrop, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
+import { Alert, DialogActions, DialogContent, DialogTitle, Stack, Box } from '@mui/material';
 import { Card, CreateCardInput } from '@typings/BankCard';
 import theme from '@utils/theme';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import { useTranslation } from 'react-i18next';
 import CardActions from './CardActions';
 import { useConfig } from '@hooks/useConfig';
@@ -15,61 +15,49 @@ import { fetchNui } from '@utils/fetchNui';
 import { CardEvents } from '@typings/Events';
 import { useAtom } from 'jotai';
 import { cardsAtom } from '@data/cards';
-import { AnimatePresence, motion } from 'motion/react';
 import Button from '@components/ui/Button';
 import AccountSelect from '@components/AccountSelect';
 import Summary from '@components/Summary';
 import { accountsAtom } from '@data/accounts';
 import PinField from '@components/ui/Fields/PinField';
 import { AccountRole, AccountType } from '@typings/Account';
+import { AnimatePresence, motion } from 'motion/react';
 
 const CreateCard = styled.div`
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: ${theme.spacing(1)};
-  border: 1px dashed ${theme.palette.grey[500]};
-  font-size: 1.75rem;
-  transition: 300ms;
-
-  min-height: 7rem;
+  border-radius: 14px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.08);
+  color: ${theme.palette.text.secondary};
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  min-height: 160px;
   width: auto;
 
-  :hover {
+  &:hover {
     color: ${theme.palette.primary.main};
-    border: 1px dashed ${theme.palette.primary.main};
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.04);
   }
 
   svg {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
   }
 `;
 
-const CardContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  height: 100%;
-  overflow: auto;
-  margin-top: 1rem;
-  margin-left: -0.5rem;
-
-  & > div {
-    width: calc(33% - 0.5rem);
-    margin-left: 0.5rem;
-    margin-top: 0.5rem;
-  }
+const CardsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
 `;
 
-const Modal = styled(motion.div)`
-  z-index: 2;
-  padding: 2rem 3rem;
-  position: absolute;
-  width: calc(100% - 5rem);
-  height: 100%;
-  top: 0;
-  left: 5rem;
-  background-color: ${theme.palette.background.paper};
+const DetailPanel = styled(motion.div)`
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+  min-width: 240px;
 `;
 
 interface BankCardsProps {
@@ -80,7 +68,7 @@ interface BankCardsProps {
 
 const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps) => {
   const { t } = useTranslation();
-  const [accounts] = useAtom(accountsAtom);
+  const [accounts, updateAccounts] = useAtom(accountsAtom);
   const defaultAccount = accounts.find((account) => Boolean(account.isDefault));
   const initialAccountId = defaultAccount?.id ?? -1;
   const [cards, updateCards] = useAtom(cardsAtom);
@@ -89,7 +77,7 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
   const [confirmPin, setConfirmPin] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isOrderingCard, setIsOrderingCard] = useState(false);
-  const [selectedAccountId, setSelectedAccountId] = useState(initialAccountId);
+  const [selectedAccountId, setSelectedAccountId] = useState(accountId);
   const {
     cards: { cost, maxCardsPerAccount },
   } = useConfig();
@@ -99,7 +87,11 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
   const isAffordable = (selectedAccount?.balance ?? 0) > cost;
 
   useEffect(() => {
-    updateCards(accountId);
+    setSelectedAccountId(accountId);
+    const fetch = async () => {
+      await updateCards(accountId);
+    };
+    fetch();
   }, [accountId, updateCards]);
 
   const handleClose = () => {
@@ -156,7 +148,8 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
         return;
       }
 
-      updateCards(newCard);
+      await updateCards(newCard);
+      await updateAccounts();
       handleClose();
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -167,63 +160,71 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
     setIsLoading(false);
   };
 
+  const handleCardClick = (cardId: number) => {
+    // Toggle selection — clicking the same card deselects
+    onSelectCardId(selectedCardId === cardId ? 0 : cardId);
+  };
+
   return (
-    <Stack direction="row" spacing={4} height="100%">
-      <Stack flex="1" alignSelf="flex-start" maxHeight="100%">
-        <Stack>
-          <Heading1>{t('Cards')}</Heading1>
-          <PreHeading>{t('Select a card to handle, or order a new one.')}</PreHeading>
-        </Stack>
+    <>
+      <Stack direction="row" spacing={2} sx={{ minHeight: 0, flex: 1 }}>
+        {/* Cards grid */}
+        <Box flex={1} minWidth={0}>
+          <CardsGrid>
+            {cards.map((card) => (
+              <div key={card.id} onClick={() => handleCardClick(card.id)}>
+                <BankCard card={card} selected={selectedCardId === card.id} />
+              </div>
+            ))}
 
-        <CardContainer>
-          {cards.map((card) => (
-            <div
-              key={card.id}
-              onClick={() => {
-                onSelectCardId(card.id);
-              }}
-            >
-              <BankCard card={card} selected={selectedCardId === card.id} />
-            </div>
-          ))}
-
-          {cards.length < maxCardsPerAccount && (
-            <CreateCard onClick={() => setIsOrderingCard(true)}>
-              <Stack spacing={1}>
+            {cards.length < maxCardsPerAccount && (
+              <CreateCard onClick={() => setIsOrderingCard(true)}>
                 <AddRounded />
-              </Stack>
-            </CreateCard>
+              </CreateCard>
+            )}
+          </CardsGrid>
+
+          {cards.length === 0 && (
+            <Box sx={{ py: 4, textAlign: 'center' }}>
+              <Heading6 sx={{ color: theme.palette.text.secondary }}>
+                {t('No cards issued for this account')}
+              </Heading6>
+              <PreHeading sx={{ mt: 0.5 }}>{t('Order a new card to get started')}</PreHeading>
+            </Box>
           )}
-        </CardContainer>
+        </Box>
+
+        {/* Inline detail panel for selected card */}
+        <AnimatePresence>
+          {selectedCard && (
+            <DetailPanel
+              initial={{ opacity: 0, width: 0, padding: 0 }}
+              animate={{ opacity: 1, width: 'auto', padding: '1.5rem' }}
+              exit={{ opacity: 0, width: 0, padding: 0 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              <CardActions
+                isBlocked={selectedCard?.isBlocked}
+                cardId={selectedCardId}
+                onBlock={() => {
+                  updateCards(accountId);
+                  onSelectCardId(0);
+                }}
+                onUnblock={() => {
+                  updateCards(accountId);
+                  onSelectCardId(0);
+                }}
+                onDelete={() => {
+                  updateCards(accountId);
+                  onSelectCardId(0);
+                }}
+              />
+            </DetailPanel>
+          )}
+        </AnimatePresence>
       </Stack>
 
-      <Backdrop
-        open={Boolean(selectedCardId)}
-        onClick={() => {
-          onSelectCardId(0);
-        }}
-        sx={{ position: 'absolute', left: '-2rem' }}
-      />
-
-      <AnimatePresence>
-        {Boolean(selectedCardId) && (
-          <Modal animate={{ x: 0 }} initial={{ x: 100 }} exit={{ x: 200, opacity: 0 }}>
-            <CardActions
-              isBlocked={selectedCard?.isBlocked}
-              cardId={selectedCardId}
-              onBlock={() => {
-                updateCards(accountId);
-                onSelectCardId(0);
-              }}
-              onDelete={() => {
-                updateCards(accountId);
-                onSelectCardId(0);
-              }}
-            />
-          </Modal>
-        )}
-      </AnimatePresence>
-
+      {/* Order card dialog */}
       <BaseDialog open={isOrderingCard} onClose={handleClose}>
         <DialogTitle>{t('Order a new card')}</DialogTitle>
         <DialogContent>
@@ -256,7 +257,7 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
 
           {error && (
             <Alert
-              sx={{ marginTop: '2rem' }}
+              sx={{ marginTop: '1.5rem' }}
               icon={isLoading ? <InfoRounded /> : <ErrorRounded />}
               color={isLoading ? 'info' : 'error'}
             >
@@ -274,7 +275,7 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
           </Button>
         </DialogActions>
       </BaseDialog>
-    </Stack>
+    </>
   );
 };
 

@@ -3,7 +3,6 @@ import WeekGraph from '@components/WeekGraph';
 import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
 import { Divider, Stack } from '@mui/material';
-import { red } from '@mui/material/colors';
 import { Box } from '@mui/system';
 import { TransactionEvents } from '@typings/Events';
 import { GetTransactionHistoryResponse } from '@typings/Transaction';
@@ -13,28 +12,43 @@ import theme from '@utils/theme';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const Title = styled(Heading5)`
-  color: ${theme.palette.primary.dark};
-`;
-
 const Container = styled.div`
-  padding: ${theme.spacing(3)};
-  border-radius: ${theme.spacing(2)};
-  background-color: ${theme.palette.background.paper};
+  padding: 1.25rem;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  height: 100%;
 `;
 
 const ExpensesIncomeContainer = styled(Box)`
-  margin-top: 1rem;
-  border-radius: ${theme.spacing(2)};
-  border: 1px dashed ${theme.palette.background.light8};
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 `;
 
 const Income = styled(Heading5)`
-  color: ${theme.palette.primary.main};
+  color: ${theme.palette.success.main};
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
 `;
 
 const Expense = styled(Heading5)`
-  color: ${red.A200};
+  color: ${theme.palette.error.main};
+  font-weight: 600;
+  font-size: 1.125rem;
+  letter-spacing: -0.01em;
+`;
+
+const Title = styled(Heading6)`
+  color: ${theme.palette.text.secondary};
+  font-weight: 600;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 `;
 
 const DashboardSummary = () => {
@@ -48,26 +62,61 @@ const DashboardSummary = () => {
 
   return (
     <Container>
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Title>{t('Weekly summary')}</Title>
-      </Stack>
+      <Title>{t('Weekly summary')}</Title>
 
-      <ExpensesIncomeContainer p={3}>
-        <Stack spacing={0.5}>
-          <Heading6>{t('Income')}</Heading6>
-          <Income>{formatMoney(data?.income ?? 0, config.general)}</Income>
-        </Stack>
+      <ExpensesIncomeContainer p={1.5}>
+        <Stack
+          direction="row"
+          spacing={2}
+          divider={
+            <Divider
+              orientation="vertical"
+              flexItem
+              sx={{ borderColor: 'rgba(255,255,255,0.04)' }}
+            />
+          }
+        >
+          <Stack spacing={0.25} flex={1}>
+            <Heading6
+              sx={{
+                fontSize: '0.5625rem',
+                color: theme.palette.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              {t('Income')}
+            </Heading6>
+            <Income>{formatMoney(data?.income ?? 0, config.general)}</Income>
+          </Stack>
 
-        <Divider orientation="horizontal" sx={{ margin: '1rem 0' }} />
-
-        <Stack spacing={0.5}>
-          <Heading6>{t('Expenses')}</Heading6>
-          <Expense>{formatMoney(data?.expenses ?? 0, config.general)}</Expense>
+          <Stack spacing={0.25} flex={1}>
+            <Heading6
+              sx={{
+                fontSize: '0.5625rem',
+                color: theme.palette.text.secondary,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              {t('Expenses')}
+            </Heading6>
+            <Expense>{formatMoney(data?.expenses ?? 0, config.general)}</Expense>
+          </Stack>
         </Stack>
       </ExpensesIncomeContainer>
 
-      <Stack marginTop={2} spacing={2}>
-        <Heading6>{t('Report')}</Heading6>
+      <Stack spacing={1}>
+        <Heading6
+          sx={{
+            fontSize: '0.5625rem',
+            color: theme.palette.text.secondary,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+          }}
+        >
+          {t('Activity Report')}
+        </Heading6>
         <WeekGraph data={data?.lastWeek ?? {}} />
       </Stack>
     </Container>

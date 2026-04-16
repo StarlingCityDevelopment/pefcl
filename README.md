@@ -38,8 +38,29 @@ https://projecterror.dev/docs/pefcl/configuration
 ### Developers
 https://projecterror.dev/docs/pefcl/developers/introduction
 
+## Local Development (Mocked)
+
+For faster iteration, you can run a mocked version of the server and the web interface in your browser. This requires [Bun](https://bun.sh/) and Docker.
+
+1.  **Clone the repository**
+2.  **Install dependencies**:
+    ```bash
+    bun install
+    ```
+3.  **Start the database**:
+    ```bash
+    docker compose up -d
+    ```
+    *This starts a MySQL database as defined in `docker-compose.yml`.*
+4.  **Run the development environment**:
+    ```bash
+    bun dev
+    ```
+    *This command runs Nx to start both the mock server and the Vite dev server for the frontend.*
+
+The mock server will be listening on port `3005`, and the web interface will be available at the URL provided by Vite (usually `http://localhost:3002`).
 
 ## Additional Notes
-Credits to the Poject-Error Team and all of it's contributors.
+Credits to the Project-Error Team and all of its contributors.
 
 [PEFCL](https://github.com/project-error/pefcl)

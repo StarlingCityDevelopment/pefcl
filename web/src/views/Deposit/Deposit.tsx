@@ -5,27 +5,25 @@ import PriceField from '@components/ui/Fields/PriceField';
 import NewBalance from '@components/ui/NewBalance';
 import { Heading2, Heading6 } from '@components/ui/Typography/Headings';
 import { accountsAtom } from '@data/accounts';
+import { transactionBaseAtom } from '@data/transactions';
 import { useConfig } from '@hooks/useConfig';
-import { Error } from '@mui/icons-material';
-import { Alert, LinearProgress, Stack, Typography } from '@mui/material';
+import { LinearProgress, Stack, Typography } from '@mui/material';
 import { ATMInput } from '@typings/Account';
-import { BalanceErrors } from '@typings/Errors';
-import { AccountEvents, CashEvents } from '@typings/Events';
+import { AccountEvents } from '@typings/Events';
 import { formatMoney } from '@utils/currency';
-import { fetchNui } from '@utils/fetchNui';
 import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMutation } from '@hooks/useMutation';
+import { cashAtom } from '@data/cash';
 
 const Deposit = () => {
   const { t } = useTranslation();
-  const [currentCash, setCurrentCash] = useState(0);
+  const [currentCash, updateCash] = useAtom(cashAtom);
   const [amount, setAmount] = useState('');
-  const [success, setSuccess] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedAccountId, setSelectedAccountId] = useState<number>(0);
   const [, updateAccounts] = useAtom(accountsAtom);
-  const [selectedAccountId, setSelectedAccountId] = useState<number>();
+  const [, updateTransactions] = useAtom(transactionBaseAtom);
   const [accounts] = useAtom(accountsAtom);
   const { general } = useConfig();
 
@@ -33,59 +31,66 @@ const Deposit = () => {
   const value = isNaN(rawValue) ? 0 : rawValue;
   const newCash = currentCash - value;
   const isValidNewBalance = newCash >= 0;
-  const isValidTransaction = Boolean(amount) && value > 0 && selectedAccountId;
+  const isValidTransaction = Boolean(amount) && value > 0 && selectedAccountId > 0;
+
+  const { mutate: mutateDeposit, isLoading } = useMutation(AccountEvents.DepositMoney, {
+    successMessage: t('Successfully deposited {{amount}} into selected account.', {
+      amount: formatMoney(value, general),
+    }),
+    onSuccess: async () => {
+      setAmount('');
+      updateCash();
+      await Promise.all([updateAccounts(), updateTransactions()]);
+    },
+  });
+
   const isButtonDisabled = !isValidNewBalance || !isValidTransaction || isLoading;
 
   useEffect(() => {
-    fetchNui<number>(CashEvents.GetMyCash).then((cash) => setCurrentCash(cash ?? 0));
-  }, [success]);
+    updateCash();
+  }, []);
 
   const handleDeposit = () => {
+    if (!selectedAccountId) return;
+
     const payload: ATMInput = {
       amount: value,
       message: t('Deposited {{amount}} into account.', { amount: formatMoney(value, general) }),
       accountId: selectedAccountId,
     };
-
-    setSuccess('');
-    setError('');
-    setIsLoading(true);
-    fetchNui<ATMInput>(AccountEvents.DepositMoney, payload)
-      .then(() => {
-        setAmount('');
-        setCurrentCash(newCash);
-        updateAccounts();
-        setSuccess(
-          t('Successfully deposited {{amount}} into selected account.', {
-            amount: formatMoney(value, general),
-          }),
-        );
-      })
-      .catch((err: Error) => {
-        if (err.message === BalanceErrors.InsufficentFunds) {
-          setError(t('Insufficent funds'));
-          return;
-        }
-
-        setError(err.message ?? t('Something went wrong'));
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    mutateDeposit(payload);
   };
 
   return (
-    <Layout>
-      <Heading2>{t('Deposit')}</Heading2>
-
-      <Stack spacing={0.5} marginTop={4}>
-        <Heading6>{t('Current cash')}</Heading6>
-        <Typography>{formatMoney(currentCash, general)}</Typography>
+    <Layout title={t('Deposit')}>
+      <Stack spacing={1} marginTop={1}>
+        <Heading6
+          sx={{
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            fontSize: '0.6875rem',
+            fontWeight: 600,
+          }}
+        >
+          {t('Current cash')}
+        </Heading6>
+        <Typography sx={{ fontWeight: 600, fontSize: '1.125rem', letterSpacing: '-0.01em' }}>
+          {formatMoney(currentCash, general)}
+        </Typography>
       </Stack>
 
-      <Stack spacing={2} marginTop={4} maxWidth="25rem">
-        <Stack spacing={1}>
-          <Heading6>{t('Amount')}</Heading6>
+      <Stack spacing={2.5} marginTop={3} maxWidth="24rem">
+        <Stack spacing={0.75}>
+          <Heading6
+            sx={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+            }}
+          >
+            {t('Amount')}
+          </Heading6>
           <PriceField
             placeholder={t('Amount')}
             value={amount}
@@ -93,8 +98,17 @@ const Deposit = () => {
           />
           <NewBalance amount={newCash} isValid={isValidNewBalance} newBalanceText={t('New cash')} />
         </Stack>
-        <Stack spacing={1}>
-          <Heading6>{t('Select account')}</Heading6>
+        <Stack spacing={0.75}>
+          <Heading6
+            sx={{
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              fontSize: '0.6875rem',
+              fontWeight: 600,
+            }}
+          >
+            {t('Select account')}
+          </Heading6>
           <AccountSelect
             accounts={accounts}
             isFromAccount={false}
@@ -107,16 +121,11 @@ const Deposit = () => {
           {t('Deposit')}
         </Button>
 
-        <Typography variant="caption">
+        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6875rem' }}>
           {t('This will take cash from your person and insert into selected bank account')}
         </Typography>
 
-        {success && <Alert color="info">{success}</Alert>}
-        {error && (
-          <Alert icon={<Error />} color="error">
-            {error}
-          </Alert>
-        )}
+        {/* useMutation handles error reporting via snackbar */}
         {isLoading && <LinearProgress />}
       </Stack>
     </Layout>

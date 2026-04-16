@@ -30,27 +30,11 @@ import MobileApp from './views/Mobile/Mobile';
 import { useGlobalSettings } from '@hooks/useGlobalSettings';
 import { useLBPhoneSettings } from '@hooks/useLBPhoneSettings';
 import { useLBTabletSettings } from '@hooks/useLBTabletSettings';
+import Shell from '@components/layout/Shell';
 
 dayjs.extend(updateLocale);
 
-const Container = styled.div`
-  padding: 4rem;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 1400px;
-  height: 800px;
-  overflow: hidden;
-  border-radius: 1rem;
-  color: ${theme.palette.text.primary};
-  background: ${theme.palette.background.default};
-`;
+// Layout moved to @components/layout/Shell
 
 const App: React.FC = () => {
   const config = useConfig();
@@ -58,7 +42,7 @@ const App: React.FC = () => {
   const setAccounts = useSetAtom(accountsAtom);
   const setTransactions = useSetAtom(transactionBaseAtom);
   const [isAtmVisible, setIsAtmVisible] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(process.env.NODE_ENV === 'development');
   const { isMobile } = useGlobalSettings();
   const LBPhoneSettings = useLBPhoneSettings();
   const LBTabletSettings = useLBTabletSettings();
@@ -82,8 +66,14 @@ const App: React.FC = () => {
     };
   }, []);
 
-  useNuiEvent('PEFCL', 'setVisible', (data) => setIsVisible(data as boolean));
-  useNuiEvent('PEFCL', 'setVisibleATM', (data) => setIsAtmVisible(data as boolean));
+  useNuiEvent('PEFCL', 'setVisible', (data) => {
+    setIsVisible(data as boolean);
+    if (data) setHasLoaded(true);
+  });
+  useNuiEvent('PEFCL', 'setVisibleATM', (data) => {
+    setIsAtmVisible(data as boolean);
+    if (data) setHasLoaded(true);
+  });
 
   const { i18n } = useTranslation();
   useExitListener(isVisible);
@@ -111,21 +101,19 @@ const App: React.FC = () => {
       {process.env.NODE_ENV === 'development' && <Devbar />}
 
       <React.Suspense fallback={'Loading bank'}>
-        {!isAtmVisible && isVisible && (
-          <Container>
-            <Content>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="accounts" element={<Accounts />} />
-                <Route path="transactions" element={<Transactions />} />
-                {/* <Route path="invoices" element={<Invoices />} /> */}
-                <Route path="transfer" element={<Transfer />} />
-                <Route path="deposit" element={<Deposit />} />
-                <Route path="withdraw" element={<Withdraw />} />
-                <Route path="cards" element={<CardsView />} />
-              </Routes>
-            </Content>
-          </Container>
+        {!isAtmVisible && isVisible && !isMobile && (
+          <Shell>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="accounts" element={<Accounts />} />
+              <Route path="transactions" element={<Transactions />} />
+              {/* <Route path="invoices" element={<Invoices />} /> */}
+              <Route path="transfer" element={<Transfer />} />
+              <Route path="deposit" element={<Deposit />} />
+              <Route path="withdraw" element={<Withdraw />} />
+              <Route path="cards" element={<CardsView />} />
+            </Routes>
+          </Shell>
         )}
       </React.Suspense>
 
@@ -133,7 +121,7 @@ const App: React.FC = () => {
         <ATM />
       </React.Suspense>
 
-      {isMobile && (
+      {!isAtmVisible && isVisible && isMobile && (
         <React.Suspense fallback={null}>
           <Routes>
             <Route path="*" element={<MobileApp />} />

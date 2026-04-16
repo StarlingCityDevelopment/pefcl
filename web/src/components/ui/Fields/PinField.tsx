@@ -55,7 +55,7 @@ const PinField = ({ onChange, value, label }: PinFieldProps) => {
       <Container>
         <InputField
           onChange={handleChange}
-          value={value}
+          value={value || ''}
           onBlur={() => setHasFocus(false)}
           onFocus={() => setHasFocus(true)}
         />

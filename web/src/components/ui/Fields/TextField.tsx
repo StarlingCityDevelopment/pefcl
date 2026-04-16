@@ -1,41 +1,73 @@
 import styled from '@emotion/styled';
-import { InputBase, InputBaseProps, StandardTextFieldProps, Typography } from '@mui/material';
+import {
+  InputBase,
+  InputBaseProps,
+  StandardTextFieldProps,
+  Typography,
+  alpha,
+  Stack,
+} from '@mui/material';
 import React from 'react';
 import theme from '../../../utils/theme';
-import { Heading5 } from '../Typography/Headings';
 
-const Container = styled.div`
+const InputContainer = styled('div', {
+  shouldForwardProp: (prop) => prop !== 'isError',
+})<{ isError?: boolean }>`
   display: flex;
-  padding: 0.75rem 1rem;
-  border-radius: ${theme.spacing(1)};
-  background-color: ${theme.palette.background.dark12};
+  min-height: 44px;
+  align-items: center;
+  padding: 0 0.875rem;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid
+    ${(props) =>
+      props.isError ? alpha(theme.palette.error.main, 0.5) : 'rgba(255, 255, 255, 0.06)'};
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: ${(props) =>
+      props.isError ? theme.palette.error.main : 'rgba(255, 255, 255, 0.12)'};
+  }
+
+  &:focus-within {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-color: ${(props) =>
+      props.isError ? theme.palette.error.main : alpha(theme.palette.primary.main, 0.6)};
+    box-shadow: 0 0 0 3px
+      ${(props) =>
+        props.isError
+          ? alpha(theme.palette.error.main, 0.1)
+          : alpha(theme.palette.primary.main, 0.08)};
+  }
 
   & > div {
     flex: 1;
+  }
+
+  input {
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.005em;
   }
 
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-    color: white !important;
-    -webkit-text-fill-color: white !important;
-    box-shadow: 0 0 0 30px rgb(16 26 37) inset !important;
-    -webkit-box-shadow: 0 0 0 30px rgb(16 26 37) inset !important;
+    -webkit-transition: background-color 5000s ease-in-out 0s;
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: ${theme.palette.text.primary} !important;
   }
 `;
 
-const LabelWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Label = styled(Heading5)`
-  margin-bottom: 0.5rem;
-`;
-
-const HelperText = styled(Typography)`
-  margin-top: 0.5rem;
+const Label = styled(Typography)`
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: ${theme.palette.text.secondary};
+  margin-bottom: 0.375rem;
 `;
 
 interface Props extends InputBaseProps {
@@ -44,20 +76,30 @@ interface Props extends InputBaseProps {
   InputProps?: StandardTextFieldProps['InputProps'];
   InputLabelProps?: StandardTextFieldProps['InputLabelProps'];
 }
-const TextField = ({ InputProps, InputLabelProps, helperText, ...props }: Props) => {
+
+const TextField = ({ InputProps, InputLabelProps, helperText, error, ...props }: Props) => {
   return (
-    <LabelWrapper>
-      {props.label && <Label {...InputLabelProps}>{props.label}</Label>}
-      <Container>
-        <InputBase {...InputProps} {...props} />
-      </Container>
+    <Stack spacing={0.5}>
+      {props.label && <Label {...(InputLabelProps as any)}>{props.label}</Label>}
+      <InputContainer isError={!!error || !!helperText}>
+        <InputBase
+          {...InputProps}
+          {...props}
+          value={props.value ?? ''}
+          sx={{ color: theme.palette.text.primary, ...props.sx }}
+        />
+      </InputContainer>
 
       {helperText && (
-        <HelperText variant="caption" color="error">
+        <Typography
+          variant="caption"
+          color="error"
+          sx={{ px: 0.5, fontWeight: 500, fontSize: '0.75rem' }}
+        >
           {helperText}
-        </HelperText>
+        </Typography>
       )}
-    </LabelWrapper>
+    </Stack>
   );
 };
 

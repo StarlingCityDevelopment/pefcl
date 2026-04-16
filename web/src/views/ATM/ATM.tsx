@@ -22,8 +22,9 @@ import BankCard from '@components/BankCard';
 import { ErrorRounded } from '@mui/icons-material';
 import PinField from '@components/ui/Fields/PinField';
 import { useExitListener } from '@hooks/useExitListener';
-import { useAtomValue } from 'jotai';
-import { defaultAccountAtom } from '@data/accounts';
+import { useAtom, useAtomValue } from 'jotai';
+import { defaultAccountAtom, accountsAtom } from '@data/accounts';
+import { transactionBaseAtom } from '@data/transactions';
 
 const AnimationContainer = styled.div`
   position: absolute;
@@ -34,33 +35,43 @@ const AnimationContainer = styled.div`
 
 const Container = styled(Paper)`
   display: inline-block;
-  padding: ${theme.spacing(7)};
-  border-radius: ${theme.spacing(3)};
+  padding: ${theme.spacing(5)};
+  border-radius: 20px;
+  background-color: #141416 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 24px 80px -12px rgba(0, 0, 0, 0.7) !important;
 `;
 
 const AccountBalance = styled(Heading6)`
-  color: ${theme.palette.text.primary};
-  font-weight: ${theme.typography.fontWeightLight};
+  color: ${theme.palette.text.secondary};
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.6875rem;
 `;
 
 const Header = styled(Stack)`
-  margin-bottom: ${theme.spacing(5)};
+  margin-bottom: ${theme.spacing(4)};
 `;
 
 const WithdrawText = styled(Heading6)`
   display: block;
-  padding-bottom: ${theme.spacing(1.5)};
+  padding-bottom: ${theme.spacing(1)};
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.6875rem;
+  font-weight: 600;
 `;
 
 const WithdrawContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 8rem);
-  grid-row-gap: ${theme.spacing(1.5)};
-  grid-column-gap: ${theme.spacing(1.5)};
+  grid-template-columns: repeat(3, 7.5rem);
+  grid-row-gap: ${theme.spacing(1)};
+  grid-column-gap: ${theme.spacing(1)};
 `;
 
 const CardWrapper = styled.div`
-  min-width: 15rem;
+  min-width: 14rem;
 `;
 
 type BankState = 'select-card' | 'enter-pin' | 'withdraw';
@@ -148,6 +159,9 @@ const ATM = () => {
     setAccount(account);
   };
 
+  const [, updateAccounts] = useAtom(accountsAtom);
+  const [, updateTransactions] = useAtom(transactionBaseAtom);
+
   const handleWithdraw = async (amount: number) => {
     const withdrawAccount = isCardsEnabled ? account : defaultAccount;
     if (!withdrawAccount) {
@@ -180,7 +194,7 @@ const ATM = () => {
     try {
       setError('');
       await fetchNui(AccountEvents.WithdrawMoney, payload);
-      await handleUpdateBalance();
+      await Promise.all([handleUpdateBalance(), updateAccounts(), updateTransactions()]);
     } catch (error) {
       if (error instanceof Error) {
         if (error.message === CardErrors.InvalidPin) {
@@ -257,9 +271,10 @@ const ATM = () => {
         {isOpen && state === 'select-card' && (
           <AnimationContainer>
             <motion.div
-              initial={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <Container elevation={4}>
                 <Header>
@@ -275,11 +290,7 @@ const ATM = () => {
                 </Stack>
 
                 {error && (
-                  <Alert
-                    icon={<ErrorRounded />}
-                    color="error"
-                    sx={{ margin: '0.5rem -1.5rem -1.5rem' }}
-                  >
+                  <Alert icon={<ErrorRounded />} color="error" sx={{ mt: 2, borderRadius: '10px' }}>
                     {error}
                   </Alert>
                 )}
@@ -293,9 +304,10 @@ const ATM = () => {
         {isOpen && state === 'enter-pin' && (
           <AnimationContainer>
             <motion.div
-              initial={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <Container elevation={4}>
                 <Header>
@@ -304,7 +316,7 @@ const ATM = () => {
                 </Header>
 
                 <form onSubmit={handleSubmit}>
-                  <Stack spacing={3}>
+                  <Stack spacing={2.5}>
                     <PinField
                       label={t('Enter pin')}
                       value={pin}
@@ -316,11 +328,7 @@ const ATM = () => {
                 </form>
 
                 {error && (
-                  <Alert
-                    icon={<ErrorRounded />}
-                    color="error"
-                    sx={{ margin: '0.5rem -1.5rem -1.5rem' }}
-                  >
+                  <Alert icon={<ErrorRounded />} color="error" sx={{ mt: 2, borderRadius: '10px' }}>
                     {error}
                   </Alert>
                 )}
@@ -334,14 +342,17 @@ const ATM = () => {
         {isOpen && state === 'withdraw' && (
           <AnimationContainer>
             <motion.div
-              initial={{ scale: 0, opacity: 0 }}
+              initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
             >
               <Container elevation={4}>
                 <Header>
                   <AccountBalance>{t('Account balance')}</AccountBalance>
-                  <Heading2>{formatMoney(accountBalance, config.general)}</Heading2>
+                  <Heading2 sx={{ letterSpacing: '-0.025em' }}>
+                    {formatMoney(accountBalance, config.general)}
+                  </Heading2>
                 </Header>
 
                 <WithdrawText>{t('Quick withdraw')}</WithdrawText>
@@ -359,7 +370,7 @@ const ATM = () => {
                 </WithdrawContainer>
 
                 {error && (
-                  <Alert icon={<ErrorRounded />} color="error" sx={{ marginTop: '1rem' }}>
+                  <Alert icon={<ErrorRounded />} color="error" sx={{ mt: 2, borderRadius: '10px' }}>
                     {error}
                   </Alert>
                 )}

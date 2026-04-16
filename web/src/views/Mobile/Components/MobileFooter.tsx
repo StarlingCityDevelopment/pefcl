@@ -14,7 +14,7 @@ import { Atom } from 'jotai';
 import { totalUnpaidInvoicesAtom } from '@data/invoices';
 import BadgeAtom from '@components/ui/BadgeAtom';
 
-export const FooterHeight = '6.5rem';
+export const FooterHeight = '5rem';
 
 const Container = styled.div`
   display: flex;
@@ -22,9 +22,13 @@ const Container = styled.div`
   width: 100%;
   height: ${FooterHeight};
   position: absolute;
-  bottom: -1px;
+  bottom: 0;
   left: 0;
-  background-color: #244978;
+  background-color: rgba(20, 20, 23, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
 `;
 
 const List = styled.ul`
@@ -48,28 +52,18 @@ const ListItemContainer = styled.li<{ isActive: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: 1rem;
   align-items: center;
 
   padding: ${theme.spacing(1)};
-  border-radius: ${theme.spacing(1)};
   color: ${theme.palette.text.secondary};
 
-  transition: 250ms;
-
-  opacity: 0.5;
-
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  opacity: 0.6;
   width: 5rem;
-  height: 4rem;
+  height: 100%;
 
-  :hover {
+  &:hover {
     opacity: 0.8;
-    background-color: ${theme.palette.background.light8};
-  }
-
-  :active {
-    color: ${theme.palette.primary.main};
-    background-color: ${theme.palette.background.light4};
   }
 
   ${({ isActive }) =>
@@ -77,13 +71,14 @@ const ListItemContainer = styled.li<{ isActive: boolean }>`
     `
       opacity: 1;
       color: ${theme.palette.primary.main};
-      background-color: ${theme.palette.background.light4};
   `};
 
   span {
-    font-weight: 400;
-    margin-top: ${theme.spacing(0.75)};
-    font-size: 0.725rem;
+    font-weight: 500;
+    margin-top: ${theme.spacing(0.5)};
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 `;
 
@@ -124,12 +119,12 @@ const MobileFooter = () => {
         <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to="../mobile/dashboard" />
         <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to="../mobile/accounts" />
         <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to="../mobile/transfer" />
-        {/* <ListItem
+        <ListItem
           icon={<ReceiptRounded />}
           label={t('Invoices')}
           to="../mobile/invoices"
           countAtom={totalUnpaidInvoicesAtom}
-        /> */}
+        />
       </List>
     </Container>
   );

@@ -31,6 +31,8 @@ import { config } from './utils/server-config';
 import { UserService } from './services/user/user.service';
 import { container } from 'tsyringe';
 import { CardService } from './services/card/card.service';
+import { sequelize } from './utils/pool';
+import { seedDatabase } from './utils/mockSeed';
 
 const hotReloadConfig = {
   resourceName: GetCurrentResourceName(),
@@ -57,7 +59,7 @@ const createEndpoint = (eventName: string): [string, RequestHandler] => {
     async (req, res) => {
       emitNet(eventName, responseEventName, req.body);
       const result = await new Promise((resolve) => {
-        onNet(responseEventName, (_source: number, data: ServerPromiseResp<BaseData>) => {
+        onceNet(responseEventName, (_source: number, data: ServerPromiseResp<BaseData>) => {
           resolve(data);
         });
       });
@@ -124,7 +126,12 @@ if (isMocking) {
   app.post(...createEndpoint(CardEvents.GetInventoryCards));
 
   app.listen(port, async () => {
-    mainLogger.child({ module: 'server' }).debug(`[MOCKSERVER]: listening on port: ${port}`);
+    // putting mock data into the db
+    mainLogger.child({ module: 'server' }).info(`[MOCKSERVER]: listening on port: ${port}`);
+
+    mainLogger.child({ module: 'server' }).info('Syncing database...');
+    await sequelize.sync({ force: true });
+    await seedDatabase();
 
     emit('onServerResourceStart', mockedResourceName);
     global.source = 3;

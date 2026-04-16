@@ -3,40 +3,53 @@ import { Card, InventoryCard } from '@typings/BankCard';
 import theme from '@utils/theme';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { MasterCardIcon } from 'src/icons/MasterCardIcon';
-import styled from 'styled-components';
+import { MasterCardIcon } from '../icons/MasterCardIcon';
+import styled from '@emotion/styled';
 import { BodyText } from './ui/Typography/BodyText';
 import { Heading4, Heading6 } from './ui/Typography/Headings';
 
 const Container = styled.div<{ selected: boolean; blocked: boolean }>`
   user-select: none;
   width: 100%;
-  padding: 1rem;
-  background: ${({ blocked }) =>
-    blocked
-      ? 'linear-gradient(90deg, #bcbcbc 0%, #b0b0b0 100%)'
-      : 'linear-gradient(90deg, #fc5f02 0%, #f43200 100%)'};
-
-  min-height: 7rem;
-  width: auto;
-  border-radius: ${theme.spacing(1)};
-
+  padding: 1.25rem;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 160px;
   cursor: pointer;
-  transition: 250ms;
-  box-shadow: ${theme.shadows[4]};
+  transition: all 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 
-  :hover {
-    box-shadow: ${theme.shadows[6]};
+  ${({ blocked }) =>
+    blocked &&
+    `
+    opacity: 0.4;
+    filter: grayscale(1);
+  `}
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
   }
 
-  transition: 200ms ease-in-out;
-  border: 2px solid transparent;
-
-  ${({ selected }) => selected && `border: 2px solid ${theme.palette.text.primary}`}
+  ${(props) =>
+    props.selected &&
+    `
+    border-color: rgba(59, 130, 246, 0.3);
+    background-color: rgba(59, 130, 246, 0.04);
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
+  `}
 `;
 
 const StyledIcon = styled(MasterCardIcon)`
-  color: rgba(255, 255, 255, 0.54);
+  width: 36px;
+  opacity: 0.6;
+  filter: grayscale(0.3);
   align-self: flex-end;
 `;
 
@@ -50,12 +63,16 @@ const BankCard = ({ card, selected = false, isBlocked = false }: BankCardProps) 
 
   return (
     <Container selected={selected} blocked={isBlocked}>
-      <Stack spacing={3}>
-        <Heading4>{card.number}</Heading4>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Stack>
-            <Heading6>{t('Card holder')}</Heading6>
-            <BodyText>{card.holder}</BodyText>
+      <Stack spacing={2}>
+        <Heading4 sx={{ fontSize: '0.9375rem', letterSpacing: '0.03em', fontWeight: 500 }}>
+          {card.number}
+        </Heading4>
+        <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
+          <Stack spacing={0.25}>
+            <Heading6 sx={{ fontSize: '0.5625rem', letterSpacing: '0.06em' }}>
+              {t('Card holder')}
+            </Heading6>
+            <BodyText sx={{ fontSize: '0.8125rem', fontWeight: 500 }}>{card.holder}</BodyText>
           </Stack>
 
           <StyledIcon />

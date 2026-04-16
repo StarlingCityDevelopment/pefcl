@@ -48,7 +48,7 @@ const AddUserModal = ({
   });
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth hideBackdrop maxWidth="xs">
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>
         <span>{t('Add user to shared account')}</span>
       </DialogTitle>

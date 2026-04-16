@@ -15,6 +15,7 @@ import Checkbox from '../ui/Checkbox';
 import TextField from '../ui/Fields/TextField';
 import { Heading2, Heading6 } from '../ui/Typography/Headings';
 import { regexAlphaNumeric } from '@shared/utils/regexes';
+import { useMutation } from '@hooks/useMutation';
 
 interface CreateAccountForm {
   accountName: string;
@@ -26,7 +27,7 @@ interface CreateAccountForm {
 const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
   const { t } = useTranslation();
   const config = useConfig();
-  const [accounts] = useAtom(accountsAtom);
+  const [accounts, updateAccounts] = useAtom(accountsAtom);
   const [, updateTransactions] = useAtom(transactionBaseAtom);
   const [defaultAccount] = useAtom(defaultAccountAtom);
 
@@ -44,17 +45,24 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
   const isFirstSetup = accounts.length === 0;
   const isDisabled = (selectedAccount?.balance ?? 0) < config?.prices?.newAccount && !isFirstSetup;
 
-  const onSubmit = async (values: CreateAccountForm) => {
-    await fetchNui(AccountEvents.CreateAccount, values);
-    await updateTransactions();
-    onClose();
+  const { mutate: mutateCreate, isLoading: isCreating } = useMutation(AccountEvents.CreateAccount, {
+    successMessage: t('Successfully created account'),
+    onSuccess: async () => {
+      await updateAccounts();
+      await updateTransactions();
+      onClose();
+    },
+  });
+
+  const onSubmit = (values: CreateAccountForm) => {
+    mutateCreate(values);
   };
 
   return (
-    <Box p={5} display="flex" flexDirection="column">
+    <Box p={4} display="flex" flexDirection="column">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="row" spacing={8}>
-          <Stack spacing={4} flex={1}>
+        <Stack direction="row" spacing={6}>
+          <Stack spacing={3} flex={1}>
             <Heading2>{t('Open account')}</Heading2>
 
             <Stack spacing={2}>
@@ -95,7 +103,11 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
                   render={({ field }) => (
                     <FormControlLabel
                       control={<Checkbox {...field} ref={null} />}
-                      label={<Heading6>{t('This is a shared account')}</Heading6>}
+                      label={
+                        <Heading6 sx={{ fontSize: '0.8125rem', fontWeight: 500 }}>
+                          {t('This is a shared account')}
+                        </Heading6>
+                      }
                     />
                   )}
                 />
@@ -103,7 +115,7 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
             </Stack>
           </Stack>
 
-          <Stack flex={1} spacing={4}>
+          <Stack flex={1} spacing={3}>
             <Controller
               name="fromAccountId"
               control={control}
@@ -119,12 +131,12 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
 
             <Summary balance={selectedAccount?.balance ?? 0} payment={config.prices.newAccount} />
 
-            <Stack direction="row" spacing={4} alignSelf="flex-end">
+            <Stack direction="row" spacing={2} alignSelf="flex-end">
               <Button color="error" onClick={onClose}>
                 {t('Cancel')}
               </Button>
-              <Button disabled={isDisabled} type="submit">
-                {t('CREATE')}
+              <Button disabled={isDisabled || isCreating} type="submit">
+                {t('Create')}
               </Button>
             </Stack>
           </Stack>

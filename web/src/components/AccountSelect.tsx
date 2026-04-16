@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import { ListSubheader, MenuItem, SelectChangeEvent, Stack, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Account, AccountRole, AccountType, ExternalAccount } from '@typings/Account';
 import { ResourceConfig } from '../../../typings/config';
@@ -13,6 +13,9 @@ import Select from './ui/Select';
 import Button from './ui/Button';
 import { Box } from '@mui/system';
 import AddExternalAccountModal from './Modals/AddExternalAccount';
+
+// Prefix to namespace external account IDs so they never collide with internal ones
+const EXT_PREFIX = 'ext-';
 
 const BalanceText = styled(Heading6)`
   color: ${theme.palette.primary.main};
@@ -71,42 +74,54 @@ const Option: React.FC<{
 interface AccountSelectProps {
   accounts: Account[];
   selectedId?: number;
+  excludeId?: number;
   isFromAccount?: boolean;
+  isExternalSelected?: boolean;
   externalAccounts?: ExternalAccount[];
-  onSelect(accountId: number): void;
+  onSelect(accountId: number, isExternal?: boolean): void;
 }
 
 const AccountSelect = ({
   accounts,
   onSelect,
   selectedId,
+  excludeId,
   isFromAccount = false,
+  isExternalSelected = false,
   externalAccounts = [],
 }: AccountSelectProps) => {
   const { t } = useTranslation();
   const config = useConfig();
-  const [isOpen, setIsOpen] = useState(false);
   const [isExternalOpen, setIsExternalOpen] = useState(false);
-  const [selected, setSelected] = useState<number>(0);
 
-  useEffect(() => {
-    if (selectedId) {
-      setSelected(selectedId);
-    }
-  }, [selectedId]);
+  // Build the controlled value string:
+  // - "0" = nothing selected
+  // - "123" = internal account with id 123
+  // - "ext-456" = external account with id 456
+  const currentValue =
+    selectedId === undefined || selectedId === 0
+      ? '0'
+      : isExternalSelected
+      ? `${EXT_PREFIX}${selectedId}`
+      : selectedId.toString();
 
   const handleChange = (event: SelectChangeEvent<string | number>) => {
-    const value = Number(event.target.value);
-    if (isNaN(value)) {
-      return;
-    }
+    const val = event.target.value.toString();
 
-    setSelected(value);
-    onSelect(value);
+    if (val.startsWith(EXT_PREFIX)) {
+      const extId = Number(val.slice(EXT_PREFIX.length));
+      if (!isNaN(extId)) {
+        onSelect(extId, true);
+      }
+    } else {
+      const numericValue = Number(val);
+      if (!isNaN(numericValue)) {
+        onSelect(numericValue, false);
+      }
+    }
   };
 
   const handleAddExternalAccount = () => {
-    setIsOpen(false);
     setIsExternalOpen(true);
   };
 
@@ -116,31 +131,78 @@ const AccountSelect = ({
         <AddExternalAccountModal isOpen={isExternalOpen} onClose={() => setIsExternalOpen(false)} />
       </React.Suspense>
       <Select
-        open={isOpen}
-        onClose={() => setIsOpen(false)}
-        onClick={() => !isOpen && setIsOpen(true)}
-        value={selected.toString()}
+        value={currentValue}
         onChange={handleChange}
         variant="filled"
-        sx={{ width: '100%' }}
+        sx={{
+          width: '100%',
+        }}
+        renderValue={(val: any) => {
+          const stringVal = val.toString();
+          if (stringVal === '0')
+            return (
+              <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary', fontWeight: 500 }}>
+                {t('Select account')}
+              </Typography>
+            );
+
+          if (stringVal.startsWith(EXT_PREFIX)) {
+            const extId = stringVal.slice(EXT_PREFIX.length);
+            const external = externalAccounts.find((a) => a.id.toString() === extId);
+            if (external)
+              return (
+                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                  {external.name} ({external.number})
+                </Typography>
+              );
+          } else {
+            const account = accounts.find((a) => a.id.toString() === stringVal);
+            if (account)
+              return (
+                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                  {account.accountName} — {formatMoney(account.balance, config.general)}
+                </Typography>
+              );
+          }
+
+          return (
+            <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary', fontWeight: 500 }}>
+              {t('Select account')}
+            </Typography>
+          );
+        }}
         MenuProps={{
-          sx: {
-            maxHeight: '25rem',
-            scrollbarColor: '#222',
-            scrollbarWidth: '2px',
+          PaperProps: {
+            sx: {
+              maxHeight: '300px',
+              backgroundColor: theme.palette.background.paper,
+              backgroundImage: 'none',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              boxShadow: theme.shadows[10],
+              mt: 1,
+              '& .MuiMenu-list': {
+                padding: '8px',
+              },
+              '&::-webkit-scrollbar': {
+                width: '4px',
+              },
+              '&::-webkit-scrollbar-track': {
+                background: 'transparent',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                background: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '10px',
+              },
+              '&::-webkit-scrollbar-thumb:hover': {
+                background: 'rgba(255, 255, 255, 0.2)',
+              },
+            },
           },
         }}
       >
-        {!isFromAccount && (
-          <Box p={2} display="flex">
-            <Button fullWidth onClick={handleAddExternalAccount}>
-              {t('Add external account')}
-            </Button>
-          </Box>
-        )}
-
-        {selected === 0 && (
-          <StyledMenuItem value={0} disabled>
+        {currentValue === '0' && (
+          <StyledMenuItem value="0" disabled>
             <ListItem>
               <Stack p="0rem 0.5rem">
                 <Heading6>{t('Select account')}</Heading6>
@@ -149,27 +211,30 @@ const AccountSelect = ({
           </StyledMenuItem>
         )}
 
-        {externalAccounts.length > 0 && <ListSubheader>{t('Your accounts')}</ListSubheader>}
-        {accounts.map((account) => {
-          const isDisabledByContributor = isFromAccount && account.role === AccountRole.Contributor;
-          return (
-            <StyledMenuItem
-              key={account.id}
-              value={account.id.toString()}
-              disabled={selectedId === account.id || isDisabledByContributor}
-            >
-              <Option
-                account={account}
-                config={config}
-                isDisabledByContributor={isDisabledByContributor}
-              />
-            </StyledMenuItem>
-          );
-        })}
+        {accounts.length > 0 && <ListSubheader>{t('Your accounts')}</ListSubheader>}
+        {accounts
+          .filter((account) => account.id !== excludeId)
+          .map((account) => {
+            const isDisabledByContributor =
+              isFromAccount && account.role === AccountRole.Contributor;
+            return (
+              <StyledMenuItem
+                key={`int-${account.id}`}
+                value={account.id.toString()}
+                disabled={currentValue === account.id.toString() || isDisabledByContributor}
+              >
+                <Option
+                  account={account}
+                  config={config}
+                  isDisabledByContributor={isDisabledByContributor}
+                />
+              </StyledMenuItem>
+            );
+          })}
 
         {externalAccounts.length > 0 && <ListSubheader>{t('External accounts')}</ListSubheader>}
         {externalAccounts.map((account) => (
-          <StyledMenuItem key={account.id} value={account.id.toString()}>
+          <StyledMenuItem key={`ext-${account.id}`} value={`${EXT_PREFIX}${account.id}`}>
             <ListItem>
               <Stack p="0rem 0.5rem">
                 <BodyText>{account.name}</BodyText>
@@ -178,6 +243,14 @@ const AccountSelect = ({
             </ListItem>
           </StyledMenuItem>
         ))}
+
+        {!isFromAccount && (
+          <Box p={1} mt={1} borderTop={`1px solid ${theme.palette.divider}`}>
+            <Button fullWidth onClick={handleAddExternalAccount}>
+              {t('Add external account')}
+            </Button>
+          </Box>
+        )}
       </Select>
     </div>
   );

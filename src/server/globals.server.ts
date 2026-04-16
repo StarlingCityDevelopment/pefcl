@@ -64,27 +64,32 @@ if (isMocking) {
     return convars[convar] ?? fallback;
   };
 
+  // Mutable mock state for cash tracking
+  let mockCash = 2500;
+
   global.exports = () => ({
     qbx_pefcl: {
-      addCash: () => {
-        console.log('global.server.ts: Adding cash ..');
-        throw new Error('adding cash');
+      addCash: (_source: number, amount: number) => {
+        mockCash += amount;
+        console.log(`global.server.ts: Adding cash ${amount} .. new balance: ${mockCash}`);
+        return true;
       },
       getCash: () => {
-        console.log('global.server.ts: Getting cash ..');
-        return 2500;
+        console.log(`global.server.ts: Getting cash .. balance: ${mockCash}`);
+        return mockCash;
       },
       getBank: () => {
         console.log('global.server.ts: Getting bank ..');
         return 5000;
       },
-      removeCash: () => {
-        console.log('global.server.ts: Removing cash ..');
-        throw new Error('could not remove cash');
+      removeCash: (_source: number, amount: number) => {
+        mockCash -= amount;
+        console.log(`global.server.ts: Removing cash ${amount} .. new balance: ${mockCash}`);
+        return true;
       },
       giveCard: () => {
         console.log('global.server.ts: Giving card ..');
-        throw new Error('giving card');
+        return true;
       },
       getCards: () => {
         console.log('global.server.ts: Getting cards ..');
@@ -101,8 +106,20 @@ if (isMocking) {
     NetEmitter.on(event, listeners);
   };
 
-  global.emit = (event: string, listeners: (...args: any[]) => void) => {
-    ServerEmitter.emit(event, listeners);
+  global.removeEventListener = (event: string, listeners: (...args: any[]) => void) => {
+    ServerEmitter.removeListener(event, listeners);
+  };
+
+  global.removeNetEventListener = (event: string, listeners: (...args: any[]) => void) => {
+    NetEmitter.removeListener(event, listeners);
+  };
+
+  global.onceNet = (event: string, listeners: (...args: any[]) => void) => {
+    NetEmitter.once(event, listeners);
+  };
+
+  global.emit = (event: string, ...args: any[]) => {
+    ServerEmitter.emit(event, ...args);
   };
 
   global.emitNet = (event: string, ...args: any[]) => {

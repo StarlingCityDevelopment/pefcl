@@ -1,6 +1,6 @@
 import React from 'react';
 import './mobile.module.css';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import theme from '@utils/theme';
 import MobileFooter, { FooterHeight } from './Components/MobileFooter';
 import MobileRoutes from './Routes';
@@ -9,12 +9,28 @@ import { Heading6 } from '@components/ui/Typography/Headings';
 import { CircularProgress, Stack } from '@mui/material';
 
 const Container = styled.div`
-  color: #fff;
+  color: ${theme.palette.text.primary};
   background: ${theme.palette.background.default};
-  overflow: auto;
   height: 100%;
-  padding-top: 58px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+`;
+
+const ContentScroll = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 20px;
   padding-bottom: ${FooterHeight};
+
+  /* Hide scrollbar */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 `;
 
 interface LoadingFallbackProps {
@@ -23,31 +39,32 @@ interface LoadingFallbackProps {
 
 const LoadingFallback = (props: LoadingFallbackProps) => (
   <Box
-    p={4}
     sx={{
-      height: '100%',
+      flex: 1,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
     }}
   >
-    <Stack spacing={3} alignItems="center">
-      <CircularProgress size={120} />
-      <Heading6>{props.message}</Heading6>
+    <Stack spacing={2} alignItems="center">
+      <CircularProgress size={32} thickness={3} />
+      <Heading6 sx={{ opacity: 0.5, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+        {props.message}
+      </Heading6>
     </Stack>
   </Box>
 );
 
 const MobileApp = () => {
   return (
-    <>
-      <Container>
+    <Container>
+      <ContentScroll>
         <React.Suspense fallback={<LoadingFallback message={'Getting data...'} />}>
           <MobileRoutes />
         </React.Suspense>
-        <MobileFooter />
-      </Container>
-    </>
+      </ContentScroll>
+      <MobileFooter />
+    </Container>
   );
 };
 

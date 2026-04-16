@@ -88,17 +88,15 @@ export class AccountDB {
     amount: number;
     transaction: Transaction;
   }) {
-    const fromBalance = fromAccount.getDataValue('balance');
-    const toBalance = toAccount.getDataValue('balance');
-    await fromAccount.update({ balance: fromBalance - amount }, { transaction });
-    await toAccount.update({ balance: toBalance + amount }, { transaction });
+    await fromAccount.decrement('balance', { by: amount, transaction });
+    await toAccount.increment('balance', { by: amount, transaction });
   }
 
   async decrement(account: AccountModel, amount: number, transaction?: Transaction) {
-    await account?.update({ balance: account.getDataValue('balance') - amount }, { transaction });
+    await account?.decrement('balance', { by: amount, transaction });
   }
 
   async increment(account: AccountModel, amount: number, transaction?: Transaction) {
-    await account?.update({ balance: account.getDataValue('balance') + amount }, { transaction });
+    await account?.increment('balance', { by: amount, transaction });
   }
 }

@@ -9,7 +9,7 @@ import { getIsAdmin, getIsOwner } from '@utils/account';
 import { useAtom } from 'jotai';
 import React, { FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { transactionBaseAtom } from 'src/data/transactions';
+import { transactionBaseAtom } from '@data/transactions';
 import Layout from '../../components/Layout';
 import Button from '../../components/ui/Button';
 import { PreHeading } from '../../components/ui/Typography/BodyText';
@@ -19,17 +19,20 @@ import { useConfig } from '../../hooks/useConfig';
 import { formatMoney } from '../../utils/currency';
 import { fetchNui } from '../../utils/fetchNui';
 import theme from '../../utils/theme';
-import AccountCards from '../dashboard/components/AccountCards';
+import AccountCards from '../../components/AccountCards';
 import SharedSettings from './SharedSettings';
 
 const Dangerzone = styled.div`
-  border: 1px solid ${theme.palette.error.main};
-  padding: ${theme.spacing(4)};
-  border-radius: ${theme.spacing(2)};
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: ${theme.spacing(3)};
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.04);
 `;
 
 const HelperText = styled(Heading6)`
-  font-weight: ${theme.typography.fontWeightLight};
+  font-weight: 400;
+  color: ${theme.palette.text.secondary};
+  font-size: 0.6875rem;
 `;
 
 const Accounts = () => {
@@ -83,13 +86,7 @@ const Accounts = () => {
 
   return (
     <Layout>
-      <Dialog
-        fullWidth
-        maxWidth="xs"
-        open={isRenameOpen}
-        onClose={() => setIsRenameOpen(false)}
-        hideBackdrop
-      >
+      <Dialog fullWidth maxWidth="xs" open={isRenameOpen} onClose={() => setIsRenameOpen(false)}>
         <DialogTitle>{t('Rename account')}</DialogTitle>
         <form onSubmit={handleRename}>
           <DialogContent>
@@ -112,24 +109,35 @@ const Accounts = () => {
         </form>
       </Dialog>
 
-      <Stack>
-        <PreHeading>{t('Total balance')}</PreHeading>
-        <Heading1>{formatMoney(totalBalance, config.general)}</Heading1>
+      <Stack spacing={0.25}>
+        <Heading6
+          sx={{
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            fontWeight: 600,
+            fontSize: '0.6875rem',
+          }}
+        >
+          {t('Total balance')}
+        </Heading6>
+        <Heading1 sx={{ letterSpacing: '-0.03em' }}>
+          {formatMoney(totalBalance, config.general)}
+        </Heading1>
       </Stack>
 
-      <Box paddingTop={4}>
+      <Box paddingTop={3}>
         <AccountCards
           onSelectAccount={setSelectedAccountId}
           selectedAccountId={selectedAccountId}
         />
       </Box>
 
-      <Stack direction="row" spacing={5} marginTop={5}>
-        <Stack spacing={5}>
+      <Stack direction="row" spacing={4} marginTop={4}>
+        <Stack spacing={4}>
           <Stack spacing={1.5} alignItems="flex-start">
             <Heading5>{t('General')}</Heading5>
-            <Stack direction="row" spacing={4} alignItems="flex-start">
-              <Stack spacing={0.75}>
+            <Stack direction="row" spacing={3} alignItems="flex-start">
+              <Stack spacing={0.5}>
                 <Button
                   onClick={handleSetDefault}
                   disabled={isDefaultAccountSelected || !isAdmin || isShared}
@@ -142,14 +150,14 @@ const Accounts = () => {
                 )}
               </Stack>
 
-              <Stack spacing={0.75}>
+              <Stack spacing={0.5}>
                 <Button onClick={() => setIsRenameOpen(true)} disabled={!isAdmin}>
                   {t('Rename account')}
                 </Button>
                 {!isAdmin && <HelperText>{t('Admin role required')}</HelperText>}
               </Stack>
 
-              <Stack spacing={0.75}>
+              <Stack spacing={0.5}>
                 <Button onClick={() => copy(selectedAccount?.number ?? '')}>
                   {t('Copy account number')}
                 </Button>
@@ -161,7 +169,7 @@ const Accounts = () => {
             <Stack spacing={1.5} alignItems="flex-start">
               <Heading5>{t('Danger zone')}</Heading5>
               <Dangerzone>
-                <Stack spacing={1.5}>
+                <Stack spacing={1}>
                   <span>
                     <Button
                       color="error"

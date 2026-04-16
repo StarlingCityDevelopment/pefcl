@@ -24,7 +24,7 @@ import { fetchNui } from '@utils/fetchNui';
 import { useAtom } from 'jotai';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { accountsAtom } from 'src/data/accounts';
+import { accountsAtom } from '@data/accounts';
 
 interface Props {
   isAdmin: boolean;

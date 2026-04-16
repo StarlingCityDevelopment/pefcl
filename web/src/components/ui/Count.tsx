@@ -8,29 +8,37 @@ const Total = styled.div<{ focus: boolean }>`
   align-items: center;
   text-align: center;
 
-  height: 2rem;
-  padding: 0 0.73rem;
+  height: 1.5rem;
+  padding: 0 0.5rem;
+  min-width: 1.5rem;
 
-  border-radius: ${theme.spacing(1)};
-  font-weight: ${theme.typography.fontWeightBold};
-  background-color: ${theme.palette.background.light4};
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  color: ${theme.palette.text.secondary};
+  border: 1px solid rgba(255, 255, 255, 0.06);
 
   ${({ focus }) =>
     focus &&
     `
-      background-color: ${theme.palette.background.light8};
+      background-color: rgba(255, 255, 255, 0.06);
+      color: ${theme.palette.text.primary};
   `}
 `;
+
+import { Box, SxProps, Theme } from '@mui/material';
 
 interface CountProps extends React.HTMLAttributes<HTMLDivElement> {
   amount: string | number;
   focus?: boolean;
+  sx?: SxProps<Theme>;
 }
-const Count = ({ amount, focus = false, ...props }: CountProps) => {
+const Count = ({ amount, focus = false, sx, ...props }: CountProps) => {
   return (
-    <div {...props}>
+    <Box sx={sx} {...props}>
       <Total focus={focus}>{amount}</Total>
-    </div>
+    </Box>
   );
 };
 

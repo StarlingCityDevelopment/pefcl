@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mariadb:10.6
+    container_name: pefcl_db
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: pefcl
+    ports:
+      - '3306:3306'
+    volumes:
+      - pefcl_db_data:/var/lib/mysql
+      - ./import.sql:/docker-entrypoint-initdb.d/import.sql
+
+volumes:
+  pefcl_db_data:

@@ -1,19 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+
 const GlobalSettingsContext = React.createContext<{ isMobile: boolean }>({ isMobile: false });
 
 export const useGlobalSettings = () => {
   const context = useContext(GlobalSettingsContext);
-
   return context;
 };
 
 interface GlobalSettingsProviderProps {
-  isMobile: boolean;
   children: React.ReactNode;
 }
-export const GlobalSettingsProvider = (props: GlobalSettingsProviderProps) => {
-  const { children, ...rest } = props;
+
+export const GlobalSettingsProvider = ({ children }: GlobalSettingsProviderProps) => {
+  // Mobile mode is active if either:
+  // 1. The URL hash contains '/mobile' (explicit force)
+  // 2. The screen width is less than 768px (responsive detection)
+  const [isMobile, setIsMobile] = useState(
+    window.location.hash.includes('/mobile') || window.innerWidth < 768,
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      const forceMobile = window.location.hash.includes('/mobile');
+      setIsMobile(forceMobile || window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('hashchange', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('hashchange', handleResize);
+    };
+  }, []);
+
   return (
-    <GlobalSettingsContext.Provider value={{ ...rest }}>{children}</GlobalSettingsContext.Provider>
+    <GlobalSettingsContext.Provider value={{ isMobile }}>{children}</GlobalSettingsContext.Provider>
   );
 };

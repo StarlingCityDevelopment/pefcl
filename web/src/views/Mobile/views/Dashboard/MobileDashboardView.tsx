@@ -2,10 +2,10 @@ import { AccountCard } from '@components/AccountCard';
 import InvoiceItem from '@components/InvoiceItem';
 import TotalBalance from '@components/TotalBalance';
 import TransactionItem from '@components/TransactionItem';
-import { Heading4, Heading5 } from '@components/ui/Typography/Headings';
+import { Heading2, Heading4, Heading5 } from '@components/ui/Typography/Headings';
 import { unpaidInvoicesAtom } from '@data/invoices';
 import { useFetchNui } from '@hooks/useFetchNui';
-import { Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import { Account } from '@typings/Account';
 import { AccountEvents, TransactionEvents } from '@typings/Events';
@@ -14,6 +14,23 @@ import { fetchNui } from '@utils/fetchNui';
 import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import theme from '@utils/theme';
+
+const SectionHeader = ({ title }: { title: string }) => (
+  <Heading4
+    sx={{
+      color: theme.palette.primary.main,
+      fontWeight: 600,
+      textTransform: 'uppercase',
+      fontSize: '0.75rem',
+      letterSpacing: '0.08em',
+      opacity: 0.9,
+      mb: 1,
+    }}
+  >
+    {title}
+  </Heading4>
+);
 
 const MobileDashboardView = () => {
   const { t } = useTranslation();
@@ -38,31 +55,58 @@ const MobileDashboardView = () => {
   );
 
   return (
-    <Box p={4}>
-      <Stack spacing={3}>
-        <TotalBalance />
+    <Box p={3} pb={12}>
+      <Stack spacing={5}>
+        <Stack spacing={0.5}>
+          <Heading2 sx={{ fontSize: '2rem' }}>{t('Dashboard')}</Heading2>
+          <TotalBalance />
+        </Stack>
 
-        <Stack spacing={1}>
-          <Heading4>{t('Default account')}</Heading4>
+        <Stack spacing={2}>
+          <SectionHeader title={t('Default account')} />
           {defaultAccount && <AccountCard account={defaultAccount} />}
         </Stack>
 
-        <Heading4>{t('Latest transactions')}</Heading4>
-        <Stack spacing={2.5} overflow="hidden">
-          {data?.transactions?.map((transaction) => (
-            <TransactionItem key={transaction.id} transaction={transaction} isLimitedSpace />
-          ))}
+        <Stack spacing={2}>
+          <SectionHeader title={t('Latest transactions')} />
+          <Stack
+            spacing={1}
+            sx={{
+              background: 'rgba(255, 255, 255, 0.02)',
+              borderRadius: '20px',
+              p: 2,
+              border: '1px solid rgba(255, 255, 255, 0.04)',
+            }}
+          >
+            {data?.transactions?.map((transaction, index) => (
+              <React.Fragment key={transaction.id}>
+                <TransactionItem transaction={transaction} isLimitedSpace />
+                {index < (data?.transactions?.length || 0) - 1 && (
+                  <Divider sx={{ opacity: 0.05, my: 1 }} />
+                )}
+              </React.Fragment>
+            ))}
+            {(!data?.transactions || data.transactions.length === 0) && (
+              <Heading5 sx={{ opacity: 0.4, textAlign: 'center', py: 2 }}>
+                {t('No recent transactions')}
+              </Heading5>
+            )}
+          </Stack>
         </Stack>
 
-        <Heading4>{t('Unpaid invoices')}</Heading4>
-        <Stack spacing={2.5} overflow="hidden">
-          {invoices.map((invoice) => (
-            <InvoiceItem key={invoice.id} invoice={invoice} />
-          ))}
+        <Stack spacing={2}>
+          <SectionHeader title={t('Unpaid invoices')} />
+          <Stack spacing={1.5} overflow="hidden">
+            {invoices.map((invoice) => (
+              <InvoiceItem key={invoice.id} invoice={invoice} />
+            ))}
 
-          {invoices.length <= 0 && (
-            <Heading5>{t('There are currently no unpaid invoices!')}</Heading5>
-          )}
+            {invoices.length <= 0 && (
+              <Heading5 sx={{ opacity: 0.4, textAlign: 'center', py: 2 }}>
+                {t('All caught up!')}
+              </Heading5>
+            )}
+          </Stack>
         </Stack>
       </Stack>
     </Box>

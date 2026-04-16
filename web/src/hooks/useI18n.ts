@@ -4,7 +4,7 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState } from 'react';
-import { loadPefclResources } from 'src/views/Mobile/i18n';
+import { loadPefclResources } from '../views/Mobile/i18n';
 
 dayjs.extend(updateLocale);
 dayjs.extend(localizedFormat);

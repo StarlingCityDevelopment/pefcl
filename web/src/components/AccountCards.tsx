@@ -9,34 +9,18 @@ import theme from '@utils/theme';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 
+const Cards = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1rem;
+  width: 100%;
+`;
+
 const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-
-  button {
-    margin-top: ${theme.spacing(1)};
-  }
-`;
-
-const Cards = styled.div`
-  position: relative;
-  min-height: 7.5rem;
-  padding: 0;
-  display: flex;
-  overflow-x: auto;
-  width: 100%;
-  padding-bottom: ${theme.spacing(2)};
-
-  & > * {
-    min-width: 17rem;
-    width: calc(25% - ${theme.spacing(1.5)});
-    margin-right: ${theme.spacing(2)};
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
+  cursor: pointer;
+  min-width: 0; /* Prevent grid blowout */
 `;
 
 const CreateCard = styled.div`
@@ -44,32 +28,30 @@ const CreateCard = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: ${theme.spacing(2)};
-  border: 1px dashed ${theme.palette.grey[500]};
-  font-size: 1.5rem;
-  transition: 300ms;
+  border-radius: 16px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.08);
+  color: ${theme.palette.text.secondary};
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+  min-height: 190px;
 
-  flex: 0;
-  min-width: 5.5rem;
-  width: 5.5rem;
-  height: 5.5rem;
-
-  :hover {
+  &:hover {
     color: ${theme.palette.primary.main};
-    border: 1px dashed ${theme.palette.primary.main};
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.04);
   }
 
   svg {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
   }
 `;
 
 interface AccountCardsProps {
   selectedAccountId?: number;
   onSelectAccount?: (id: number) => void;
+  hideCreate?: boolean;
 }
 
-const AccountCards = ({ onSelectAccount, selectedAccountId }: AccountCardsProps) => {
+const AccountCards = ({ onSelectAccount, selectedAccountId, hideCreate }: AccountCardsProps) => {
   const config = useConfig();
   const [orderedAccounts] = useAtom(orderedAccountsAtom);
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
@@ -81,7 +63,6 @@ const AccountCards = ({ onSelectAccount, selectedAccountId }: AccountCardsProps)
         onClose={() => setIsCreateAccountOpen(false)}
         maxWidth="md"
         fullWidth
-        hideBackdrop
       >
         <CreateAccountModal onClose={() => setIsCreateAccountOpen(false)} />
       </Dialog>
@@ -93,7 +74,7 @@ const AccountCards = ({ onSelectAccount, selectedAccountId }: AccountCardsProps)
           </CardContainer>
         ))}
 
-        {orderedAccounts.length < (config.accounts.maximumNumberOfAccounts || 4) && (
+        {!hideCreate && orderedAccounts.length < (config.accounts.maximumNumberOfAccounts || 4) && (
           <CreateCard onClick={() => setIsCreateAccountOpen(true)} title="create-account">
             <Add />
           </CreateCard>
@@ -103,15 +84,17 @@ const AccountCards = ({ onSelectAccount, selectedAccountId }: AccountCardsProps)
   );
 };
 
-export const LoadingCards = () => {
+export const LoadingCards = ({ hideCreate }: { hideCreate?: boolean }) => {
   return (
     <Cards>
       <LoadingAccountCard />
       <LoadingAccountCard />
       <LoadingAccountCard />
-      <CreateCard>
-        <Add />
-      </CreateCard>
+      {!hideCreate && (
+        <CreateCard>
+          <Add />
+        </CreateCard>
+      )}
     </Cards>
   );
 };

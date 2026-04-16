@@ -44,7 +44,7 @@ const RemoveUserModal = ({ isOpen, onSelect, onClose, accountId }: SelectUserMod
     .filter((user) => !user.isDisabled);
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth hideBackdrop maxWidth="xs">
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="xs">
       <DialogTitle>
         <span>{t('Remove user from a shared account')}</span>
       </DialogTitle>

@@ -139,10 +139,13 @@ export class AccountService {
 
   async handleGetMyAccounts(source: number): Promise<Account[]> {
     logger.debug('Retrieving accounts');
-    const accountModels = await this.getMyAccounts(source);
+    const [accountModels, sharedAccounts] = await Promise.all([
+      this.getMyAccounts(source),
+      this.getMySharedAccounts(source),
+    ]);
+
     const accounts = accountModels.map((account) => account.toJSON());
     const filteredAccounts = accounts.filter((account) => account.type !== AccountType.Shared);
-    const sharedAccounts = await this.getMySharedAccounts(source);
 
     const accs = [...filteredAccounts, ...sharedAccounts];
     return accs.map((account) => {
@@ -176,11 +179,12 @@ export class AccountService {
         emitNet(Broadcasts.NewSharedUser, user?.getSource(), account.toJSON());
       });
 
-      t.commit();
+      await t.commit();
       return account;
     } catch (err) {
-      t.rollback();
+      await t.rollback();
       logger.error('Failed to add user to shared account');
+      throw err;
     }
   }
 
@@ -207,10 +211,11 @@ export class AccountService {
           emitNet(Broadcasts.RemovedSharedUser, user?.getSource(), account.toJSON());
       });
 
-      t.commit();
+      await t.commit();
     } catch (error) {
-      t.rollback();
+      await t.rollback();
       logger.error('Failed to remove user from shared account');
+      throw error;
     }
   }
 
@@ -332,13 +337,14 @@ export class AccountService {
 
       emit(AccountEvents.NewAccountCreated, account.toJSON());
 
-      t.commit();
+      await t.commit();
       return account.toJSON();
     } catch (e) {
-      t.rollback();
+      await t.rollback();
       logger.silly('Failed to create a new account');
       logger.silly(req);
       logger.error(e);
+      throw e;
     }
   }
 
@@ -396,12 +402,12 @@ export class AccountService {
 
       emit(AccountEvents.AccountDeleted, deletingAccount.toJSON());
       logger.silly('Successfully deleted account!');
-      t.commit();
+      await t.commit();
     } catch (e) {
-      t.rollback();
+      await t.rollback();
       logger.silly('Failed to delete account');
       logger.silly(req);
-      return;
+      throw e;
     }
 
     logger.silly(req);
@@ -459,11 +465,11 @@ export class AccountService {
         )}`,
       );
       logger.silly({ userBalance, depositionAmount, currentAccountBalance });
-      t.commit();
+      await t.commit();
     } catch (err) {
       logger.error(`Failed to deposit money into account ${targetAccount.getDataValue('id')}`);
       logger.error(err);
-      t.rollback();
+      await t.rollback();
       throw err;
     }
   }
@@ -524,11 +530,11 @@ export class AccountService {
 
       logger.silly(`Withdrew ${amount} from account ${accountId}`);
       logger.silly({ withdrawAmount: amount, currentAccountBalance });
-      t.commit();
+      await t.commit();
     } catch (err) {
       logger.error(`Failed to withdraw money from account.`);
       logger.error(err);
-      t.rollback();
+      await t.rollback();
       throw err;
     }
   }
@@ -567,13 +573,14 @@ export class AccountService {
         emit(AccountEvents.ChangedDefaultAccount, newDefaultAccount.toJSON());
       });
 
-      t.commit();
+      await t.commit();
       return newDefaultAccount;
     } catch (err) {
       logger.error(`Failed to change default account for ${user?.getIdentifier()}`);
       logger.error(err);
 
-      t.rollback();
+      await t.rollback();
+      throw err;
     }
 
     logger.silly(`Successfully changed default account to ${req.data.accountId}`);
@@ -645,9 +652,10 @@ export class AccountService {
         },
         t,
       );
-      t.commit();
+      await t.commit();
     } catch (err) {
-      t.rollback();
+      await t.rollback();
+      throw err;
     }
   }
 
@@ -687,9 +695,10 @@ export class AccountService {
         },
         t,
       );
-      t.commit();
+      await t.commit();
     } catch (err) {
-      t.rollback();
+      await t.rollback();
+      throw err;
     }
   }
 
@@ -718,9 +727,10 @@ export class AccountService {
         },
         t,
       );
-      t.commit();
+      await t.commit();
     } catch (err) {
-      t.rollback();
+      await t.rollback();
+      throw err;
     }
   }
 
@@ -751,12 +761,7 @@ export class AccountService {
         await this._accountDB.decrement(toAccount, amount, t);
       }
 
-      await account.update(
-        {
-          balance: account.getDataValue('balance') - amount,
-        },
-        { transaction: t },
-      );
+      await this._accountDB.decrement(account, amount, t);
 
       await this._transactionService.handleCreateTransaction(
         {
@@ -768,9 +773,10 @@ export class AccountService {
         },
         t,
       );
-      t.commit();
-    } catch {
-      t.rollback();
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      throw err;
     }
   }
 
@@ -810,9 +816,10 @@ export class AccountService {
         },
         t,
       );
-      t.commit();
-    } catch {
-      t.rollback();
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      throw err;
     }
   }
 
@@ -843,9 +850,10 @@ export class AccountService {
         },
         t,
       );
-      t.commit();
-    } catch {
-      t.rollback();
+      await t.commit();
+    } catch (err) {
+      await t.rollback();
+      throw err;
     }
   }
 
@@ -940,11 +948,12 @@ export class AccountService {
         emitNet(Broadcasts.NewSharedUser, user?.getSource(), account.toJSON());
       });
 
-      t.commit();
+      await t.commit();
       return account;
     } catch (err) {
-      t.rollback();
+      await t.rollback();
       logger.error('Failed to add user to unique account');
+      throw err;
     }
   }
 
@@ -997,11 +1006,12 @@ export class AccountService {
         emitNet(Broadcasts.RemovedSharedUser, user?.getSource(), sharedAccount.toJSON());
       });
 
-      t.commit();
+      await t.commit();
       return sharedAccount;
     } catch (err) {
-      t.rollback();
+      await t.rollback();
       logger.error('Failed to remove user from unique account');
+      throw err;
     }
   }
 

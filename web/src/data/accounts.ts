@@ -18,14 +18,25 @@ const getAccounts = async (): Promise<Account[]> => {
   }
 };
 
+const isLoadedAtom = atom(false);
+
 export const rawAccountAtom = atom<Account[]>([]);
 export const accountsAtom = atom<Promise<Account[]>, Account[] | undefined, Promise<void>>(
   async (get) => {
-    const accounts = get(rawAccountAtom).length === 0 ? await getAccounts() : get(rawAccountAtom);
-    return accounts;
+    const isLoaded = get(isLoadedAtom);
+    const raw = get(rawAccountAtom);
+
+    if (!isLoaded && raw.length === 0) {
+      // This is only for the very first load
+      return await getAccounts();
+    }
+
+    return raw;
   },
-  async (_get, set, by) => {
-    return set(rawAccountAtom, by ?? (await getAccounts()));
+  async (get, set, by) => {
+    const accounts = by ?? (await getAccounts());
+    set(rawAccountAtom, accounts);
+    set(isLoadedAtom, true);
   },
 );
 

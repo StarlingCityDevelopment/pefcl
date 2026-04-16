@@ -1,6 +1,7 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
-import AccountCards from '../AccountCards';
+import AccountCards from '@components/AccountCards';
 import { renderWithProviders } from '@utils/test';
 import { mockedAccounts } from '@utils/constants';
 

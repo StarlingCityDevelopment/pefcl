@@ -139,9 +139,9 @@ export class TransactionService {
         t,
       );
 
-      t.commit();
+      await t.commit();
     } catch (e) {
-      t.rollback();
+      await t.rollback();
       logger.silly('Failed to create internal transfer');
       logger.silly(e);
       throw e;
@@ -188,9 +188,9 @@ export class TransactionService {
       await this.handleCreateTransaction({ ...data, type: TransactionType.Outgoing }, t);
       await this.handleCreateTransaction({ ...data, type: TransactionType.Incoming }, t);
 
-      t.commit();
+      await t.commit();
     } catch (e) {
-      t.rollback();
+      await t.rollback();
       logger.silly('Failed to create internal transfer');
       logger.silly(e);
       throw e;

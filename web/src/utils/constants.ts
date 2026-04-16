@@ -10,58 +10,7 @@ const now = dayjs();
 export const DEFAULT_PAGINATION_LIMIT = 5;
 export const defaultWithdrawOptions = [500, 1000, 1500, 3000, 5000, 7500];
 
-export const mockedAccounts: Account[] = [
-  {
-    id: 1,
-    accountName: 'Savings',
-    number: '920, 1000-2000-3000',
-    balance: 4500,
-    isDefault: true,
-    ownerIdentifier: '',
-    type: AccountType.Personal,
-    role: AccountRole.Owner,
-  },
-  {
-    id: 2,
-    accountName: 'Pension',
-    number: '920, 1000-2000-3002',
-    balance: 20000,
-    isDefault: false,
-    ownerIdentifier: '',
-    type: AccountType.Personal,
-    role: AccountRole.Owner,
-  },
-  {
-    id: 3,
-    accountName: 'Bennys AB',
-    number: '920, 1000-2000-3004',
-    balance: 1800000,
-    isDefault: false,
-    ownerIdentifier: '',
-    type: AccountType.Shared,
-    role: AccountRole.Owner,
-  },
-  {
-    id: 4,
-    accountName: 'Bennys AB',
-    number: '920, 1000-2000-3004',
-    balance: 1800000,
-    isDefault: false,
-    ownerIdentifier: '',
-    type: AccountType.Shared,
-    role: AccountRole.Owner,
-  },
-  {
-    id: 5,
-    accountName: 'Bennys AB',
-    number: '920, 1000-2000-3004',
-    balance: 1800000,
-    isDefault: false,
-    ownerIdentifier: '',
-    type: AccountType.Shared,
-    role: AccountRole.Owner,
-  },
-];
+export const mockedAccounts: Account[] = [];
 
 export const mockedTransactions: GetTransactionsResponse = {
   limit: 25,

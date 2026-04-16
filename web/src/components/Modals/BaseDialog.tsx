@@ -12,7 +12,6 @@ const BaseDialog = (props: BaseDialogProps) => {
     <Dialog
       {...props}
       fullWidth
-      hideBackdrop
       disablePortal={isMobile}
       fullScreen={isMobile}
       sx={{ position: isMobile ? 'absolute' : 'fixed', height: '100%' }}

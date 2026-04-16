@@ -29,15 +29,28 @@ const getInvoices = async (input: GetInvoicesInput): Promise<GetInvoicesResponse
   }
 };
 
+const isLoadedAtom = atom(false);
 const invoicesAtomRaw = atom<GetInvoicesResponse>(initialState);
-export const invoicesAtom = atom(
+export const invoicesAtom = atom<
+  Promise<GetInvoicesResponse>,
+  GetInvoicesResponse | undefined,
+  Promise<void>
+>(
   async (get) => {
-    const hasTransactions = get(invoicesAtomRaw).invoices.length > 0;
-    return hasTransactions ? get(invoicesAtomRaw) : await getInvoices({ ...initialState });
+    const isLoaded = get(isLoadedAtom);
+    const raw = get(invoicesAtomRaw);
+
+    if (!isLoaded && raw.invoices.length === 0) {
+      return await getInvoices({ ...initialState });
+    }
+
+    return raw;
   },
-  async (get, set) => {
+  async (get, set, by?) => {
     const currentSettings = get(invoicesAtomRaw);
-    return set(invoicesAtomRaw, await getInvoices(currentSettings));
+    const data = by ?? (await getInvoices(currentSettings));
+    set(invoicesAtomRaw, data);
+    set(isLoadedAtom, true);
   },
 );
 

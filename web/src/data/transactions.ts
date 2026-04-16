@@ -25,21 +25,29 @@ const getTransactions = async (input: GetTransactionsInput): Promise<GetTransact
   }
 };
 
+const isLoadedAtom = atom(false);
 export const rawTransactionsAtom = atom<GetTransactionsResponse>(transactionInitialState);
 
 export const transactionBaseAtom = atom<
   Promise<GetTransactionsResponse>,
-  GetTransactionsResponse | undefined
+  GetTransactionsResponse | undefined,
+  Promise<void>
 >(
   async (get) => {
-    const hasTransactions = get(rawTransactionsAtom).transactions.length > 0;
-    return hasTransactions
-      ? get(rawTransactionsAtom)
-      : await getTransactions({ ...transactionInitialState });
+    const isLoaded = get(isLoadedAtom);
+    const raw = get(rawTransactionsAtom);
+
+    if (!isLoaded && raw.transactions.length === 0) {
+      return await getTransactions({ ...transactionInitialState });
+    }
+
+    return raw;
   },
   async (get, set, by?) => {
     const currentSettings = get(rawTransactionsAtom);
-    return set(rawTransactionsAtom, by ?? (await getTransactions({ ...currentSettings })));
+    const data = by ?? (await getTransactions({ ...currentSettings }));
+    set(rawTransactionsAtom, data);
+    set(isLoadedAtom, true);
   },
 );
 

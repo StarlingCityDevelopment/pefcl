@@ -6,35 +6,7 @@ import { isEnvBrowser } from '@utils/misc';
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 
-const mockedCards: Card[] = [
-  {
-    id: 1,
-    account: mockedAccounts[0],
-    isBlocked: false,
-    number: '4242 4220 1234 9000',
-    holder: 'Charles Carlsberg',
-    pin: 1234,
-    holderCitizenId: '1',
-  },
-  {
-    id: 2,
-    account: mockedAccounts[0],
-    isBlocked: false,
-    number: '4242 4220 1234 9002',
-    holder: 'Charles Carlsberg',
-    pin: 1234,
-    holderCitizenId: '2',
-  },
-  {
-    id: 3,
-    account: mockedAccounts[0],
-    isBlocked: false,
-    number: '4242 4220 1234 9003',
-    holder: 'Charles Carlsberg',
-    pin: 1234,
-    holderCitizenId: '3',
-  },
-];
+const mockedCards: Card[] = [];
 
 const getCards = async (accountId: number): Promise<Card[]> => {
   try {
@@ -51,30 +23,40 @@ const getCards = async (accountId: number): Promise<Card[]> => {
 };
 
 export const selectedAccountIdAtom = atom<number>(0);
+const isLoadedAtom = atom<Record<number, boolean>>({});
+export const rawCardAtom = atom<Record<number, Card[]>>({});
 
-export const rawCardAtom = atomWithStorage<Record<number, Card[]>>('rawCards', {});
-export const cardsAtom = atom(
+export const cardsAtom = atom<Promise<Card[]>, Card | number | undefined, Promise<void>>(
   async (get) => {
-    const selectedCardId = get(selectedAccountIdAtom);
+    const accountId = get(selectedAccountIdAtom);
     const state = get(rawCardAtom);
+    const isLoaded = get(isLoadedAtom)[accountId];
 
-    return state[selectedCardId] ?? [];
+    if (!isLoaded && (!state[accountId] || state[accountId].length === 0)) {
+      return await getCards(accountId);
+    }
+
+    return state[accountId] ?? [];
   },
-  async (get, set, by: Card | number) => {
-    const selectedCardId = get(selectedAccountIdAtom);
+  async (get, set, by) => {
+    const accountId = get(selectedAccountIdAtom);
     const state = get(rawCardAtom);
 
     if (typeof by === 'number') {
       const cards = await getCards(by);
-      return set(rawCardAtom, { ...state, [selectedCardId]: cards });
+      set(rawCardAtom, { ...state, [by]: cards });
+      set(isLoadedAtom, { ...get(isLoadedAtom), [by]: true });
+      return;
     }
 
     if (!by) {
-      const cards = await getCards(selectedCardId);
-      return set(rawCardAtom, { ...state, [selectedCardId]: cards });
+      const cards = await getCards(accountId);
+      set(rawCardAtom, { ...state, [accountId]: cards });
+      set(isLoadedAtom, { ...get(isLoadedAtom), [accountId]: true });
+      return;
     }
 
-    const cards = state[selectedCardId];
-    return set(rawCardAtom, { ...state, [selectedCardId]: [...cards, by] });
+    const currentCards = state[accountId] ?? [];
+    set(rawCardAtom, { ...state, [accountId]: [...currentCards, by] });
   },
 );

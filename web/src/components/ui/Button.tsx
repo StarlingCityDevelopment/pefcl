@@ -1,45 +1,69 @@
-// import styled from '@emotion/styled';
 import styled from '@emotion/styled';
-import { ButtonProps, css } from '@mui/material';
-import { Button as ButtonBase } from '@mui/material';
+import { Button as MuiButton, ButtonProps, alpha } from '@mui/material';
 import React from 'react';
 import theme from '../../utils/theme';
 
-const colors = {
-  inherit: '',
-  secondary: '',
-  success: '',
-  info: '',
-  warning: '',
-  error: css`
-    color: ${theme.palette.error.main};
-    background-color: rgba(255, 77, 77, 0.14);
-  `,
-  primary: css`
-    color: ${theme.palette.primary.main};
-  `,
-};
-
-const StyledButtonBase = styled(ButtonBase)`
-  font-weight: 200;
+const StyledButton = styled(MuiButton)<ButtonProps>`
+  text-transform: none;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 0.625rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
   box-shadow: none;
-  border-radius: ${theme.spacing(1)};
-  background-color: #1d2a3a;
-  padding: 0.4rem 2rem;
+  position: relative;
 
-  ${({ color }) => colors[color ?? 'primary']};
+  ${({ variant, color = 'primary' }) => {
+    const paletteColor = (theme.palette as any)[color]?.main || theme.palette.primary.main;
 
-  :disabled {
-    opacity: 0.25;
-    ${({ color }) => colors[color ?? 'primary']};
-  }
+    if (variant === 'text') {
+      return `
+        background: transparent;
+        color: ${paletteColor};
+        border: none;
+        padding: 0.5rem 1rem;
+
+        &:hover {
+          background: ${alpha(paletteColor, 0.06)};
+        }
+
+        &:active {
+          transform: scale(0.97);
+        }
+      `;
+    }
+
+    // Default contained style
+    return `
+      background: ${alpha(paletteColor, 0.1)};
+      color: ${paletteColor};
+      border: 1px solid ${alpha(paletteColor, 0.15)};
+
+      &:hover {
+        background: ${alpha(paletteColor, 0.15)};
+        border-color: ${alpha(paletteColor, 0.3)};
+      }
+
+      &:active {
+        transform: scale(0.97);
+      }
+
+      &.Mui-disabled {
+        background: rgba(255, 255, 255, 0.03);
+        color: ${theme.palette.text.secondary};
+        border-color: transparent;
+        opacity: 0.4;
+      }
+    `;
+  }}
 `;
 
-export const Button: React.FC<ButtonProps> = ({ children, ...props }) => {
+const Button: React.FC<ButtonProps> = ({ children, variant = 'contained', ...props }) => {
   return (
-    <StyledButtonBase {...props} color={props.color || 'primary'}>
+    <StyledButton {...props} variant={variant} disableRipple>
       {children}
-    </StyledButtonBase>
+    </StyledButton>
   );
 };
 

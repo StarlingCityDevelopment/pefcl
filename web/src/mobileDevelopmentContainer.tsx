@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter } from 'react-router';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import image from './bg.png';
 import { NuiProvider } from 'react-fivem-hooks';
 import MobileApp from './views/Mobile/Mobile';
@@ -13,7 +13,7 @@ const Container = styled.div`
 `;
 const Background = styled.div<{ src: string }>`
   z-index: 10;
-  background: url(${({ src }) => src});
+  background: url(${(props) => props.src});
   position: absolute;
   width: 500px;
   height: 1000px;

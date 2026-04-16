@@ -64,6 +64,16 @@ export class CardController {
     }
   }
 
+  @NetPromise(CardEvents.Unblock)
+  async unblockCard(req: Request<BlockCardInput>, res: Response<boolean>) {
+    try {
+      const isUpdated = await this.cardService.unblockCard(req);
+      res({ status: 'ok', data: isUpdated });
+    } catch (error) {
+      res({ status: 'error', errorMsg: error.message });
+    }
+  }
+
   @NetPromise(CardEvents.Delete)
   async deleteCard(req: Request<DeleteCardInput>, res: Response<boolean>) {
     try {

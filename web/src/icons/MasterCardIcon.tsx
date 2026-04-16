@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const MasterCardIcon: React.FC = (props) => {
+export const MasterCardIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
     <svg
       width="24"

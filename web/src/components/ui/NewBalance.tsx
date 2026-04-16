@@ -15,12 +15,19 @@ const NewBalance = ({ amount, isValid, newBalanceText }: NewBalanceProps) => {
   const { general } = useConfig();
 
   return (
-    <Stack direction="row">
-      <Typography variant="caption" color="text.secondary">
-        {newBalanceText ?? t('New balance')}
+    <Stack direction="row" spacing={0.5} alignItems="center">
+      <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }}>
+        {newBalanceText ?? t('New balance')}:
       </Typography>
-      <Typography variant="caption" color={isValid ? 'primary.main' : 'error'}>
-        : {formatMoney(amount, general)}
+      <Typography
+        variant="caption"
+        sx={{
+          color: isValid ? 'primary.main' : 'error.main',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+        }}
+      >
+        {formatMoney(amount, general)}
       </Typography>
     </Stack>
   );

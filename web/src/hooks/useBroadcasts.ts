@@ -1,6 +1,7 @@
 import { accountsAtom, rawAccountAtom } from '@data/accounts';
 import { invoicesAtom } from '@data/invoices';
 import { transactionBaseAtom } from '@data/transactions';
+import { rawCashAtom } from '@data/cash';
 import { Account } from '@typings/Account';
 import { Broadcasts } from '@typings/Events';
 import { updateAccount } from '@utils/account';
@@ -11,6 +12,7 @@ export const useBroadcasts = () => {
   const updateInvoices = useSetAtom(invoicesAtom);
   const updateTransactions = useSetAtom(transactionBaseAtom);
   const setRawAccounts = useSetAtom(rawAccountAtom);
+  const setRawCash = useSetAtom(rawCashAtom);
   const [accounts, updateAccounts] = useAtom(accountsAtom);
 
   useNuiEvent('PEFCL', Broadcasts.NewTransaction, () => {
@@ -18,7 +20,7 @@ export const useBroadcasts = () => {
   });
 
   useNuiEvent('PEFCL', Broadcasts.NewAccount, (account: Account) => {
-    setRawAccounts([...accounts, account])
+    setRawAccounts([...accounts, account]);
   });
 
   useNuiEvent('PEFCL', Broadcasts.UpdatedAccount, () => {
@@ -39,6 +41,11 @@ export const useBroadcasts = () => {
 
   useNuiEvent('PEFCL', Broadcasts.RemovedSharedUser, () => {
     updateAccounts();
+  });
+
+  // Real-time cash updates from server broadcasts
+  useNuiEvent<number>('PEFCL', Broadcasts.NewCashAmount, (newCash) => {
+    setRawCash(newCash);
   });
 };
 
