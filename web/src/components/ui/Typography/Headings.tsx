@@ -1,51 +1,31 @@
-import styled from '@emotion/styled';
-import { Typography } from '@mui/material';
-import theme from '../../../utils/theme';
+import React from 'react';
+import { cn } from '@utils/cn';
 
-const BaseHeading = styled(Typography)`
-  font-family: ${theme.typography.fontFamily};
-  color: ${theme.palette.text.primary};
-`;
+interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  children: React.ReactNode;
+}
 
-export const Heading1 = styled(BaseHeading)`
-  font-size: 2.5rem;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-`;
+export const Heading1: React.FC<HeadingProps> = ({ className, ...props }) => (
+  <h1 className={cn("text-[2.5rem] font-semibold tracking-tighter leading-[1.15] text-white", className)} {...props} />
+);
 
-export const Heading2 = styled(BaseHeading)`
-  font-size: 1.75rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-`;
+export const Heading2: React.FC<HeadingProps> = ({ className, ...props }) => (
+  <h2 className={cn("text-[1.75rem] font-semibold tracking-tight leading-normal text-white", className)} {...props} />
+);
 
-export const Heading3 = styled(BaseHeading)`
-  font-size: 1.375rem;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.3;
-`;
+export const Heading3: React.FC<HeadingProps> = ({ className, ...props }) => (
+  <h3 className={cn("text-[1.375rem] font-semibold tracking-tight leading-relaxed text-white", className)} {...props} />
+);
 
-export const Heading4 = styled(BaseHeading)`
-  font-size: 1.125rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.35;
-`;
+export const Heading4: React.FC<HeadingProps> = ({ className, ...props }) => (
+  <h4 className={cn("text-lg font-medium tracking-tight leading-snug text-white", className)} {...props} />
+);
 
-export const Heading5 = styled(BaseHeading)`
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.4;
-  color: ${theme.palette.text.secondary};
-`;
+export const Heading5: React.FC<HeadingProps> = ({ className, ...props }) => (
+  <h5 className={cn("text-[0.9375rem] font-medium leading-relaxed text-white/60", className)} {...props} />
+);
 
-export const Heading6 = styled(BaseHeading)`
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  line-height: 1.5;
-  color: ${theme.palette.text.secondary};
-`;
+export const Heading6: React.FC<HeadingProps> = ({ className, ...props }) => (
+  <h6 className={cn("text-[0.75rem] font-medium tracking-wider leading-relaxed text-white/60 uppercase", className)} {...props} />
+);
+

@@ -1,19 +1,18 @@
 import InvoiceItem from '@components/InvoiceItem';
-import { Stack } from '@mui/material';
-import { useAtom } from 'jotai';
+import { useAtomValue } from 'jotai';
 import type React from 'react';
 import { unpaidInvoicesAtom } from '../../../data/invoices';
 
 const PendingInvoices: React.FC = () => {
-  const [invoices] = useAtom(unpaidInvoicesAtom);
+ const invoices = useAtomValue(unpaidInvoicesAtom);
 
-  return (
-    <Stack spacing={2}>
-      {invoices.map((invoice) => (
-        <InvoiceItem key={invoice.id} invoice={invoice} />
-      ))}
-    </Stack>
-  );
+ return (
+ <div className="flex flex-col gap-3">
+ {invoices.map((invoice) => (
+ <InvoiceItem key={invoice.id} invoice={invoice} />
+ ))}
+ </div>
+ );
 };
 
 export default PendingInvoices;

@@ -1,13 +1,13 @@
 import UserSelect from '@components/UserSelect';
 import Button from '@components/ui/Button';
-import { Heading6 } from '@components/ui/Typography/Headings';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
+import { Typography } from '@components/ui/Typography';
 import { AccountRole, type SharedAccountUser } from '@typings/Account';
 import { SharedAccountEvents } from '@typings/Events';
 import type { OnlineUser } from '@typings/user';
 import { fetchNui } from '@utils/fetchNui';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import BaseDialog from './BaseDialog';
 
 interface SelectUserModalProps {
   isOpen: boolean;
@@ -15,10 +15,12 @@ interface SelectUserModalProps {
   accountId: number;
   onSelect(identifier: string): void;
 }
+
 const RemoveUserModal = ({ isOpen, onSelect, onClose, accountId }: SelectUserModalProps) => {
   const { t } = useTranslation();
   const [selectedUserIdentifier, setSelectedUserIdentifier] = useState('');
   const [users, setUsers] = useState<SharedAccountUser[]>([]);
+
   const handleUserSelect = (user: OnlineUser) => {
     setSelectedUserIdentifier(user.identifier);
   };
@@ -37,33 +39,36 @@ const RemoveUserModal = ({ isOpen, onSelect, onClose, accountId }: SelectUserMod
     .map((user) => ({
       name: user.name ?? '',
       identifier: user.userIdentifier,
-      isDisabled: [AccountRole.Owner].includes(user.role),
+      isDisabled: [AccountRole.Owner as AccountRole].includes(user.role),
     }))
     .filter((user) => !user.isDisabled);
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth='xs'>
-      <DialogTitle>
-        <span>{t('Remove user from a shared account')}</span>
-      </DialogTitle>
+    <BaseDialog open={isOpen} onClose={onClose} maxWidth="500px">
+      <div className="p-6 flex flex-col gap-6 h-full">
+        <Typography variant="h3" className="text-lg font-medium leading-none tracking-tight">
+          {t('Revoke Access')}
+        </Typography>
 
-      <DialogContent>
-        <Stack spacing={1.5}>
-          <Heading6>{t('Select a user')}</Heading6>
+        <div className="flex flex-col gap-1.5">
+          <Typography variant="label" className="text-white/60">
+            {t('Identify User')}
+          </Typography>
           <UserSelect onSelect={handleUserSelect} users={filteredUsers} />
-        </Stack>
-      </DialogContent>
+        </div>
 
-      <DialogActions>
-        <Button color='error' onClick={onClose}>
-          {t('Cancel')}
-        </Button>
-        <Button onClick={handleSubmit} disabled={!selectedUserIdentifier}>
-          {t('Remove user')}
-        </Button>
-      </DialogActions>
-    </Dialog>
+        <div className="flex justify-end gap-3 mt-auto pt-6 border-t border-white/5">
+          <Button variant="secondary" onClick={onClose}>
+            {t('Cancel')}
+          </Button>
+          <Button onClick={handleSubmit} disabled={!selectedUserIdentifier} className="bg-red-500 hover:bg-red-600 text-white">
+            {t('Revoke Access')}
+          </Button>
+        </div>
+      </div>
+    </BaseDialog>
   );
 };
 
 export default RemoveUserModal;
+

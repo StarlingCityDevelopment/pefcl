@@ -1,41 +1,42 @@
-import styled from '@emotion/styled';
-import { Button, type ButtonProps } from '@mui/material';
-import type React from 'react';
-
-interface IconLabelButtonProps extends ButtonProps {
-  icon: React.ReactElement;
-}
+import React from 'react';
+import { cn } from '@utils/cn';
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: React.ReactElement;
+  children?: React.ReactNode;
 }
 
-const IconLabelButton: React.FC<IconLabelButtonProps> = ({ children, icon, ...props }) => (
-  <Button {...props} endIcon={icon}>
-    {children}
-  </Button>
-);
-
-const IconButtonWrapper = styled('button')({
-  background: '#d84e4b',
-  display: 'inline',
-  alignItems: 'center',
-  justifyContent: 'center',
-  color: '#fff',
-  border: 'none',
-  borderRadius: 5,
-  padding: '3px 20px',
-  fontWeight: 500,
-  fontSize: 16,
-});
-
-export const IconButton: React.FC<IconButtonProps> = ({ children, icon, ...props }) => {
+export const IconButton: React.FC<IconButtonProps> = ({ children, icon, className, ...props }) => {
   return (
-    <IconButtonWrapper {...props}>
+    <button 
+      className={cn(
+        "inline-flex items-center justify-center gap-2 px-5 py-1.5 bg-[#d84e4b] text-white rounded-lg font-medium text-base transition-all hover:bg-[#c44341] active:scale-95",
+        className
+      )}
+      {...props}
+    >
       {children}
-      {icon}
-    </IconButtonWrapper>
+      <span className="shrink-0">{icon}</span>
+    </button>
   );
 };
+
+interface IconLabelButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: React.ReactElement;
+  children: React.ReactNode;
+}
+
+const IconLabelButton: React.FC<IconLabelButtonProps> = ({ children, icon, className, ...props }) => (
+  <button 
+    className={cn(
+      "inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black rounded-xl font-bold uppercase italic tracking-tighter transition-all hover:bg-white/95 active:scale-[0.98]",
+      className
+    )}
+    {...props}
+  >
+    {children}
+    <span className="shrink-0">{icon}</span>
+  </button>
+);
 
 export default IconLabelButton;

@@ -1,45 +1,27 @@
-import styled from '@emotion/styled';
-import theme from '@utils/theme';
-import type React from 'react';
-
-const Total = styled.div<{ focus: boolean }>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  height: 1.5rem;
-  padding: 0 0.5rem;
-  min-width: 1.5rem;
-
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.04);
-  color: ${theme.palette.text.secondary};
-  border: 1px solid rgba(255, 255, 255, 0.06);
-
-  ${({ focus }) =>
-    focus &&
-    `
-      background-color: rgba(255, 255, 255, 0.06);
-      color: ${theme.palette.text.primary};
-  `}
-`;
-
-import { Box, type SxProps, type Theme } from '@mui/material';
+import React from 'react';
+import { cn } from '@utils/cn';
 
 interface CountProps extends React.HTMLAttributes<HTMLDivElement> {
-  amount: string | number;
-  focus?: boolean;
-  sx?: SxProps<Theme>;
+ amount: string | number;
+ focus?: boolean;
 }
-const Count = ({ amount, focus = false, sx, ...props }: CountProps) => {
-  return (
-    <Box sx={sx} {...props}>
-      <Total focus={focus}>{amount}</Total>
-    </Box>
-  );
+
+const Count: React.FC<CountProps> = ({ amount, focus = false, className, ...props }) => {
+ return (
+ <div
+ className={cn(
+ "flex justify-center items-center text-center",
+ "h-12 min-w-[3rem] px-2 rounded-xl",
+ "font-black text-sm transition-all duration-300",
+ "bg-white/[0.03] border border-white/10 text-slate-400",
+ focus && "bg-white/[0.08] border-white/30 text-white scale-105 -[0_0_20px_rgba(255,255,255,0.05)]",
+ className
+ )}
+ {...props}
+ >
+ {amount}
+ </div>
+ );
 };
 
 export default Count;

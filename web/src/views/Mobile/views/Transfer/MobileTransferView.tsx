@@ -2,23 +2,22 @@ import AccountSelect from '@components/AccountSelect';
 import Button from '@components/ui/Button';
 import PriceField from '@components/ui/Fields/PriceField';
 import NewBalance from '@components/ui/NewBalance';
-import { Heading2, Heading5 } from '@components/ui/Typography/Headings';
+import { Typography } from '@components/ui/Typography';
 import { accountsAtom } from '@data/accounts';
 import { externalAccountsAtom } from '@data/externalAccounts';
 import { transactionBaseAtom } from '@data/transactions';
 import { useConfig } from '@hooks/useConfig';
-import { Alert, Stack } from '@mui/material';
-import { Box } from '@mui/system';
 import { GenericErrors } from '@typings/Errors';
 import { TransactionEvents } from '@typings/Events';
 import { type CreateTransferInput, TransferType } from '@typings/Transaction';
 import { formatMoney } from '@utils/currency';
 import { fetchNui } from '@utils/fetchNui';
-import theme from '@utils/theme';
 import { useAtom } from 'jotai';
 import type React from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Info, AlertCircle } from 'lucide-react';
+import { cn } from '@utils/cn';
 
 const MobileTransferView = () => {
   const { t } = useTranslation();
@@ -106,109 +105,77 @@ const MobileTransferView = () => {
   };
 
   return (
-    <Box p={3} pb={12}>
-      <Stack spacing={4}>
-        <Stack spacing={0.5}>
-          <Heading2 sx={{ fontSize: '2rem' }}>{t('Transfer funds')}</Heading2>
-          <Heading5 sx={{ opacity: 0.6, fontWeight: 400 }}>
-            {t('Transfer between internal & external accounts.')}
-          </Heading5>
-        </Stack>
+    <div className="p-6 pb-24 flex flex-col gap-10">
+      <div className="flex flex-col gap-1">
+        <Typography variant="h2" className="text-[2rem] leading-none mb-2 italic uppercase">
+          {t('Transfer funds')}
+        </Typography>
+        <Typography className="text-white/40 font-medium">
+          {t('Transfer between internal & external accounts.')}
+        </Typography>
+      </div>
 
-        <Stack spacing={4}>
-          <Stack spacing={1.5}>
-            <Heading5
-              sx={{
-                color: theme.palette.primary.main,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                fontSize: '0.75rem',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('From account')}
-            </Heading5>
-            <AccountSelect
-              isFromAccount
-              accounts={accounts}
-              onSelect={handleFromSelect}
-              selectedId={selectedFromAccountId}
-            />
-          </Stack>
+      <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-4">
+          <Typography variant="pre" className="text-primary font-black ml-1">
+            {t('From account')}
+          </Typography>
+          <AccountSelect
+            isFromAccount
+            accounts={accounts}
+            onSelect={handleFromSelect}
+            selectedId={selectedFromAccountId}
+          />
+        </div>
 
-          <Stack spacing={1.5}>
-            <Heading5
-              sx={{
-                color: theme.palette.primary.main,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                fontSize: '0.75rem',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('To account')}
-            </Heading5>
-            <AccountSelect
-              accounts={accounts}
-              externalAccounts={externalAccounts}
-              onSelect={handleToSelect}
-              selectedId={selectedToAccountId}
-              isExternalSelected={isToExternal}
-            />
-          </Stack>
+        <div className="flex flex-col gap-4">
+          <Typography variant="pre" className="text-primary font-black ml-1">
+            {t('To account')}
+          </Typography>
+          <AccountSelect
+            accounts={accounts}
+            externalAccounts={externalAccounts}
+            onSelect={handleToSelect}
+            selectedId={selectedToAccountId}
+            isExternalSelected={isToExternal}
+          />
+        </div>
 
-          <Stack spacing={1.5}>
-            <Heading5
-              sx={{
-                color: theme.palette.primary.main,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                fontSize: '0.75rem',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('Amount')}
-            </Heading5>
-            <PriceField value={amount} onChange={handleAmountChange} />
-            <NewBalance amount={newBalance} isValid={isValidNewBalance} />
-          </Stack>
+        <div className="flex flex-col gap-4">
+          <Typography variant="pre" className="text-primary font-black ml-1">
+            {t('Value Specification')}
+          </Typography>
+          <PriceField value={amount} onChange={handleAmountChange} />
+          <NewBalance amount={newBalance} isValid={isValidNewBalance} />
+        </div>
 
-          <Box pt={2}>
-            <Button size="large" fullWidth onClick={handleTransfer} disabled={isButtonDisabled}>
-              {t('Transfer funds')}
-            </Button>
-          </Box>
+        <div className="pt-4">
+          <Button className="w-full h-16 text-lg" onClick={handleTransfer} disabled={isButtonDisabled}>
+            {t('Authorize Transfer')}
+          </Button>
+        </div>
 
-          {success && (
-            <Alert
-              color="info"
-              variant="filled"
-              sx={{
-                borderRadius: '12px',
-                background: 'rgba(59, 130, 246, 0.1)',
-                border: '1px solid rgba(59, 130, 246, 0.2)',
-              }}
-            >
+        {success && (
+          <div className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center gap-4 text-blue-400">
+            <Info className="w-5 h-5 shrink-0" />
+            <Typography className="text-blue-400 leading-tight">
               {success}
-            </Alert>
-          )}
-          {error && (
-            <Alert
-              color="error"
-              variant="filled"
-              sx={{
-                borderRadius: '12px',
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-              }}
-            >
+            </Typography>
+          </div>
+        )}
+        
+        {error && (
+          <div className="p-5 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center gap-4 text-red-500">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <Typography className="text-red-500 leading-tight font-medium">
               {error}
-            </Alert>
-          )}
-        </Stack>
-      </Stack>
-    </Box>
+            </Typography>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
 export default MobileTransferView;
+

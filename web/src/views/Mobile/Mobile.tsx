@@ -1,69 +1,31 @@
 import React from 'react';
-import './mobile.module.css';
-import { Heading6 } from '@components/ui/Typography/Headings';
-import styled from '@emotion/styled';
-import { CircularProgress, Stack } from '@mui/material';
-import { Box } from '@mui/system';
-import theme from '@utils/theme';
-import MobileFooter, { FooterHeight } from './Components/MobileFooter';
+import MobileFooter from './Components/MobileFooter';
 import MobileRoutes from './Routes';
+import { Loader2 } from 'lucide-react';
+import { Typography } from '@ui/Typography';
+import { cn } from '@utils/cn';
 
-const Container = styled.div`
-  color: ${theme.palette.text.primary};
-  background: ${theme.palette.background.default};
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-`;
-
-const ContentScroll = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding-top: 20px;
-  padding-bottom: ${FooterHeight};
-
-  /* Hide scrollbar */
-  &::-webkit-scrollbar {
-    display: none;
-  }
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-`;
-
-interface LoadingFallbackProps {
-  message: string;
-}
-
-const LoadingFallback = (props: LoadingFallbackProps) => (
-  <Box
-    sx={{
-      flex: 1,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}
-  >
-    <Stack spacing={2} alignItems='center'>
-      <CircularProgress size={32} thickness={3} />
-      <Heading6 sx={{ opacity: 0.5, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{props.message}</Heading6>
-    </Stack>
-  </Box>
+const LoadingFallback = ({ message }: { message: string }) => (
+ <div className="flex-1 flex flex-col items-center justify-center gap-4">
+ <Loader2 className="w-8 h-8 animate-spin text-white/20" />
+ <Typography variant="pre" className="text-slate-500 font-bold tracking-[0.2em] uppercase text-[10px]">
+ {message}
+ </Typography>
+ </div>
 );
 
 const MobileApp = () => {
   return (
-    <Container>
-      <ContentScroll>
-        <React.Suspense fallback={<LoadingFallback message={'Getting data...'} />}>
+    <div className="absolute inset-0 flex flex-col h-[100dvh] w-full bg-black text-white overflow-hidden font-sans select-none">
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-[calc(76px+env(safe-area-inset-bottom))]">
+        <React.Suspense fallback={<LoadingFallback message={'Securely Loading'} />}>
           <MobileRoutes />
         </React.Suspense>
-      </ContentScroll>
+      </div>
       <MobileFooter />
-    </Container>
+    </div>
   );
 };
+
 
 export default MobileApp;

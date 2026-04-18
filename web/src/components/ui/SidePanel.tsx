@@ -1,56 +1,7 @@
-import styled from '@emotion/styled';
-import { Close } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import theme from '@utils/theme';
+import React from 'react';
+import { X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import type React from 'react';
-
-const Overlay = styled(motion.div)<{ zIndex: number }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: ${({ zIndex }) => zIndex};
-`;
-
-const Panel = styled(motion.div)<{ width?: string; zIndex: number }>`
-  padding: 2rem 2.5rem;
-  position: absolute;
-  width: ${({ width }) => width || 'calc(100% - 5rem)'};
-  height: 100%;
-  top: 0;
-  right: 0;
-  background-color: ${theme.palette.background.paper};
-  border-left: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: -16px 0 48px rgba(0, 0, 0, 0.3);
-  z-index: ${({ zIndex }) => zIndex};
-  overflow-y: auto;
-`;
-
-const CloseButton = styled(IconButton)`
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  color: ${theme.palette.text.secondary};
-  transition: all 0.15s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: ${theme.palette.text.primary};
-  }
-
-  svg {
-    font-size: 1rem;
-  }
-`;
+import { cn } from '@utils/cn';
 
 interface SidePanelProps {
   isOpen: boolean;
@@ -58,45 +9,57 @@ interface SidePanelProps {
   width?: string;
   children: React.ReactNode;
   zIndex?: number;
+  className?: string;
 }
 
-const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, width, children, zIndex = 100 }) => {
+const SidePanel: React.FC<SidePanelProps> = ({ 
+  isOpen, 
+  onClose, 
+  width, 
+  children, 
+  zIndex = 100,
+  className
+}) => {
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          <Overlay
-            key='side-panel-overlay'
-            zIndex={zIndex - 1}
+          <motion.div
+            key="side-panel-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onClose();
-            }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/40 backdrop-blur-md"
+            style={{ zIndex: zIndex - 1 }}
           />
-          <Panel
-            key='side-panel-content'
-            width={width}
-            zIndex={zIndex}
+          <motion.div
+            key="side-panel-content"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+            className={cn(
+              "fixed top-0 right-0 h-full bg-[#0A0A0A] border-l border-white/5 p-8 overflow-y-auto",
+              className
+            )}
+            style={{ 
+              width: width || '450px',
+              maxWidth: '90%',
+              zIndex: zIndex 
+            }}
           >
-            <CloseButton
-              onClick={(e) => {
-                e.stopPropagation();
-                onClose();
-              }}
+            <button
+              onClick={onClose}
+              className="absolute top-6 right-6 w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200"
             >
-              <Close />
-            </CloseButton>
-            {children}
-          </Panel>
+              <X className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col h-full">
+              {children}
+            </div>
+          </motion.div>
         </>
       )}
     </AnimatePresence>
@@ -104,3 +67,4 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, width, children,
 };
 
 export default SidePanel;
+

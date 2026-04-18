@@ -1,20 +1,15 @@
-import styled from '@emotion/styled';
-import { Typography } from '@mui/material';
-import theme from '../../../utils/theme';
+import React from 'react';
+import { cn } from '@utils/cn';
 
-const BaseText = styled(Typography)`
-  font-family: ${theme.typography.fontFamily};
-`;
+interface BodyTextProps extends React.HTMLAttributes<HTMLParagraphElement> {
+  children: React.ReactNode;
+}
 
-export const PreHeading = styled(BaseText)`
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: ${theme.palette.text.secondary};
-  line-height: 1.5;
-`;
+export const PreHeading: React.FC<BodyTextProps> = ({ className, ...props }) => (
+  <p className={cn("text-[0.8125rem] font-normal leading-relaxed text-white/60", className)} {...props} />
+);
 
-export const BodyText = styled(BaseText)`
-  font-size: 0.9375rem;
-  font-weight: 400;
-  line-height: 1.6;
-`;
+export const BodyText: React.FC<BodyTextProps> = ({ className, ...props }) => (
+  <p className={cn("text-[0.9375rem] font-normal leading-relaxed text-white/90", className)} {...props} />
+);
+

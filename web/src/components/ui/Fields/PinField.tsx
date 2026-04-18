@@ -1,71 +1,61 @@
 import { PIN_CODE_LENGTH } from '@common/constants';
-import styled from '@emotion/styled';
-import { type InputBaseProps, Stack, Typography } from '@mui/material';
 import React, { type ChangeEvent, useState } from 'react';
 import Count from '../Count';
-
-const Container = styled.div`
-  position: relative;
-  display: grid;
-  grid-template-columns: ${`repeat(${PIN_CODE_LENGTH}, 1fr)`};
-  grid-column-gap: 0.5rem;
-  width: ${`calc(${PIN_CODE_LENGTH} * 3rem)`};
-`;
-
-const InputField = styled.input`
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-`;
+import { Typography } from '../Typography';
 
 interface PinFieldProps {
-  label?: string;
-  value: string;
-  onChange: InputBaseProps['onChange'];
+ label?: string;
+ value: string;
+ onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const PinField = ({ onChange, value, label }: PinFieldProps) => {
-  const [hasFocus, setHasFocus] = useState(false);
+ const [hasFocus, setHasFocus] = useState(false);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const newValue = event.target.value;
-    const newLength = newValue.length;
+ const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+ const newValue = event.target.value;
+ const newLength = newValue.length;
 
-    if (newValue && isNaN(Number.parseInt(newValue, 10))) {
-      return;
-    }
+ if (newValue && isNaN(Number.parseInt(newValue, 10))) {
+ return;
+ }
 
-    if (newLength > PIN_CODE_LENGTH && value.length < newLength) {
-      return;
-    }
+ if (newLength > PIN_CODE_LENGTH && value.length < newLength) {
+ return;
+ }
 
-    onChange?.(event);
-  };
+ onChange?.(event);
+ };
 
-  const codeLen = new Array(PIN_CODE_LENGTH).fill('');
+ const codeLen = new Array(PIN_CODE_LENGTH).fill('');
 
-  return (
-    <Stack spacing={0.5}>
-      {label && (
-        <Typography variant='caption' color='text.secondary'>
-          {label}
-        </Typography>
-      )}
-      <Container>
-        <InputField
-          onChange={handleChange}
-          value={value || ''}
-          onBlur={() => setHasFocus(false)}
-          onFocus={() => setHasFocus(true)}
-        />
+ return (
+ <div className="flex flex-col gap-2">
+ {label && (
+ <Typography variant="pre" className="text-slate-500">
+ {label}
+ </Typography>
+ )}
+ <div className="relative grid grid-cols-4 gap-3 w-fit">
+ <input
+ className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+ onChange={handleChange}
+ value={value || ''}
+ onBlur={() => setHasFocus(false)}
+ onFocus={() => setHasFocus(true)}
+ autoFocus
+ />
 
-        {codeLen.map((_val, index) => (
-          <Count key={index} amount={value[index] ? '*' : ''} focus={hasFocus} />
-        ))}
-      </Container>
-    </Stack>
-  );
+ {codeLen.map((_val, index) => (
+ <Count 
+ key={index} 
+ amount={value[index] ? '•' : ''} 
+ focus={hasFocus && (value.length === index || (index === PIN_CODE_LENGTH - 1 && value.length === PIN_CODE_LENGTH))} 
+ />
+ ))}
+ </div>
+ </div>
+ );
 };
 
 export default PinField;

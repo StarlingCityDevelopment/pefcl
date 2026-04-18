@@ -1,182 +1,107 @@
-import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
-import { ArrowDownwardRounded, ArrowUpwardRounded, SwapHorizRounded } from '@mui/icons-material';
-import { Box, Skeleton, Stack, alpha } from '@mui/material';
+import { ArrowUpRight, ArrowDownLeft, ArrowLeftRight } from 'lucide-react';
 import { type Transaction, TransactionType } from '@typings/Transaction';
-import { BodyText } from '@ui/Typography/BodyText';
-import { Heading6 } from '@ui/Typography/Headings';
+import { Typography } from '@ui/Typography';
+import { Skeleton } from '@ui/Base';
 import { formatMoney } from '@utils/currency';
-import theme from '@utils/theme';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
-import type React from 'react';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@utils/cn';
 
 dayjs.extend(calendar);
+dayjs.extend(relativeTime);
 
-const Container = styled.div<{ type: TransactionType }>`
-  padding: 0.625rem 1rem;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  transition: all 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
-  cursor: pointer;
+interface TransactionItemProps {
+ transaction: Transaction;
+ isLimitedSpace?: boolean;
+}
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.08);
-  }
-`;
-
-const IconWrapper = styled.div<{ type: TransactionType }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  flex-shrink: 0;
-
-  ${({ type }) => {
-    switch (type) {
-      case TransactionType.Incoming:
-        return `
-          background: rgba(52, 211, 153, 0.1);
-          color: ${theme.palette.success.main};
-        `;
-      case TransactionType.Outgoing:
-        return `
-          background: rgba(239, 68, 68, 0.1);
-          color: ${theme.palette.error.main};
-        `;
-      default:
-        return `
-          background: rgba(255, 255, 255, 0.04);
-          color: ${theme.palette.text.secondary};
-        `;
-    }
-  }}
-`;
-
-const TransactionDate = styled(Heading6)`
-  color: ${theme.palette.text.secondary};
-  font-size: 0.6875rem;
-  text-transform: none;
-  letter-spacing: 0.01em;
-  font-weight: 400;
-`;
-
-const TransactionItem: React.FC<{ transaction: Transaction; isLimitedSpace?: boolean }> = ({
-  isLimitedSpace,
-  transaction,
-  ...rest
+const TransactionItem: React.FC<TransactionItemProps> = ({
+ transaction,
+ isLimitedSpace,
 }) => {
-  const { t } = useTranslation();
-  const { message, amount, id, createdAt, toAccount, fromAccount, type } = transaction;
-  const config = useConfig();
-  const createdAtDate = dayjs(createdAt);
+ const { t } = useTranslation();
+ const { message, amount, createdAt, toAccount, fromAccount, type } = transaction;
+ const config = useConfig();
+ const createdAtDate = dayjs(createdAt);
 
-  const getIcon = () => {
-    switch (type) {
-      case TransactionType.Incoming:
-        return <ArrowUpwardRounded sx={{ fontSize: '1.125rem' }} />;
-      case TransactionType.Outgoing:
-        return <ArrowDownwardRounded sx={{ fontSize: '1.125rem' }} />;
-      default:
-        return <SwapHorizRounded sx={{ fontSize: '1.125rem' }} />;
-    }
-  };
+ const isIncoming = type === TransactionType.Incoming;
 
-  return (
-    <Container key={id} type={type} {...rest}>
-      <Stack direction='row' spacing={1.5} alignItems='center'>
-        <IconWrapper type={type}>{getIcon()}</IconWrapper>
+ return (
+ <div 
+ className={cn(
+ "group flex items-center gap-4 p-5 rounded-[2rem] transition-all duration-300",
+ "bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 hover: hover:/60",
+ "relative overflow-hidden cursor-default"
+ )}
+ >
+ <div className={cn(
+ "flex items-center justify-center w-12 h-12 rounded-2xl border transition-all duration-500",
+ isIncoming 
+ ? "bg-white text-black border-white -[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110" 
+ : "bg-white/[0.03] text-slate-500 border-white/10 group-hover:text-white group-hover:border-white/30"
+ )}>
+ {isIncoming ? <ArrowUpRight className="w-5 h-5" /> : <ArrowDownLeft className="w-5 h-5" />}
+ </div>
 
-        <Stack flex={1} spacing={0.25} minWidth={0}>
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Heading6
-              sx={{
-                fontWeight: 500,
-                fontSize: '0.8125rem',
-                color: theme.palette.text.primary,
-                letterSpacing: 0,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {message}
-            </Heading6>
-            <Heading6
-              sx={{
-                fontWeight: 600,
-                fontSize: '0.8125rem',
-                color: type === TransactionType.Incoming ? theme.palette.success.main : theme.palette.text.primary,
-                letterSpacing: '-0.01em',
-                flexShrink: 0,
-                ml: 1,
-              }}
-            >
-              {type === TransactionType.Incoming ? '+' : '-'} {formatMoney(amount, config.general)}
-            </Heading6>
-          </Stack>
-
-          <Stack direction='row' justifyContent='space-between' alignItems='center'>
-            <Stack direction='row' spacing={0.75} alignItems='center'>
-              <TransactionDate>{createdAtDate.fromNow()}</TransactionDate>
-              {!isLimitedSpace && (
-                <>
-                  <Box
-                    sx={{
-                      width: 2,
-                      height: 2,
-                      borderRadius: '50%',
-                      bgcolor: 'rgba(255,255,255,0.1)',
-                    }}
-                  />
-                  <TransactionDate>{createdAtDate.format(t('DATE_FORMAT'))}</TransactionDate>
-                </>
-              )}
-            </Stack>
-
-            {!isLimitedSpace && (fromAccount || toAccount) && (
-              <Stack direction='row' spacing={0.75} alignItems='center'>
-                {fromAccount && (
-                  <BodyText sx={{ fontSize: '0.6875rem', color: theme.palette.text.secondary }}>
-                    {fromAccount.accountName}
-                  </BodyText>
-                )}
-                {fromAccount && toAccount && <SwapHorizRounded sx={{ fontSize: '0.75rem', opacity: 0.2 }} />}
-                {toAccount && (
-                  <BodyText sx={{ fontSize: '0.6875rem', color: theme.palette.text.secondary }}>
-                    {toAccount.accountName}
-                  </BodyText>
-                )}
-              </Stack>
-            )}
-          </Stack>
-        </Stack>
-      </Stack>
-    </Container>
-  );
+ <div className="flex-1 flex flex-col min-w-0">
+ <div className="flex justify-between items-start gap-4">
+ <div className="flex flex-col min-w-0">
+ <Typography className="font-black text-sm text-white truncate tracking-tight uppercase italic leading-none mb-1">
+ {message}
+ </Typography>
+ <div className="flex items-center gap-2">
+ <Typography variant="pre" className="text-[9px] text-slate-500 font-black">
+ {createdAtDate.fromNow()}
+ </Typography>
+ {!isLimitedSpace && (
+ <>
+ <div className="w-0.5 h-0.5 rounded-full bg-slate-800" />
+ <Typography variant="pre" className="text-[9px] text-slate-600 font-black">
+ {createdAtDate.format('HH:mm')}
+ </Typography>
+ </>
+ )}
+ </div>
+ </div>
+ <div className="flex flex-col items-end shrink-0">
+ <Typography 
+ className={cn(
+ "font-black text-base tracking-tighter leading-none mb-1 transition-all duration-300",
+ isIncoming ? "text-white" : "text-slate-400 group-hover:text-white"
+ )}
+ >
+ {isIncoming ? '+' : '-'} {formatMoney(amount, config.general)}
+ </Typography>
+ {(!isLimitedSpace && (fromAccount || toAccount)) && (
+ <Typography variant="label" className="text-[8px] text-slate-600 group-hover:text-slate-500 transition-colors">
+ {isIncoming ? fromAccount?.accountName || t('External') : toAccount?.accountName || t('External')}
+ </Typography>
+ )}
+ </div>
+ </div>
+ </div>
+ </div>
+ );
 };
 
 export const TransactionSkeleton = () => (
-  <Container type={TransactionType.Transfer} style={{ pointerEvents: 'none' }}>
-    <Stack direction='row' spacing={1.5} alignItems='center'>
-      <Skeleton variant='rectangular' width={36} height={36} sx={{ borderRadius: '8px' }} />
-      <Stack flex={1} spacing={0.75}>
-        <Stack direction='row' justifyContent='space-between'>
-          <Skeleton variant='text' width='40%' />
-          <Skeleton variant='text' width='20%' />
-        </Stack>
-        <Stack direction='row' justifyContent='space-between'>
-          <Skeleton variant='text' width='30%' />
-          <Skeleton variant='text' width='20%' />
-        </Stack>
-      </Stack>
-    </Stack>
-  </Container>
+ <div className="flex items-center gap-4 p-5 rounded-[2rem] bg-white/[0.02] border border-white/5 animate-pulse">
+ <Skeleton className="w-12 h-12 rounded-2xl shrink-0" />
+ <div className="flex-1 flex flex-col gap-3">
+ <div className="flex justify-between">
+ <Skeleton className="w-32 h-4 rounded-sm" />
+ <Skeleton className="w-20 h-4 rounded-sm" />
+ </div>
+ <div className="flex justify-between">
+ <Skeleton className="w-24 h-3 rounded-sm" />
+ <Skeleton className="w-16 h-3 rounded-sm" />
+ </div>
+ </div>
+ </div>
 );
 
 export default TransactionItem;

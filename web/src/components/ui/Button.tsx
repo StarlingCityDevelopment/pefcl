@@ -1,70 +1,54 @@
-import styled from '@emotion/styled';
-import { type ButtonProps, Button as MuiButton, alpha } from '@mui/material';
-import type React from 'react';
-import theme from '../../utils/theme';
+import * as React from "react"
+import { cn } from "@utils/cn"
 
-const StyledButton = styled(MuiButton)<ButtonProps>`
-  text-transform: none;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  padding: 0.625rem 1.5rem;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-  box-shadow: none;
-  position: relative;
+export interface ButtonProps
+ extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+ variant?: 'primary' | 'secondary' | 'ghost' | 'text' | 'outline' | 'danger'
+ size?: 'sm' | 'md' | 'lg' | 'xl' | 'icon'
+}
 
-  ${({ variant, color = 'primary' }) => {
-    const paletteColor = (theme.palette as any)[color]?.main || theme.palette.primary.main;
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+ ({ className, variant = 'primary', size = 'md', ...props }, ref) => {
+ const variants = {
+ primary: "bg-white text-black hover:bg-white/95 active:bg-white/90",
+ secondary: "bg-white/[0.03] text-white border border-white/10 hover:bg-white/[0.06] hover:border-white/20",
+ ghost: "bg-transparent text-slate-500 hover:text-white hover:bg-white/[0.04]",
+ text: "bg-transparent text-white/70 hover:text-white hover:bg-white/[0.03]",
+ outline: "bg-transparent border border-white/10 text-white hover:border-white/30 hover:bg-white/[0.02]",
+ danger: "bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20 hover:border-red-500/40"
 
-    if (variant === 'text') {
-      return `
-        background: transparent;
-        color: ${paletteColor};
-        border: none;
-        padding: 0.5rem 1rem;
+ }
+ 
+ const sizes = {
+ sm: "h-8 px-3 text-[11px] font-bold rounded-xl tracking-tight",
+ md: "h-11 px-6 text-sm font-bold rounded-2xl tracking-tight",
+ lg: "h-14 px-8 text-base font-black rounded-[1.25rem] tracking-tight",
+ xl: "h-16 px-10 text-lg font-black rounded-[1.5rem] tracking-tighter",
+ icon: "h-11 w-11 flex items-center justify-center rounded-2xl",
+ }
 
-        &:hover {
-          background: ${alpha(paletteColor, 0.06)};
-        }
+ return (
+ <button
+ ref={ref}
+ className={cn(
+ "inline-flex items-center justify-center transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)]",
+ "active:scale-[0.97] disabled:opacity-30 disabled:pointer-events-none select-none",
+ "relative overflow-hidden group",
+ variants[variant],
+ sizes[size],
+ className
+ )}
+ {...props}
+ >
+ {/* Subtle shimmer effect for premium variants */}
+ {(variant === 'primary' || variant === 'secondary') && (
+ <span className="absolute inset-0 w-full h-full bg-gradient-to-tr from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+ )}
+ <span className="relative z-10">{props.children}</span>
+ </button>
+ )
+ }
+)
+Button.displayName = "Button"
 
-        &:active {
-          transform: scale(0.97);
-        }
-      `;
-    }
-
-    // Default contained style
-    return `
-      background: ${alpha(paletteColor, 0.1)};
-      color: ${paletteColor};
-      border: 1px solid ${alpha(paletteColor, 0.15)};
-
-      &:hover {
-        background: ${alpha(paletteColor, 0.15)};
-        border-color: ${alpha(paletteColor, 0.3)};
-      }
-
-      &:active {
-        transform: scale(0.97);
-      }
-
-      &.Mui-disabled {
-        background: rgba(255, 255, 255, 0.03);
-        color: ${theme.palette.text.secondary};
-        border-color: transparent;
-        opacity: 0.4;
-      }
-    `;
-  }}
-`;
-
-const Button: React.FC<ButtonProps> = ({ children, variant = 'contained', ...props }) => {
-  return (
-    <StyledButton {...props} variant={variant} disableRipple>
-      {children}
-    </StyledButton>
-  );
-};
-
-export default Button;
+export default Button

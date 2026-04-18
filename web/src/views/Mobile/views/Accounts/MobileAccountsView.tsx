@@ -1,12 +1,8 @@
 import { AccountCard } from '@components/AccountCard';
 import TotalBalance from '@components/TotalBalance';
-import { Heading2, Heading5 } from '@components/ui/Typography/Headings';
+import { Typography } from '@components/ui/Typography';
 import { accountsAtom } from '@data/accounts';
-import { Stack } from '@mui/material';
-import { Box } from '@mui/system';
-import theme from '@utils/theme';
 import { useAtom } from 'jotai';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const MobileAccountsView = () => {
@@ -14,38 +10,30 @@ const MobileAccountsView = () => {
   const [accounts] = useAtom(accountsAtom);
 
   return (
-    <Box p={3} pb={12}>
-      <Stack spacing={5}>
-        <Stack spacing={0.5}>
-          <Heading2 sx={{ fontSize: '2rem' }}>{t('Accounts')}</Heading2>
-          <TotalBalance />
-        </Stack>
+    <div className="p-6 pb-24 flex flex-col gap-10">
+      <div className="flex flex-col gap-2">
+        <Typography variant="h2" className="text-[2rem] leading-none mb-2 italic uppercase">
+          {t('Accounts')}
+        </Typography>
+        <TotalBalance />
+      </div>
 
-        <Stack spacing={2.5}>
-          {accounts.map((account) => {
-            return <AccountCard account={account} key={account.id} />;
-          })}
-        </Stack>
+      <div className="flex flex-col gap-5">
+        {accounts.map((account) => {
+          return <AccountCard account={account} key={account.id} />;
+        })}
+      </div>
 
-        {accounts.length <= 1 && (
-          <Stack
-            spacing={1}
-            sx={{
-              opacity: 0.5,
-              textAlign: 'center',
-              p: 4,
-              background: 'rgba(255, 255, 255, 0.02)',
-              borderRadius: '20px',
-            }}
-          >
-            <Heading5 sx={{ fontWeight: 400, lineHeight: 1.6 }}>
-              {t('You can create more accounts by visiting the nearest bank.')}
-            </Heading5>
-          </Stack>
-        )}
-      </Stack>
-    </Box>
+      {accounts.length <= 1 && (
+        <div className="p-8 text-center rounded-[2.5rem] bg-white/[0.02] border border-white/5 border-dashed">
+          <Typography className="text-white/40 leading-relaxed font-medium text-sm">
+            {t('You can create more accounts by visiting the nearest bank.')}
+          </Typography>
+        </div>
+      )}
+    </div>
   );
 };
 
 export default MobileAccountsView;
+

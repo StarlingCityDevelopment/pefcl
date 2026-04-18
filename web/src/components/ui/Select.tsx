@@ -1,132 +1,102 @@
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
-import { ArrowDropDownRounded } from '@mui/icons-material';
-import {
-  Select as BaseSelect,
-  type SelectProps as BaseSelectProps,
-  Box,
-  InputBase,
-  Typography,
-  alpha,
-  styled,
-} from '@mui/material';
-import theme from '@utils/theme';
-import React from 'react';
+import { ChevronDown } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Typography } from './Typography';
+import { cn } from '@utils/cn';
+import { useTranslation } from 'react-i18next';
 
-const InputContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'isFocused',
-})<{ isFocused?: boolean }>(({ isFocused }) => ({
-  display: 'flex',
-  height: '44px',
-  alignItems: 'center',
-  borderRadius: '10px',
-  backgroundColor: 'rgba(255, 255, 255, 0.04)',
-  border: `1px solid ${isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.06)'}`,
-  transition: 'all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
-  '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    borderColor: isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.12)',
-  },
-  ...(isFocused && {
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.08)}`,
-  }),
-}));
+interface SelectProps {
+ value?: string | number;
+ onChange?: (event: { target: { value: string | number } }) => void;
+ options: { value: string | number; label: string | React.ReactNode }[];
+ label?: string;
+ placeholder?: string;
+ className?: string;
+ renderValue?: (value: any) => React.ReactNode;
+}
 
-const StyledSelect = styled(BaseSelect)(({ theme }) => ({
-  '& .MuiSelect-select': {
-    padding: '0 0.875rem',
-    height: '44px !important',
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    color: theme.palette.text.primary,
-  },
-}));
+const Select = ({ 
+ value, 
+ onChange, 
+ options, 
+ label, 
+ placeholder, 
+ className,
+ renderValue 
+}: SelectProps) => {
+ const { t } = useTranslation();
+ const [isOpen, setIsOpen] = useState(false);
+ const containerRef = useRef<HTMLDivElement>(null);
 
-type SelectProps = BaseSelectProps<any> & {
-  label?: string;
-};
+ useEffect(() => {
+ const handleClickOutside = (event: MouseEvent) => {
+ if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+ setIsOpen(false);
+ }
+ };
+ document.addEventListener('mousedown', handleClickOutside);
+ return () => document.removeEventListener('mousedown', handleClickOutside);
+ }, []);
 
-const Select = (props: SelectProps) => {
-  const [isFocused, setIsFocused] = React.useState(false);
-  const { isMobile } = useGlobalSettings();
+ const selectedOption = options.find(opt => opt.value === value);
 
-  return (
-    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-      {props.label && (
-        <Typography
-          variant='caption'
-          sx={{
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: 'text.secondary',
-            fontSize: '0.6875rem',
-            mb: 0.25,
-          }}
-        >
-          {props.label}
-        </Typography>
-      )}
-      <InputContainer isFocused={isFocused}>
-        <StyledSelect
-          {...props}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          input={<InputBase sx={{ width: '100%' }} />}
-          IconComponent={(iconProps) => (
-            <ArrowDropDownRounded
-              {...iconProps}
-              sx={{
-                color: `${theme.palette.text.secondary} !important`,
-                mr: 0.25,
-                fontSize: '1.25rem',
-                transition: 'transform 0.2s ease',
-              }}
-            />
-          )}
-          MenuProps={{
-            disablePortal: isMobile,
-            PaperProps: {
-              sx: {
-                bgcolor: '#141416',
-                backgroundImage: 'none',
-                mt: 0.75,
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '12px',
-                boxShadow: '0 16px 48px -8px rgba(0, 0, 0, 0.6)',
-                maxHeight: 280,
-                '&::-webkit-scrollbar': {
-                  width: '4px',
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  borderRadius: '10px',
-                },
-                '&::-webkit-scrollbar-thumb:hover': {
-                  background: 'rgba(255, 255, 255, 0.12)',
-                },
-                '& .MuiMenuItem-root': {
-                  fontSize: '0.8125rem',
-                  py: 0.875,
-                  borderRadius: '8px',
-                  mx: 0.5,
-                  '&.Mui-selected': {
-                    bgcolor: 'rgba(59, 130, 246, 0.08)',
-                    '&:hover': { bgcolor: 'rgba(59, 130, 246, 0.12)' },
-                  },
-                  '&:hover': {
-                    bgcolor: 'rgba(255, 255, 255, 0.04)',
-                  },
-                },
-              },
-            },
-          }}
-        />
-      </InputContainer>
-    </Box>
-  );
+ return (
+ <div className="flex flex-col gap-1.5 w-full relative" ref={containerRef}>
+ {label && (
+ <Typography variant="pre" className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">
+ {label}
+ </Typography>
+ )}
+ 
+ <button
+ type="button"
+ onClick={() => setIsOpen(!isOpen)}
+ className={cn(
+ "relative flex items-center justify-between min-h-[52px] px-5 rounded-2xl transition-all duration-300",
+ "bg-white/[0.03] border border-white/5 text-left",
+ "hover:bg-white/[0.05] hover:border-white/10",
+ isOpen ? "bg-white/[0.01] border-white ring-4 ring-white/5" : "",
+ className
+ )}
+ >
+ <div className="flex-1 truncate">
+ {renderValue ? (
+ renderValue(value)
+ ) : selectedOption ? (
+ <span className="text-sm font-bold text-white tracking-tight">{selectedOption.label}</span>
+ ) : (
+ <span className="text-sm font-medium text-slate-500 tracking-tight">{placeholder || t('Select option')}</span>
+ )}
+ </div>
+ <ChevronDown className={cn("w-4 h-4 text-slate-500 transition-transform duration-300", isOpen && "rotate-180 text-white")} />
+ </button>
+
+ {isOpen && (
+ <div className="absolute top-[calc(100%+8px)] left-0 right-0 z-50 overflow-hidden rounded-2xl bg-black/95 border border-white/10 -[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+ <div className="max-h-[300px] overflow-y-auto no-scrollbar py-2">
+ {options.map((option) => (
+ <button
+ key={option.value}
+ type="button"
+ onClick={() => {
+ onChange?.({ target: { value: option.value } });
+ setIsOpen(false);
+ }}
+ className={cn(
+ "flex items-center w-full px-5 py-3 text-left transition-all",
+ "text-sm font-medium tracking-tight",
+ option.value === value 
+          ? "bg-white/10 text-white font-bold" 
+ : "text-slate-400 hover:text-white hover:bg-white/[0.05]"
+ )}
+ >
+ {option.label}
+ </button>
+ ))}
+ </div>
+ </div>
+ )}
+ </div>
+ );
 };
 
 export default Select;

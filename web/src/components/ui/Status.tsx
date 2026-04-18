@@ -1,70 +1,37 @@
-import type { SerializedStyles } from '@emotion/react';
-import styled from '@emotion/styled';
-import { type ChipProps, css } from '@mui/material';
-import theme from '@utils/theme';
-import type React from 'react';
-import { BodyText } from './Typography/BodyText';
+import React from 'react';
+import { cn } from '@utils/cn';
 
-type Color = Exclude<ChipProps['color'], undefined>;
-
-const colors: Record<Color, SerializedStyles> = {
-  default: css`
-    color: ${theme.palette.text.secondary};
-  `,
-  primary: css`
-    color: ${theme.palette.primary.main};
-    background-color: rgba(59, 130, 246, 0.08);
-    border-color: rgba(59, 130, 246, 0.15);
-  `,
-  secondary: css``,
-  error: css`
-    color: ${theme.palette.error.main};
-    background-color: rgba(239, 68, 68, 0.08);
-    border-color: rgba(239, 68, 68, 0.15);
-  `,
-  info: css``,
-  success: css`
-    color: ${theme.palette.success.main};
-    background-color: rgba(52, 211, 153, 0.08);
-    border-color: rgba(52, 211, 153, 0.15);
-  `,
-  warning: css`
-    color: ${theme.palette.warning.main};
-    background-color: rgba(251, 191, 36, 0.08);
-    border-color: rgba(251, 191, 36, 0.15);
-  `,
-};
-
-const Container = styled.div<{ color: Color }>`
-  text-transform: uppercase;
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-
-  color: ${theme.palette.text.primary};
-  background-color: rgba(255, 255, 255, 0.04);
-
-  span {
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-  }
-
-  ${({ color }) => colors[color]}
-`;
+type StatusColor = 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 
 interface StatusProps {
   label: string;
-  color: Color;
+  color: StatusColor;
+  className?: string;
 }
-const Status: React.FC<StatusProps> = (props) => {
+
+const colorMap: Record<StatusColor, string> = {
+  default: "text-white/60 bg-white/5 border-white/10",
+  primary: "text-blue-400 bg-blue-500/10 border-blue-500/20",
+  secondary: "text-white/60 bg-white/5 border-white/10",
+  error: "text-red-400 bg-red-500/10 border-red-500/20",
+  info: "text-sky-400 bg-sky-500/10 border-sky-500/20",
+  success: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+  warning: "text-amber-400 bg-amber-500/10 border-amber-500/20",
+};
+
+const Status: React.FC<StatusProps> = ({ label, color, className }) => {
   return (
-    <Container color={props.color}>
-      <BodyText>{props.label}</BodyText>
-    </Container>
+    <div 
+      className={cn(
+        "inline-flex items-center px-2.5 py-0.5 rounded-lg border text-[0.625rem] font-black uppercase tracking-widest italic leading-none transition-all",
+        colorMap[color],
+        className
+      )}
+    >
+      {label}
+    </div>
   );
 };
 
 export default Status;
+

@@ -1,67 +1,38 @@
-import styled from '@emotion/styled';
-import theme from '@utils/theme';
 import type React from 'react';
 import Sidebar from '../Sidebar';
-
-const AppShell = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100vw;
-  background-color: transparent;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  pointer-events: none; /* Let clicks through to child container or game background */
-`;
-
-const MainContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 1400px;
-  height: 800px;
-  max-width: 95vw;
-  max-height: 90vh;
-  overflow: hidden;
-  border-radius: 20px;
-  color: ${theme.palette.text.primary};
-  background-color: ${theme.palette.background.paper};
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 24px 80px -16px rgba(0, 0, 0, 0.65),
-    0 0 120px -40px rgba(59, 130, 246, 0.06);
-  position: relative;
-  pointer-events: all; /* Ensure clicks are captured by the main UI */
-`;
-
-const ContentArea = styled.main`
-  flex: 1;
-  height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
-  position: relative;
-  background-color: ${theme.palette.background.paper};
-  padding: 0;
-`;
+import { cn } from '@utils/cn';
 
 interface ShellProps {
-  children: React.ReactNode;
+ children: React.ReactNode;
+ className?: string;
 }
 
 /**
  * The core layout shell for the desktop bank application.
- * Provides the centered container, sidebar, and main content area.
+ * Migrated to Tailwind CSS for maximum flexibility.
  */
-const Shell: React.FC<ShellProps> = ({ children }) => {
-  return (
-    <AppShell>
-      <MainContainer>
-        <Sidebar />
-        <ContentArea id='main-content'>{children}</ContentArea>
-      </MainContainer>
-    </AppShell>
-  );
+const Shell: React.FC<ShellProps> = ({ children, className }) => {
+ return (
+ <div className="fixed inset-0 z-10 flex items-center justify-center bg-transparent pointer-events-none overflow-hidden">
+ <main 
+ className={cn(
+ "flex flex-row w-[1400px] h-[800px] max-w-[95vw] max-h-[90vh]",
+ "overflow-hidden rounded-[2.5rem] bg-black/90 backdrop-blur-md",
+ "border border-white/[0.08]",
+ "relative pointer-events-auto",
+ className
+ )}
+ >
+ <Sidebar aria-label="Main Navigation" />
+ <section id="main-content" className="flex-1 h-full overflow-y-auto overflow-x-hidden p-0 relative custom-scrollbar">
+ {children}
+ </section>
+
+ {/* Modal Portal Root - ensures modals stay within dashboard boundaries */}
+ <div id="dashboard-modal-root" className="absolute inset-0 pointer-events-none z-[100]" />
+ </main>
+ </div>
+ );
 };
 
 export default Shell;

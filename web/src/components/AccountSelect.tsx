@@ -1,256 +1,169 @@
-import styled from '@emotion/styled';
 import { useGlobalSettings } from '@hooks/useGlobalSettings';
-import { ListSubheader, MenuItem, type SelectChangeEvent, Stack, Typography } from '@mui/material';
-import { Box } from '@mui/system';
 import { type Account, AccountRole, AccountType, type ExternalAccount } from '@typings/Account';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ResourceConfig } from '../../../typings/config';
 import { useConfig } from '../hooks/useConfig';
 import { formatMoney } from '../utils/currency';
-import theme from '../utils/theme';
 import AddExternalAccountModal from './Modals/AddExternalAccount';
 import Button from './ui/Button';
 import Select from './ui/Select';
-import { BodyText } from './ui/Typography/BodyText';
-import { Heading6 } from './ui/Typography/Headings';
+import { Typography } from './ui/Typography';
+import { cn } from '@utils/cn';
 
 // Prefix to namespace external account IDs so they never collide with internal ones
 const EXT_PREFIX = 'ext-';
 
-const BalanceText = styled(Heading6)`
-  color: ${theme.palette.primary.main};
-`;
-
-const StyledMenuItem = styled(MenuItem)`
-  &.Mui-selected {
-    background: ${theme.palette.background.dark12};
-  }
-
-  &.Mui-selected:focus-visible,
-  &.Mui-selected:focus,
-  &.Mui-selected:hover {
-    background: ${theme.palette.background.dark12};
-  }
-
-  &.Mui-focusVisible {
-    background: ${theme.palette.background.dark4};
-  }
-`;
-
-const ListItem = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding-right: 0.75rem;
-`;
-
-const Option: React.FC<{
-  account: Account;
-  config: ResourceConfig;
-  isDisabledByContributor?: boolean;
-}> = ({ account, config, isDisabledByContributor }) => {
-  const { t } = useTranslation();
-  return (
-    <ListItem>
-      <Stack p='0rem 0.5rem'>
-        <BodyText>{account.accountName}</BodyText>
-        {isDisabledByContributor ? (
-          <Typography variant='caption'>{t('Contributors cannot use money in shared accounts.')}</Typography>
-        ) : (
-          <BalanceText>{formatMoney(account.balance, config.general)}</BalanceText>
-        )}
-      </Stack>
-
-      <Stack direction='row' spacing={2}>
-        <Heading6>{account.type === AccountType.Personal ? t('Personal') : t('Shared')}</Heading6>
-      </Stack>
-    </ListItem>
-  );
-};
-
 interface AccountSelectProps {
-  accounts: Account[];
-  selectedId?: number;
-  excludeId?: number;
-  isFromAccount?: boolean;
-  isExternalSelected?: boolean;
-  externalAccounts?: ExternalAccount[];
-  onSelect(accountId: number, isExternal?: boolean): void;
+ accounts: Account[];
+ selectedId?: number;
+ excludeId?: number;
+ isFromAccount?: boolean;
+ isExternalSelected?: boolean;
+ externalAccounts?: ExternalAccount[];
+ onSelect(accountId: number, isExternal?: boolean): void;
 }
 
+const AccountSelectSnapshot = ({ account, type }: { account: Account | ExternalAccount, type: 'internal' | 'external' }) => {
+ const { t } = useTranslation();
+ const config = useConfig();
+ 
+ if (type === 'external') {
+ const ext = account as ExternalAccount;
+ return (
+ <div className="flex flex-col text-left py-1 overflow-hidden pr-2">
+ <Typography className="text-sm font-medium text-white truncate mb-1">{ext.name}</Typography>
+ <Typography variant="pre" className="text-[10px] text-slate-500 font-medium">{ext.number}</Typography>
+ </div>
+ );
+ }
+
+ const acc = account as Account;
+ return (
+ <div className="flex flex-col text-left py-1 overflow-hidden pr-2">
+ <div className="flex items-center gap-2 mb-1">
+ <Typography className="text-sm font-medium text-white truncate">{acc.accountName}</Typography>
+ <div className="flex items-center justify-center px-2 py-0.5 rounded-md bg-white/5 border border-white/10 shrink-0">
+ <Typography variant="pre" className="text-[8px] text-slate-400 uppercase tracking-widest">
+ {acc.type === AccountType.Personal ? t('Personal') : t('Shared')}
+ </Typography>
+ </div>
+ </div>
+ <Typography className="text-sm text-slate-300">
+ {formatMoney(acc.balance, config.general)}
+ </Typography>
+ </div>
+ );
+};
+
 const AccountSelect = ({
-  accounts,
-  onSelect,
-  selectedId,
-  excludeId,
-  isFromAccount = false,
-  isExternalSelected = false,
-  externalAccounts = [],
+ accounts,
+ onSelect,
+ selectedId,
+ excludeId,
+ isFromAccount = false,
+ isExternalSelected = false,
+ externalAccounts = [],
 }: AccountSelectProps) => {
-  const { t } = useTranslation();
-  const config = useConfig();
-  const [isExternalOpen, setIsExternalOpen] = useState(false);
+ const { t } = useTranslation();
+ const [isExternalOpen, setIsExternalOpen] = useState(false);
 
-  // Build the controlled value string:
-  // - "0" = nothing selected
-  // - "123" = internal account with id 123
-  // - "ext-456" = external account with id 456
-  const currentValue =
-    selectedId === undefined || selectedId === 0
-      ? '0'
-      : isExternalSelected
-        ? `${EXT_PREFIX}${selectedId}`
-        : selectedId.toString();
+ // Build options for our custom Select
+ const options = useMemo(() => {
+ const opts: { value: string | number; label: React.ReactNode }[] = [];
 
-  const handleChange = (event: SelectChangeEvent<string | number>) => {
-    const val = event.target.value.toString();
+ // Internal Accounts
+ accounts
+ .filter((account) => account.id !== excludeId)
+ .forEach((account) => {
+ const isDisabledByContributor = isFromAccount && account.role === AccountRole.Contributor;
+ opts.push({
+ value: account.id.toString(),
+ label: (
+ <div className={cn("flex flex-col w-full", isDisabledByContributor && "opacity-30 grayscale")}>
+ <AccountSelectSnapshot account={account} type="internal" />
+ {isDisabledByContributor && (
+ <Typography variant="pre" className="text-[8px] text-slate-500 mt-2 font-black leading-tight">
+ {t('Restricted: Contributors cannot move shared funds')}
+ </Typography>
+ )}
+ </div>
+ )
+ });
+ });
 
-    if (val.startsWith(EXT_PREFIX)) {
-      const extId = Number(val.slice(EXT_PREFIX.length));
-      if (!isNaN(extId)) {
-        onSelect(extId, true);
-      }
-    } else {
-      const numericValue = Number(val);
-      if (!isNaN(numericValue)) {
-        onSelect(numericValue, false);
-      }
-    }
-  };
+ // External Accounts
+ externalAccounts.forEach((account) => {
+ opts.push({
+ value: `${EXT_PREFIX}${account.id}`,
+ label: <AccountSelectSnapshot account={account} type="external" />
+ });
+ });
 
-  const handleAddExternalAccount = () => {
-    setIsExternalOpen(true);
-  };
+ return opts;
+ }, [accounts, externalAccounts, excludeId, isFromAccount, t]);
 
-  const { isMobile } = useGlobalSettings();
+ const currentValue =
+ selectedId === undefined || selectedId === 0
+ ? '0'
+ : isExternalSelected
+ ? `${EXT_PREFIX}${selectedId}`
+ : selectedId.toString();
 
-  return (
-    <div>
-      <React.Suspense fallback={null}>
-        <AddExternalAccountModal isOpen={isExternalOpen} onClose={() => setIsExternalOpen(false)} />
-      </React.Suspense>
-      <Select
-        value={currentValue}
-        onChange={handleChange}
-        variant='filled'
-        sx={{
-          width: '100%',
-        }}
-        renderValue={(val: any) => {
-          const stringVal = val.toString();
-          if (stringVal === '0')
-            return (
-              <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary', fontWeight: 500 }}>
-                {t('Select account')}
-              </Typography>
-            );
+ const handleChange = (event: { target: { value: string | number } }) => {
+ const val = event.target.value.toString();
+ if (val === '0') return;
 
-          if (stringVal.startsWith(EXT_PREFIX)) {
-            const extId = stringVal.slice(EXT_PREFIX.length);
-            const external = externalAccounts.find((a) => a.id.toString() === extId);
-            if (external)
-              return (
-                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600 }}>
-                  {external.name} ({external.number})
-                </Typography>
-              );
-          } else {
-            const account = accounts.find((a) => a.id.toString() === stringVal);
-            if (account)
-              return (
-                <Typography sx={{ fontSize: '0.9rem', fontWeight: 600 }}>
-                  {account.accountName} — {formatMoney(account.balance, config.general)}
-                </Typography>
-              );
-          }
+ if (val.startsWith(EXT_PREFIX)) {
+ const extId = Number(val.slice(EXT_PREFIX.length));
+ if (!isNaN(extId)) {
+ onSelect(extId, true);
+ }
+ } else {
+ const numericValue = Number(val);
+ if (!isNaN(numericValue)) {
+ onSelect(numericValue, false);
+ }
+ }
+ };
 
-          return (
-            <Typography sx={{ fontSize: '0.9rem', color: 'text.secondary', fontWeight: 500 }}>
-              {t('Select account')}
-            </Typography>
-          );
-        }}
-        MenuProps={{
-          disablePortal: isMobile,
-          PaperProps: {
-            sx: {
-              maxHeight: '300px',
-              backgroundColor: theme.palette.background.paper,
-              backgroundImage: 'none',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-              boxShadow: theme.shadows[10],
-              mt: 1,
-              '& .MuiMenu-list': {
-                padding: '8px',
-              },
-              '&::-webkit-scrollbar': {
-                width: '4px',
-              },
-              '&::-webkit-scrollbar-track': {
-                background: 'transparent',
-              },
-              '&::-webkit-scrollbar-thumb': {
-                background: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '10px',
-              },
-              '&::-webkit-scrollbar-thumb:hover': {
-                background: 'rgba(255, 255, 255, 0.2)',
-              },
-            },
-          },
-        }}
-      >
-        {currentValue === '0' && (
-          <StyledMenuItem value='0' disabled>
-            <ListItem>
-              <Stack p='0rem 0.5rem'>
-                <Heading6>{t('Select account')}</Heading6>
-              </Stack>
-            </ListItem>
-          </StyledMenuItem>
-        )}
+ return (
+ <div className="w-full">
+ <React.Suspense fallback={null}>
+ <AddExternalAccountModal isOpen={isExternalOpen} onClose={() => setIsExternalOpen(false)} />
+ </React.Suspense>
+ <div className="flex flex-col gap-3">
+ <Select
+ value={currentValue}
+ onChange={handleChange}
+ options={options}
+ placeholder={t('Select account')}
+ renderValue={(val) => {
+ const stringVal = (val || '').toString();
+ if (stringVal === '0') return <Typography variant="label" className="text-slate-500 py-2">{t('Select account')}</Typography>;
 
-        {accounts.length > 0 && <ListSubheader>{t('Your accounts')}</ListSubheader>}
-        {accounts
-          .filter((account) => account.id !== excludeId)
-          .map((account) => {
-            const isDisabledByContributor = isFromAccount && account.role === AccountRole.Contributor;
-            return (
-              <StyledMenuItem
-                key={`int-${account.id}`}
-                value={account.id.toString()}
-                disabled={currentValue === account.id.toString() || isDisabledByContributor}
-              >
-                <Option account={account} config={config} isDisabledByContributor={isDisabledByContributor} />
-              </StyledMenuItem>
-            );
-          })}
-
-        {externalAccounts.length > 0 && <ListSubheader>{t('External accounts')}</ListSubheader>}
-        {externalAccounts.map((account) => (
-          <StyledMenuItem key={`ext-${account.id}`} value={`${EXT_PREFIX}${account.id}`}>
-            <ListItem>
-              <Stack p='0rem 0.5rem'>
-                <BodyText>{account.name}</BodyText>
-                <Heading6>{account.number}</Heading6>
-              </Stack>
-            </ListItem>
-          </StyledMenuItem>
-        ))}
-
-        {!isFromAccount && (
-          <Box p={1} mt={1} borderTop={`1px solid ${theme.palette.divider}`}>
-            <Button fullWidth onClick={handleAddExternalAccount}>
-              {t('Add external account')}
-            </Button>
-          </Box>
-        )}
-      </Select>
-    </div>
-  );
+ if (stringVal.startsWith(EXT_PREFIX)) {
+ const extId = stringVal.slice(EXT_PREFIX.length);
+ const external = externalAccounts.find((a) => a.id.toString() === extId);
+ if (external) return <AccountSelectSnapshot account={external} type="external" />;
+ } else {
+ const account = accounts.find((a) => a.id.toString() === stringVal);
+ if (account) return <AccountSelectSnapshot account={account} type="internal" />;
+ }
+ return <Typography variant="label" className="text-slate-500 py-2">{t('Select account')}</Typography>;
+ }}
+ />
+ {!isFromAccount && (
+ <Button 
+ variant="secondary" 
+ onClick={() => setIsExternalOpen(true)}
+ className="h-8 rounded-full text-[9px] font-black uppercase tracking-widest px-4 self-start"
+ >
+ + {t('Register Outside Entity')}
+ </Button>
+ )}
+ </div>
+ </div>
+ );
 };
 
 export default AccountSelect;

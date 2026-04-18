@@ -1,184 +1,237 @@
-import TextField from '@components/ui/Fields/TextField';
+import { Input } from '@components/ui/Input';
 import { transactionBaseAtom } from '@data/transactions';
-import styled from '@emotion/styled';
-import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
-import { Box } from '@mui/system';
 import { AccountType } from '@typings/Account';
 import { AccountEvents } from '@typings/Events';
 import { getIsAdmin, getIsOwner } from '@utils/account';
 import copy from 'copy-to-clipboard';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import React, { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import AccountCards from '../../components/AccountCards';
 import Layout from '../../components/Layout';
 import Button from '../../components/ui/Button';
-import { PreHeading } from '../../components/ui/Typography/BodyText';
-import { Heading1, Heading5, Heading6 } from '../../components/ui/Typography/Headings';
+import { Typography } from '../../components/ui/Typography';
+import { Modal } from '../../components/ui/Modal';
 import { accountsAtom, defaultAccountAtom, totalBalanceAtom } from '../../data/accounts';
 import { useConfig } from '../../hooks/useConfig';
 import { formatMoney } from '../../utils/currency';
 import { fetchNui } from '../../utils/fetchNui';
-import theme from '../../utils/theme';
 import SharedSettings from './SharedSettings';
+import { cn } from '@utils/cn';
+import { Shield, AlertTriangle, PenTool, Copy, PlusCircle } from 'lucide-react';
 
-const Dangerzone = styled.div`
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: ${theme.spacing(3)};
-  border-radius: 12px;
-  background: rgba(239, 68, 68, 0.04);
-`;
+interface RenameAccountActionProps {
+  accountId: number;
+  currentName: string;
+  isAdmin: boolean;
+  onUpdate: () => void;
+}
 
-const HelperText = styled(Heading6)`
-  font-weight: 400;
-  color: ${theme.palette.text.secondary};
-  font-size: 0.6875rem;
-`;
-
-const Accounts = () => {
-  const config = useConfig();
+const RenameAccountAction = ({ accountId, currentName, isAdmin, onUpdate }: RenameAccountActionProps) => {
   const { t } = useTranslation();
-  const [totalBalance] = useAtom(totalBalanceAtom);
-  const [accounts, updateAccounts] = useAtom(accountsAtom);
-  const [, updateTransactions] = useAtom(transactionBaseAtom);
-  const [defaultAccount] = useAtom(defaultAccountAtom);
-  const [selectedAccountId, setSelectedAccountId] = useState<number>(defaultAccount?.id ?? 0);
-  const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
-  const [isRenameOpen, setIsRenameOpen] = useState(false);
-  const [renameInput, setRenameInput] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState(currentName);
 
-  const handleUpdateAccounts = () => {
-    updateAccounts();
-  };
-
-  const handleSetDefault = () => {
-    fetchNui(AccountEvents.SetDefaultAccount, { accountId: selectedAccountId })
-      .then(handleUpdateAccounts)
-      .catch((err) => {
-        console.log({ err });
-      });
-  };
-
-  const handleDeleteAccount = async () => {
-    await fetchNui(AccountEvents.DeleteAccount, { accountId: selectedAccountId });
-    await updateAccounts();
-    await updateTransactions();
-  };
+  useEffect(() => {
+    setName(currentName);
+  }, [currentName]);
 
   const handleRename = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    fetchNui(AccountEvents.RenameAccount, { accountId: selectedAccountId, name: renameInput }).then(
-      handleUpdateAccounts,
-    );
-    setIsRenameOpen(false);
+    fetchNui(AccountEvents.RenameAccount, { accountId, name }).then(() => {
+      onUpdate();
+      setIsOpen(false);
+    });
   };
 
-  useEffect(() => {
-    if (selectedAccount?.accountName) {
-      setRenameInput(selectedAccount.accountName);
-    }
-  }, [selectedAccount?.accountName]);
-
-  const isAdmin = Boolean(selectedAccount && getIsAdmin(selectedAccount));
-  const isOwner = Boolean(selectedAccount && getIsOwner(selectedAccount));
-  const isShared = selectedAccount?.type === AccountType.Shared;
-  const isDefaultAccountSelected = defaultAccount?.id === selectedAccountId;
-
   return (
-    <Layout>
-      <Dialog fullWidth maxWidth='xs' open={isRenameOpen} onClose={() => setIsRenameOpen(false)}>
-        <DialogTitle>{t('Rename account')}</DialogTitle>
-        <form onSubmit={handleRename}>
-          <DialogContent>
-            <Stack spacing={2}>
-              <TextField
-                autoFocus
-                placeholder={t('New account name')}
-                value={renameInput}
-                onChange={(event) => setRenameInput(event.target.value)}
+    <div className="flex flex-col gap-1.5">
+      <Button
+        onClick={() => setIsOpen(true)}
+        disabled={!isAdmin}
+        variant="secondary"
+        className="h-11 justify-start px-4 text-sm"
+      >
+        <PenTool className="w-4 h-4 mr-2.5 opacity-50" />
+        {t('Rename account')}
+      </Button>
+      {!isAdmin && (
+        <Typography variant="pre" className="text-[9px] text-slate-600 font-medium uppercase tracking-widest ml-1">
+          {t('Admin access required')}
+        </Typography>
+      )}
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title={t('Rename Account')}
+        maxWidth="sm"
+      >
+        <form onSubmit={handleRename} className="flex flex-col gap-6 h-full">
+          <Input
+            autoFocus
+            label={t('Account Name')}
+            placeholder={t('Enter new name...')}
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <div className="flex justify-end gap-3 mt-auto pt-6 border-t border-white/5">
+            <Button variant="secondary" onClick={() => setIsOpen(false)} type="button">
+              {t('Cancel')}
+            </Button>
+            <Button type="submit">{t('Save')}</Button>
+          </div>
+        </form>
+      </Modal>
+    </div>
+  );
+};
+
+const Accounts = () => {
+ const config = useConfig();
+ const { t } = useTranslation();
+ const totalBalance = useAtomValue(totalBalanceAtom);
+ const [accounts, updateAccounts] = useAtom(accountsAtom);
+ const [, updateTransactions] = useAtom(transactionBaseAtom);
+ const defaultAccount = useAtomValue(defaultAccountAtom);
+ const [selectedAccountId, setSelectedAccountId] = useState<number>(defaultAccount?.id ?? 0);
+ const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
+
+ const handleUpdateAccounts = () => {
+ updateAccounts();
+ };
+
+ const handleSetDefault = () => {
+ fetchNui(AccountEvents.SetDefaultAccount, { accountId: selectedAccountId })
+ .then(handleUpdateAccounts)
+ .catch((err) => {
+ console.log({ err });
+ });
+ };
+
+ const handleDeleteAccount = async () => {
+ await fetchNui(AccountEvents.DeleteAccount, { accountId: selectedAccountId });
+ await updateAccounts();
+ await updateTransactions();
+ };
+
+ const isAdmin = Boolean(selectedAccount && getIsAdmin(selectedAccount));
+ const isOwner = Boolean(selectedAccount && getIsOwner(selectedAccount));
+ const isShared = selectedAccount?.type === AccountType.Shared;
+ const isDefaultAccountSelected = defaultAccount?.id === selectedAccountId;
+
+ return (
+  <Layout>
+
+     <div className="flex flex-col gap-1 mb-6">
+       <Typography variant="label" className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">
+         {t('Total Portfolio')}
+       </Typography>
+       <Typography variant="h1" className="text-4xl font-light text-white leading-tight tracking-tight">
+         {formatMoney(totalBalance, config.general)}
+       </Typography>
+     </div>
+
+     <div className="relative">
+       <AccountCards onSelectAccount={setSelectedAccountId} selectedAccountId={selectedAccountId} />
+     </div>
+
+     <div className="grid grid-cols-1 lg:grid-cols-[1fr,360px] gap-8 mt-8 items-start">
+       <div className="flex flex-col gap-8">
+         <div className="flex flex-col gap-4">
+           <div className="flex items-center gap-2">
+             <Shield className="w-4 h-4 text-slate-500" />
+             <Typography variant="h3" className="text-white font-medium tracking-tight leading-none text-sm">
+               {t('Account Management')}
+             </Typography>
+           </div>
+
+           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+             <div className="flex flex-col gap-1.5">
+               <Button
+                 onClick={handleSetDefault}
+                 disabled={isDefaultAccountSelected || !isAdmin || isShared}
+                 variant="secondary"
+                 className="h-11 justify-start px-4 text-sm"
+               >
+                 <PlusCircle className="w-4 h-4 mr-2.5 opacity-50" />
+                 {t('Set as default')}
+               </Button>
+               {(!isAdmin || isShared) && (
+                 <Typography variant="pre" className="text-[9px] text-slate-600 font-medium uppercase tracking-widest ml-1">
+                   {!isAdmin ? t('Authorization required') : t('Shared accounts ineligible')}
+                 </Typography>
+               )}
+             </div>
+
+             <RenameAccountAction 
+                accountId={selectedAccountId} 
+                currentName={selectedAccount?.accountName ?? ''} 
+                isAdmin={isAdmin}
+                onUpdate={handleUpdateAccounts}
               />
 
-              <DialogActions>
-                <Button color='error' onClick={() => setIsRenameOpen(false)}>
-                  {t('Cancel')}
-                </Button>
-                <Button type='submit'>{t('Rename')}</Button>
-              </DialogActions>
-            </Stack>
-          </DialogContent>
-        </form>
-      </Dialog>
+             <Button
+               variant="secondary"
+               onClick={() => copy(selectedAccount?.number ?? '')}
+               className="h-11 justify-start px-4 text-sm"
+             >
+               <Copy className="w-4 h-4 mr-2.5 opacity-50" />
+               {t('Copy account number')}
+             </Button>
+           </div>
+         </div>
 
-      <Stack spacing={0.25}>
-        <Heading6
-          sx={{
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            fontWeight: 600,
-            fontSize: '0.6875rem',
-          }}
-        >
-          {t('Total balance')}
-        </Heading6>
-        <Heading1 sx={{ letterSpacing: '-0.03em' }}>{formatMoney(totalBalance, config.general)}</Heading1>
-      </Stack>
+         {isOwner && (
+           <div className="flex flex-col gap-4">
+             <div className="flex items-center gap-2">
+               <AlertTriangle className="w-4 h-4 text-slate-500" />
+               <Typography variant="h3" className="text-white font-medium tracking-tight leading-none text-sm">
+                 {t('Danger Zone')}
+               </Typography>
+             </div>
+             <div className="p-5 rounded-2xl border border-red-500/10 bg-red-500/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4">
+               <div className="flex flex-col gap-1">
+                 <Typography className="text-white font-medium leading-none text-sm">
+                   {t('Delete Account')}
+                 </Typography>
+                 <Typography variant="pre" className={cn("text-[9px] font-medium uppercase tracking-widest leading-loose max-w-sm", isDefaultAccountSelected ? "text-slate-600" : "text-slate-500")}>
+                   {isDefaultAccountSelected
+                     ? t('Cannot delete the default account.')
+                     : t('This will permanently delete the account and move assets to default.')}
+                 </Typography>
+               </div>
+               <Button
+                 variant="secondary"
+                 className="bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white hover:border-red-500 min-w-[120px] h-10 rounded-xl text-[10px] font-medium uppercase tracking-widest shrink-0"
+                 onClick={handleDeleteAccount}
+                 disabled={isDefaultAccountSelected}
+               >
+                 {t('Delete')}
+               </Button>
+             </div>
+           </div>
+         )}
+       </div>
 
-      <Box paddingTop={3}>
-        <AccountCards onSelectAccount={setSelectedAccountId} selectedAccountId={selectedAccountId} />
-      </Box>
-
-      <Stack direction='row' spacing={4} marginTop={4}>
-        <Stack spacing={4}>
-          <Stack spacing={1.5} alignItems='flex-start'>
-            <Heading5>{t('General')}</Heading5>
-            <Stack direction='row' spacing={3} alignItems='flex-start'>
-              <Stack spacing={0.5}>
-                <Button onClick={handleSetDefault} disabled={isDefaultAccountSelected || !isAdmin || isShared}>
-                  {t('Set account to default')}
-                </Button>
-                {!isAdmin && <HelperText>{t('Admin role required')}</HelperText>}
-                {isAdmin && isShared && <HelperText>{t('Shared account cannot be default account')}</HelperText>}
-              </Stack>
-
-              <Stack spacing={0.5}>
-                <Button onClick={() => setIsRenameOpen(true)} disabled={!isAdmin}>
-                  {t('Rename account')}
-                </Button>
-                {!isAdmin && <HelperText>{t('Admin role required')}</HelperText>}
-              </Stack>
-
-              <Stack spacing={0.5}>
-                <Button onClick={() => copy(selectedAccount?.number ?? '')}>{t('Copy account number')}</Button>
-              </Stack>
-            </Stack>
-          </Stack>
-
-          {isOwner && (
-            <Stack spacing={1.5} alignItems='flex-start'>
-              <Heading5>{t('Danger zone')}</Heading5>
-              <Dangerzone>
-                <Stack spacing={1}>
-                  <span>
-                    <Button color='error' onClick={handleDeleteAccount} disabled={isDefaultAccountSelected}>
-                      {t('Delete account')}
-                    </Button>
-                  </span>
-
-                  <HelperText>
-                    {isDefaultAccountSelected
-                      ? t('You cannot delete the default account')
-                      : t('Funds will be transfered to default account.')}
-                  </HelperText>
-                </Stack>
-              </Dangerzone>
-            </Stack>
-          )}
-        </Stack>
-
-        <Stack>{isShared && <SharedSettings accountId={selectedAccountId} isAdmin={isAdmin} />}</Stack>
-      </Stack>
-    </Layout>
-  );
+       <aside className="sticky top-0">
+         {isShared && (
+           <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10">
+             <SharedSettings accountId={selectedAccountId} isAdmin={isAdmin} />
+           </div>
+         )}
+         {!isShared && (
+           <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 border-dashed flex flex-col items-center justify-center text-center gap-3 py-12 opacity-30">
+             <Shield className="w-8 h-8 text-slate-500" />
+             <Typography variant="pre" className="text-[9px] font-medium uppercase tracking-widest text-slate-500 leading-relaxed max-w-[180px]">
+               {t('Personal account — no sharing settings.')}
+             </Typography>
+           </div>
+         )}
+       </aside>
+     </div>
+   </Layout>
+ );
 };
 
 export default Accounts;

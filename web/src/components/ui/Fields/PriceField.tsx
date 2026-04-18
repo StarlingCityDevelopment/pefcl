@@ -1,133 +1,84 @@
-import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
-import { InputAdornment, InputBase, type InputBaseProps, Stack, Typography, alpha } from '@mui/material';
 import { formatMoneyWithoutCurrency, getCurrencySign, getSignLocation } from '@utils/currency';
-import theme from '@utils/theme';
 import React, { type ChangeEventHandler } from 'react';
+import { Typography } from '../Typography';
+import { cn } from '@utils/cn';
 
-const InputContainer = styled('div', {
-  shouldForwardProp: (prop) => prop !== 'isFocused',
-})<{ isFocused?: boolean }>`
-  display: flex;
-  min-height: 44px;
-  align-items: center;
-  padding: 0 0.875rem;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.04);
-  border: 1px solid
-    ${(props) => (props.isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.06)')};
-  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-  width: 100%;
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: ${(props) =>
-      props.isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.12)'};
-  }
-
-  ${({ isFocused }) =>
-    isFocused &&
-    `
-    background-color: rgba(255, 255, 255, 0.02);
-    box-shadow: 0 0 0 3px ${alpha(theme.palette.primary.main, 0.08)};
-  `}
-
-  & > div {
-    flex: 1;
-  }
-
-  input {
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: ${theme.palette.text.primary};
-    letter-spacing: -0.01em;
-  }
-`;
-
-const Label = styled(Typography)`
-  font-size: 0.6875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: ${theme.palette.text.secondary};
-  margin-bottom: 0.375rem;
-`;
-
-interface Props extends InputBaseProps {
-  label?: string;
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+ label?: string;
+ error?: boolean;
 }
 
-const PriceField: React.FC<Props> = ({ label, ...props }) => {
-  const config = useConfig();
-  const [isFocused, setIsFocused] = React.useState(false);
+const PriceField: React.FC<Props> = ({ label, error, className, ...props }) => {
+ const config = useConfig();
+ const [isFocused, setIsFocused] = React.useState(false);
 
-  const currencySignLocation = getSignLocation(config);
-  const isLocationBefore = currencySignLocation === 'before';
-  const currencySign = getCurrencySign(config);
+ const currencySignLocation = getSignLocation(config);
+ const isLocationBefore = currencySignLocation === 'before';
+ const currencySign = getCurrencySign(config);
 
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-    const value = event.target.value.replace(/\D/g, '');
-    const formattedValue = formatMoneyWithoutCurrency(Number(value), config.general.language);
+ const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+ const value = event.target.value.replace(/\D/g, '');
+ const formattedValue = formatMoneyWithoutCurrency(Number(value), config.general.language);
 
-    if (!value) {
-      props.onChange?.(event);
-      return;
-    }
+ if (!value) {
+ props.onChange?.(event);
+ return;
+ }
 
-    const formattedEvent = {
-      ...event,
-      target: { ...event.target, value: formattedValue },
-    } as React.ChangeEvent<HTMLInputElement>;
+ const formattedEvent = {
+ ...event,
+ target: { ...event.target, value: formattedValue },
+ } as React.ChangeEvent<HTMLInputElement>;
 
-    props.onChange?.(formattedEvent);
-  };
+ props.onChange?.(formattedEvent);
+ };
 
-  return (
-    <Stack sx={{ width: '100%' }}>
-      {label && <Label>{label}</Label>}
-      <InputContainer isFocused={isFocused}>
-        <InputBase
-          {...props}
-          value={props.value ?? ''}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onChange={handleChange}
-          startAdornment={
-            !isLocationBefore ? null : (
-              <InputAdornment
-                position='start'
-                sx={{
-                  '& p': {
-                    fontWeight: 600,
-                    color: alpha(theme.palette.primary.main, 0.7),
-                    fontSize: '0.875rem',
-                  },
-                }}
-              >
-                {currencySign}
-              </InputAdornment>
-            )
-          }
-          endAdornment={
-            isLocationBefore ? null : (
-              <InputAdornment
-                position='end'
-                sx={{
-                  '& p': {
-                    fontWeight: 600,
-                    color: alpha(theme.palette.primary.main, 0.7),
-                    fontSize: '0.875rem',
-                  },
-                }}
-              >
-                {currencySign}
-              </InputAdornment>
-            )
-          }
-        />
-      </InputContainer>
-    </Stack>
-  );
+ return (
+ <div className="flex flex-col gap-2 w-full">
+ {label && (
+ <Typography variant="pre" className="text-slate-500">
+ {label}
+ </Typography>
+ )}
+ <div 
+ className={cn(
+ "flex min-h-[52px] items-center px-4 rounded-2xl transition-all duration-300",
+ "bg-white/[0.03] border border-white/5",
+ "hover:bg-white/[0.05] hover:border-white/10",
+ isFocused && "bg-white/[0.02] border-white ring-1 ring-white/10 -[0_0_20px_rgba(255,255,255,0.05)]",
+ error && "border-red-500/50 bg-red-500/[0.02]",
+ className
+ )}
+ >
+ {isLocationBefore && (
+ <span className="text-sm font-black text-white/40 mr-2 select-none">
+ {currencySign}
+ </span>
+ )}
+ 
+ <input
+ {...props}
+ type="text"
+ value={props.value ?? ''}
+ onFocus={() => setIsFocused(true)}
+ onBlur={() => setIsFocused(false)}
+ onChange={handleChange}
+ className={cn(
+ "flex-1 bg-transparent border-none outline-none p-0",
+ "text-base font-bold text-white placeholder:text-slate-700",
+ "tracking-tight"
+ )}
+ />
+
+ {!isLocationBefore && (
+ <span className="text-sm font-black text-white/40 ml-2 select-none">
+ {currencySign}
+ </span>
+ )}
+ </div>
+ </div>
+ );
 };
 
 export default PriceField;

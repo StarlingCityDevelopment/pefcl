@@ -1,128 +1,100 @@
-import BadgeAtom from '@components/ui/BadgeAtom';
 import { totalUnpaidInvoicesAtom } from '@data/invoices';
-import styled from '@emotion/styled';
-import { CreditCardRounded, DashboardRounded, ReceiptRounded, SwapHorizRounded } from '@mui/icons-material';
-import { Badge } from '@mui/material';
-import theme from '@utils/theme';
+import { 
+ LayoutDashboard, 
+ Wallet, 
+ ArrowLeftRight, 
+ Receipt 
+} from 'lucide-react';
 import type { Atom } from 'jotai';
 import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useMatch } from 'react-router';
+import { useAtomValue } from 'jotai';
+import { cn } from '@utils/cn';
+import { Typography } from '@components/ui/Typography';
 
-export const FooterHeight = '5rem';
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: ${FooterHeight};
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  background-color: rgba(20, 20, 23, 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom);
-`;
-
-const List = styled.ul`
-  flex: 1;
-  padding: 0 1.25rem;
-
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  list-style: none;
-  margin: 0;
-
-  a {
-    text-decoration: none;
-  }
-`;
-
-const ListItemContainer = styled.li<{ isActive: boolean }>`
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  padding: ${theme.spacing(1)};
-  color: ${theme.palette.text.secondary};
-
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-  opacity: 0.6;
-  width: 5rem;
-  height: 100%;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  ${({ isActive }) =>
-    isActive &&
-    `
-      opacity: 1;
-      color: ${theme.palette.primary.main};
-  `};
-
-  span {
-    font-weight: 500;
-    margin-top: ${theme.spacing(0.5)};
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-`;
+export const FooterHeight = '72px';
 
 interface ListItemProps {
-  to: string;
-  label: string;
-  icon: ReactNode;
-  amount?: number;
-  countAtom?: Atom<number>;
+ to: string;
+ label: string;
+ icon: ReactNode;
+ countAtom?: Atom<number>;
 }
-const ListItem = ({ to, icon, label, amount, countAtom }: ListItemProps) => {
-  const match = useMatch(to);
 
-  return (
-    <Link to={to}>
-      <ListItemContainer isActive={Boolean(match)}>
-        {countAtom ? (
-          <BadgeAtom color='error' countAtom={countAtom}>
-            {icon}
-          </BadgeAtom>
-        ) : (
-          <Badge color='error' badgeContent={amount}>
-            {icon}
-          </Badge>
-        )}
+const ListItem = ({ to, icon, label, countAtom }: ListItemProps) => {
+ const match = useMatch(to);
+ const isActive = !!match;
+ const count = countAtom ? useAtomValue(countAtom) : 0;
 
-        <span>{label}</span>
-      </ListItemContainer>
-    </Link>
-  );
+ return (
+ <Link to={to} className="flex-1 flex flex-col items-center justify-center gap-1 group relative">
+ <div className={cn(
+ "flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300",
+ isActive 
+ ? "bg-white text-black -[0_0_20px_rgba(255,255,255,0.15)] scale-110" 
+ : "text-slate-500 group-hover:text-white group-active:scale-95"
+ )}>
+ <div className="relative">
+ {icon}
+ {count > 0 && (
+ <span className="absolute -top-1 -right-1 flex h-3 w-3">
+ <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+ <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+ </span>
+ )}
+ </div>
+ </div>
+ <Typography 
+ variant="pre" 
+ className={cn(
+ "text-[8px] font-black tracking-widest transition-colors",
+ isActive ? "text-white" : "text-slate-500"
+ )}
+ >
+ {label}
+ </Typography>
+ </Link>
+ );
 };
 
 const MobileFooter = () => {
-  const { t } = useTranslation();
-  return (
-    <Container>
-      <List>
-        <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to='../mobile/dashboard' />
-        <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to='../mobile/accounts' />
-        <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to='../mobile/transfer' />
-        <ListItem
-          icon={<ReceiptRounded />}
-          label={t('Invoices')}
-          to='../mobile/invoices'
-          countAtom={totalUnpaidInvoicesAtom}
-        />
-      </List>
-    </Container>
-  );
+ const { t } = useTranslation();
+ 
+ return (
+ <nav 
+ className={cn(
+ "fixed bottom-0 left-0 right-0 z-50",
+ "bg-black/80 backdrop-blur-md border-t border-white/5",
+ "pb-[env(safe-area-inset-bottom)] px-4"
+ )}
+ style={{ height: `calc(${FooterHeight} + env(safe-area-inset-bottom))` }}
+ >
+ <div className="flex flex-row items-center justify-between h-full max-w-lg mx-auto">
+ <ListItem 
+ icon={<LayoutDashboard className="w-5 h-5" />} 
+ label={t('Overview')} 
+ to='../mobile/dashboard' 
+ />
+ <ListItem 
+ icon={<Wallet className="w-5 h-5" />} 
+ label={t('Banks')} 
+ to='../mobile/accounts' 
+ />
+ <ListItem 
+ icon={<ArrowLeftRight className="w-5 h-5" />} 
+ label={t('Transfer')} 
+ to='../mobile/transfer' 
+ />
+ <ListItem
+ icon={<Receipt className="w-5 h-5" />}
+ label={t('Bills')}
+ to='../mobile/invoices'
+ countAtom={totalUnpaidInvoicesAtom}
+ />
+ </div>
+ </nav>
+ );
 };
 
 export default MobileFooter;

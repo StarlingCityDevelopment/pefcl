@@ -1,142 +1,111 @@
-import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
-import { Box, Divider, Stack } from '@mui/material';
 import { type Invoice, InvoiceStatus } from '@typings/Invoice';
 import { formatMoney } from '@utils/currency';
-import theme from '@utils/theme';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import relative from 'dayjs/plugin/relativeTime';
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import BaseDialog from './Modals/BaseDialog';
+import { Modal } from './ui/Modal';
 import PayInvoiceModal from './Modals/PayInvoice';
 import Button from './ui/Button';
-import Status from './ui/Status';
-import { BodyText } from './ui/Typography/BodyText';
-import { Heading6 } from './ui/Typography/Headings';
+import { Typography } from './ui/Typography';
+import { cn } from '@utils/cn';
 
 dayjs.extend(calendar);
 dayjs.extend(relative);
 
-const InvoiceContainer = styled.div<{ isPending: boolean }>`
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 20px;
-  padding: 1.25rem;
-  width: 100%;
-  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-  cursor: ${({ isPending }) => (isPending ? 'pointer' : 'default')};
+const InvoiceItem: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
+ const { t } = useTranslation();
+ const { message, amount, id, createdAt, expiresAt, from } = invoice;
+ const config = useConfig();
+ const expiresDate = dayjs(expiresAt);
+ const createdDate = dayjs(createdAt);
+ const [isPayOpen, setIsPayOpen] = React.useState(false);
 
-  @media (hover: hover) {
-    &:hover {
-      background: ${({ isPending }) => (isPending ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.02)')};
-      transform: ${({ isPending }) => (isPending ? 'translateY(-2px)' : 'none')};
-      border-color: ${({ isPending }) => (isPending ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.04)')};
-    }
-  }
+ const isPending = invoice.status === InvoiceStatus.PENDING;
+ const isPaid = invoice.status === InvoiceStatus.PAID;
 
-  &:active {
-    transform: ${({ isPending }) => (isPending ? 'translateY(0) scale(0.99)' : 'none')};
-  }
-`;
+ return (
+ <>
+ <Modal isOpen={isPayOpen} onClose={() => setIsPayOpen(false)} title={t('Pay Invoice')}>
+ <PayInvoiceModal onClose={() => setIsPayOpen(false)} invoice={invoice} />
+ </Modal>
 
-const From = styled(BodyText)`
-  font-weight: 700;
-  color: ${theme.palette.text.primary};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
+ <div 
+ onClick={() => isPending && setIsPayOpen(true)}
+ className={cn(
+ "group flex flex-col gap-5 p-6 rounded-[2.5rem] transition-all duration-300 relative overflow-hidden",
+ "bg-white/[0.02] border border-white/5",
+ isPending 
+ ? "cursor-pointer hover:bg-white/[0.04] hover:border-white/10 active:scale-[0.98]" 
+ : "cursor-default opacity-80"
+ )}
+ >
+ <div className="flex justify-between items-start gap-4">
+ <div className="flex flex-col min-w-0 flex-1">
+ <Typography variant="pre" className="text-slate-500 font-black mb-1">
+ {t('Bill from')}
+ </Typography>
+ <Typography className="text-sm font-black text-white truncate uppercase italic leading-none">{from}</Typography>
+ <Typography className="text-[11px] text-slate-500 font-medium line-clamp-2 mt-2 leading-tight">
+ {message}
+ </Typography>
+ </div>
+ <div className="flex flex-col items-end shrink-0">
+ <Typography className="text-xl font-black text-white tracking-tighter leading-none">
+ {formatMoney(amount, config.general)}
+ </Typography>
+ <Typography variant="pre" className="text-[9px] text-slate-600 font-black mt-2">
+ {createdDate.fromNow()}
+ </Typography>
+ </div>
+ </div>
 
-const Message = styled(BodyText)`
-  color: ${theme.palette.text.secondary};
-  opacity: 0.7;
-  font-size: 0.85rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-`;
+ {(isPending || isPaid) && (
+ <div className="flex justify-between items-center pt-5 border-t border-white/[0.03]">
+ {isPending ? (
+ <div className="flex flex-col">
+ <Typography variant="label" className="text-slate-600 mb-1">
+ {t('Expires')}
+ </Typography>
+ <Typography variant="pre" className="text-slate-400 font-black tracking-tight text-[10px]">
+ {expiresDate.format(t('DATE_FORMAT'))}
+ </Typography>
+ </div>
+ ) : (
+ <div className="flex items-center gap-2">
+ <div className="w-1.5 h-1.5 rounded-full bg-slate-500" />
+ <Typography variant="pre" className="text-slate-500 font-black tracking-widest text-[9px]">
+ {t('Archived')}
+ </Typography>
+ </div>
+ )}
 
-const InvoiceItem: React.FC<{ invoice: Invoice }> = ({ invoice, ...props }) => {
-  const { t } = useTranslation();
-  const { message, amount, id, createdAt, expiresAt, from } = invoice;
-  const config = useConfig();
-  const { isMobile } = useGlobalSettings();
-  const expiresDate = dayjs(expiresAt);
-  const createdDate = dayjs(createdAt);
-  const [isPayOpen, setIsPayOpen] = React.useState(false);
-
-  const handleCloseModal = () => {
-    setIsPayOpen(false);
-  };
-
-  const isPending = invoice.status === InvoiceStatus.PENDING;
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    if (isPending) {
-      setIsPayOpen(true);
-    }
-  };
-
-  return (
-    <>
-      <BaseDialog open={isPayOpen} onClose={handleCloseModal} maxWidth='md'>
-        <PayInvoiceModal onClose={handleCloseModal} invoice={invoice} />
-      </BaseDialog>
-
-      <InvoiceContainer {...props} key={id} isPending={isPending} onClick={handleCardClick}>
-        <Stack spacing={2}>
-          <Stack direction='row' justifyContent='space-between' alignItems='flex-start'>
-            <Stack spacing={0.25} sx={{ minWidth: 0, flex: 1, pr: 2 }}>
-              <From>{from}</From>
-              <Message title={message}>{message}</Message>
-            </Stack>
-            <Stack alignItems='flex-end' sx={{ flexShrink: 0 }}>
-              <BodyText sx={{ fontWeight: 700, color: theme.palette.primary.main }}>
-                {formatMoney(amount, config.general)}
-              </BodyText>
-              <Heading6 sx={{ opacity: 0.5, fontSize: '0.65rem' }}>{createdDate.fromNow()}</Heading6>
-            </Stack>
-          </Stack>
-
-          {(invoice.status === InvoiceStatus.PENDING || invoice.status === InvoiceStatus.PAID) && (
-            <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              {invoice.status === InvoiceStatus.PENDING ? (
-                <Stack spacing={0}>
-                  <Heading6 sx={{ fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase' }}>
-                    {t('Expires')}
-                  </Heading6>
-                  <BodyText sx={{ fontSize: '0.85rem', fontWeight: 500 }}>
-                    {expiresDate.format(t('DATE_FORMAT'))}
-                  </BodyText>
-                </Stack>
-              ) : (
-                <Box />
-              )}
-
-              {invoice.status === InvoiceStatus.PENDING ? (
-                <Button
-                  size='small'
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsPayOpen(true);
-                  }}
-                >
-                  {t('Pay invoice')}
-                </Button>
-              ) : (
-                <Status label={t('Paid')} color='success' />
-              )}
-            </Stack>
-          )}
-        </Stack>
-      </InvoiceContainer>
-    </>
-  );
+ {isPending ? (
+ <Button
+ variant="primary"
+ size="sm"
+ onClick={(e) => {
+ e.stopPropagation();
+ setIsPayOpen(true);
+ }}
+ className="px-6 h-9 rounded-full text-[10px] font-black uppercase tracking-widest"
+ >
+ {t('Pay Now')}
+ </Button>
+ ) : (
+ <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+ <Typography variant="pre" className="text-[10px] font-black text-white uppercase tracking-widest leading-none">
+ {t('Paid')}
+ </Typography>
+ </div>
+ )}
+ </div>
+ )}
+ </div>
+ </>
+ );
 };
 
 export default InvoiceItem;

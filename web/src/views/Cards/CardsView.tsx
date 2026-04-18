@@ -1,133 +1,126 @@
 import Layout from '@components/Layout';
-import { PreHeading } from '@components/ui/Typography/BodyText';
-import { Heading2, Heading6 } from '@components/ui/Typography/Headings';
+import { Typography } from '@components/ui/Typography';
 import { accountsAtom } from '@data/accounts';
 import { selectedAccountIdAtom } from '@data/cards';
-import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
-import { AccountBalanceRounded } from '@mui/icons-material';
-import { Box, Stack, alpha } from '@mui/material';
+import { Wallet, ShieldCheck } from 'lucide-react';
 import { formatMoney } from '@utils/currency';
-import theme from '@utils/theme';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import BankCards from './components/BankCards';
-
-const AccountTabsContainer = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  padding: 0.25rem 0;
-
-  &::-webkit-scrollbar {
-    height: 0;
-  }
-`;
-
-const AccountTab = styled.button<{ isActive: boolean }>`
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  border: 1px solid
-    ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.06)')};
-  background: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.08)' : 'rgba(255, 255, 255, 0.02)')};
-  color: ${({ isActive }) => (isActive ? theme.palette.text.primary : theme.palette.text.secondary)};
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
-  white-space: nowrap;
-  flex-shrink: 0;
-  font-family: inherit;
-  font-size: 0.8125rem;
-  font-weight: 500;
-
-  &:hover {
-    background: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.04)')};
-    border-color: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.4)' : 'rgba(255, 255, 255, 0.1)')};
-    color: ${theme.palette.text.primary};
-  }
-
-  &:active {
-    transform: scale(0.97);
-  }
-`;
-
-const AccountIcon = styled.div<{ isActive: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)')};
-
-  svg {
-    font-size: 0.875rem;
-    color: ${({ isActive }) => (isActive ? theme.palette.primary.main : theme.palette.text.secondary)};
-  }
-`;
-
-const BalanceLabel = styled.span`
-  font-size: 0.6875rem;
-  font-weight: 400;
-  color: ${theme.palette.text.secondary};
-  margin-left: 0.125rem;
-`;
+import { cn } from '@utils/cn';
 
 const CardsView = () => {
-  const [selectedCardId, setSelectedCardId] = useState(0);
-  const [selectedAccountId, setSelectedAccountId] = useAtom(selectedAccountIdAtom);
-  const [accounts] = useAtom(accountsAtom);
-  const { t } = useTranslation();
-  const config = useConfig();
+ const [selectedCardId, setSelectedCardId] = useState(0);
+ const [selectedAccountId, setSelectedAccountId] = useAtom(selectedAccountIdAtom);
+ const accounts = useAtomValue(accountsAtom);
+ const { t } = useTranslation();
+ const config = useConfig();
 
-  // Auto-select first account if none selected
-  useEffect(() => {
-    if (!selectedAccountId && accounts.length > 0) {
-      setSelectedAccountId(accounts[0].id);
-    }
-  }, [accounts, selectedAccountId, setSelectedAccountId]);
+ // Auto-select first account if none selected
+ useEffect(() => {
+ if (!selectedAccountId && accounts.length > 0) {
+ setSelectedAccountId(accounts[0].id);
+ }
+ }, [accounts, selectedAccountId, setSelectedAccountId]);
 
-  const handleSelectAccount = (accountId: number) => {
-    setSelectedAccountId(accountId);
-    setSelectedCardId(0); // Reset card selection when switching accounts
-  };
+ const handleSelectAccount = (accountId: number) => {
+ setSelectedAccountId(accountId);
+ setSelectedCardId(0); // Reset card selection when switching accounts
+ };
 
-  return (
-    <Layout>
-      <Stack spacing={3}>
-        <Stack spacing={0.5}>
-          <Heading2>{t('Cards')}</Heading2>
-          <PreHeading>{t('Manage cards for your bank accounts')}</PreHeading>
-        </Stack>
+ return (
+ <Layout>
+ <div className="flex flex-col gap-10">
+ <div className="flex flex-col gap-1">
+ <Typography variant="label" className="text-slate-500 font-bold uppercase tracking-widest px-1">
+ {t('Credential Catalog')}
+ </Typography>
+ <div className="flex items-center gap-4">
+ <Typography variant="h1" className="text-white font-bold leading-tight tracking-tight text-4xl">
+ {t('Card Access')}
+ </Typography>
+ <div className="px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+ <Typography variant="pre" className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">
+ {t('Encrypted')}
+ </Typography>
+ </div>
+ </div>
+ </div>
 
-        {/* Account selector tabs */}
-        <AccountTabsContainer>
-          {accounts.map((account) => {
-            const isActive = account.id === selectedAccountId;
-            return (
-              <AccountTab key={account.id} isActive={isActive} onClick={() => handleSelectAccount(account.id)}>
-                <AccountIcon isActive={isActive}>
-                  <AccountBalanceRounded />
-                </AccountIcon>
-                <Stack spacing={0} alignItems='flex-start'>
-                  <span>{account.accountName}</span>
-                  <BalanceLabel>{formatMoney(account.balance, config.general)}</BalanceLabel>
-                </Stack>
-              </AccountTab>
-            );
-          })}
-        </AccountTabsContainer>
+ {/* Account selector tabs */}
+ <div className="flex flex-col gap-4">
+ <Typography variant="pre" className="text-[10px] text-slate-500 font-bold uppercase tracking-widest px-1">
+ {t('Select Source Entity')}
+ </Typography>
+ <div className="flex flex-row gap-4 overflow-x-auto pb-6 no-scrollbar custom-scrollbar">
+ {accounts.map((account) => {
+ const isActive = account.id === selectedAccountId;
+ return (
+ <button 
+ key={account.id} 
+ onClick={() => handleSelectAccount(account.id)}
+ className={cn(
+ "flex flex-col items-start gap-4 p-6 rounded-[2rem] border transition-all duration-300 min-w-[240px] select-none text-left relative overflow-hidden group",
+ "active:scale-95",
+ isActive 
+ ? "bg-white border-white -[0_20px_40px_-10px_rgba(255,255,255,0.2)]" 
+ : "bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10"
+ )}
+ >
+ <div className={cn(
+ "flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300",
+ isActive ? "bg-black text-white" : "bg-white/5 text-slate-500 group-hover:text-white group-hover:bg-white/10"
+ )}>
+ <Wallet className="w-5 h-5" />
+ </div>
+ 
+ <div className="flex flex-col gap-1 relative z-10">
+ <Typography className={cn(
+ "text-sm font-bold tracking-tight transition-colors",
+ isActive ? "text-black" : "text-slate-400 group-hover:text-white"
+ )}>
+ {account.accountName}
+ </Typography>
+ <Typography className={cn(
+ "text-xs font-medium tracking-tight leading-none transition-colors",
+ isActive ? "text-black/60" : "text-slate-600 group-hover:text-slate-500"
+ )}>
+ {formatMoney(account.balance, config.general)}
+ </Typography>
+ </div>
 
-        {/* Bank cards for selected account */}
-        {selectedAccountId > 0 && (
-          <BankCards selectedCardId={selectedCardId} onSelectCardId={setSelectedCardId} accountId={selectedAccountId} />
-        )}
-      </Stack>
-    </Layout>
-  );
+ {/* Decorative circle for active state */}
+ {isActive && (
+ <div className="absolute -bottom-8 -right-8 w-24 h-24 bg-black/[0.03] rounded-full" />
+ )}
+ </button>
+ );
+ })}
+ </div>
+ </div>
+
+ {/* Bank cards for selected account */}
+ {selectedAccountId > 0 && (
+ <div className="mt-4 flex flex-col gap-6">
+ <div className="flex items-center gap-3 px-1">
+ <ShieldCheck className="w-5 h-5 text-slate-500" />
+ <Typography variant="pre" className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+ {t('Active Credentials Registry')}
+ </Typography>
+ </div>
+ 
+ <BankCards 
+ selectedCardId={selectedCardId} 
+ onSelectCardId={setSelectedCardId} 
+ accountId={selectedAccountId} 
+ />
+ </div>
+ )}
+ </div>
+ </Layout>
+ );
 };
 
 export default CardsView;

@@ -1,80 +1,66 @@
-import styled from '@emotion/styled';
-import { Stack } from '@mui/material';
 import type { Card, InventoryCard } from '@typings/BankCard';
-import theme from '@utils/theme';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MasterCardIcon } from '../icons/MasterCardIcon';
-import { BodyText } from './ui/Typography/BodyText';
-import { Heading4, Heading6 } from './ui/Typography/Headings';
-
-const Container = styled.div<{ selected: boolean; blocked: boolean }>`
-  user-select: none;
-  width: 100%;
-  padding: 1.25rem;
-  background-color: rgba(255, 255, 255, 0.02);
-  border-radius: 14px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 160px;
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-
-  ${({ blocked }) =>
-    blocked &&
-    `
-    opacity: 0.4;
-    filter: grayscale(1);
-  `}
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.1);
-    transform: translateY(-1px);
-  }
-
-  ${(props) =>
-    props.selected &&
-    `
-    border-color: rgba(59, 130, 246, 0.3);
-    background-color: rgba(59, 130, 246, 0.04);
-    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
-  `}
-`;
-
-const StyledIcon = styled(MasterCardIcon)`
-  width: 36px;
-  opacity: 0.6;
-  filter: grayscale(0.3);
-  align-self: flex-end;
-`;
+import { Typography } from './ui/Typography';
+import { cn } from '@utils/cn';
 
 interface BankCardProps {
   card: Card | InventoryCard;
   isBlocked?: boolean;
   selected?: boolean;
 }
+
 const BankCard = ({ card, selected = false, isBlocked = false }: BankCardProps) => {
   const { t } = useTranslation();
 
   return (
-    <Container selected={selected} blocked={isBlocked}>
-      <Stack spacing={2}>
-        <Heading4 sx={{ fontSize: '0.9375rem', letterSpacing: '0.03em', fontWeight: 500 }}>{card.number}</Heading4>
-        <Stack direction='row' justifyContent='space-between' alignItems='flex-end'>
-          <Stack spacing={0.25}>
-            <Heading6 sx={{ fontSize: '0.5625rem', letterSpacing: '0.06em' }}>{t('Card holder')}</Heading6>
-            <BodyText sx={{ fontSize: '0.8125rem', fontWeight: 500 }}>{card.holder}</BodyText>
-          </Stack>
+    <div 
+      className={cn(
+        "group relative flex flex-col justify-between h-[180px] w-full p-6 rounded-2xl",
+        "bg-white/[0.03] border transition-all duration-300 backdrop-blur-md overflow-hidden",
+        isBlocked 
+          ? "opacity-30 grayscale pointer-events-none cursor-not-allowed" 
+          : "cursor-pointer hover:bg-white/[0.06] hover:border-white/20",
+        selected 
+          ? "bg-white/[0.08] border-white ring-1 ring-white/20" 
+          : "border-white/5"
+      )}
+    >
+      {/* Glossy edge effect */}
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/5 blur-3xl rounded-full" />
+      
+      <div className="relative z-10">
+        <Typography 
+          variant="pre" 
+          className="text-slate-500 font-black tracking-[0.2em] mb-3 group-hover:text-white/60 transition-colors"
+        >
+          {t('Debit Card')}
+        </Typography>
+        <Typography 
+          className="text-lg font-mono font-black text-white tracking-[0.15em] opacity-80 group-hover:opacity-100 transition-all"
+        >
+          {card.number}
+        </Typography>
+      </div>
 
-          <StyledIcon />
-        </Stack>
-      </Stack>
-    </Container>
+      <div className="relative z-10 flex justify-between items-end">
+        <div className="flex flex-col gap-0.5">
+          <Typography variant="pre" className="text-[8px] text-slate-500 font-black uppercase tracking-widest">
+            {t('Card holder')}
+          </Typography>
+          <Typography className="text-[13px] font-black text-white uppercase italic tracking-tight truncate max-w-[140px]">
+            {card.holder}
+          </Typography>
+        </div>
+
+        <div className="relative">
+          <MasterCardIcon 
+            style={{ width: 32, filter: 'grayscale(1) brightness(1.5)' }} 
+            className="opacity-30 group-hover:opacity-70 transition-all duration-700" 
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 

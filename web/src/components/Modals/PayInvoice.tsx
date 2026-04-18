@@ -1,7 +1,5 @@
-import styled from '@emotion/styled';
 import { useGlobalSettings } from '@hooks/useGlobalSettings';
-import { CheckRounded, ErrorRounded } from '@mui/icons-material';
-import { Alert, Box, Paper, Stack, Typography, alpha } from '@mui/material';
+import { CheckCircle2, AlertCircle, Calendar, MessageSquare, User, Wallet, ArrowRight } from 'lucide-react';
 import { InvoiceEvents } from '@typings/Events';
 import type { Invoice, PayInvoiceInput } from '@typings/Invoice';
 import dayjs from 'dayjs';
@@ -15,18 +13,12 @@ import { transactionBaseAtom } from '../../data/transactions';
 import { useConfig } from '../../hooks/useConfig';
 import { formatMoney } from '../../utils/currency';
 import { fetchNui } from '../../utils/fetchNui';
-import theme from '../../utils/theme';
 import AccountSelect from '../AccountSelect';
 import Summary from '../Summary';
 import Button from '../ui/Button';
-import { BodyText } from '../ui/Typography/BodyText';
-import { Heading2, Heading3, Heading5, Heading6 } from '../ui/Typography/Headings';
+import { Typography } from '../ui/Typography';
 
 dayjs.extend(calendar);
-
-const Amount = styled(Heading3)`
-  font-weight: ${theme.typography.fontWeightLight};
-`;
 
 interface PayInvoiceModalProps {
   invoice: Invoice;
@@ -73,132 +65,147 @@ const PayInvoiceModal = ({ onClose, invoice }: PayInvoiceModalProps) => {
 
   if (isPaid) {
     return (
-      <Paper
-        sx={{
-          minHeight: isMobile ? '300px' : '400px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Stack spacing={2} alignItems='center'>
-          <Box
-            sx={{
-              width: 80,
-              height: 80,
-              borderRadius: '50%',
-              background: alpha(theme.palette.success.main, 0.1),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: theme.palette.success.main,
-              mb: 1,
-            }}
-          >
-            <CheckRounded sx={{ fontSize: 48 }} />
-          </Box>
-          <Heading2>{t('Paid')}</Heading2>
-          <BodyText sx={{ opacity: 0.6 }}>{t('Invoice has been settled.')}</BodyText>
-        </Stack>
-      </Paper>
+      <div className="flex flex-col items-center justify-center py-12 px-6 min-h-[300px]">
+        <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-4 transition-transform animate-in zoom-in duration-500">
+          <CheckCircle2 className="w-8 h-8" />
+        </div>
+        <Typography variant="h2" className="italic uppercase mb-1">
+          {t('Settled')}
+        </Typography>
+        <Typography className="text-slate-400 text-sm">
+          {t('Invoice has been successfully paid.')}
+        </Typography>
+      </div>
     );
   }
 
   const hasEnoughFunds = (selectedAccount?.balance ?? 0) >= invoice.amount;
 
   return (
-    <Paper>
-      <Stack p={isMobile ? 3 : 4} spacing={isMobile ? 3 : 8} direction={isMobile ? 'column' : 'row'}>
-        <Stack spacing={isMobile ? 2.5 : 4} flex={1}>
-          <Stack>
-            <Stack direction='row' justifyContent='space-between' alignItems='center'>
-              <Heading2 sx={{ fontSize: isMobile ? '1.5rem' : '2rem' }}>{t('Invoice')}</Heading2>
-              <Amount sx={{ fontSize: isMobile ? '1.25rem' : '1.75rem' }}>
-                {formatMoney(invoice.amount, config.general)}
-              </Amount>
-            </Stack>
+    <div className="flex flex-col w-full h-full">
+      {/* Header Section */}
+      <div className="flex items-center gap-2 mb-6 w-full">
+        <Typography variant="pre" className="text-primary/60 font-medium text-xs uppercase tracking-wider">
+          {t('Invoice Statement')}
+        </Typography>
+        <div className="h-px flex-1 bg-white/5" />
+        <Typography variant="pre" className="text-white/40 font-medium text-[10px] tracking-widest uppercase">
+          #{invoice.id.toString().padStart(6, '0')}
+        </Typography>
+      </div>
 
-            <Heading5 sx={{ opacity: 0.8 }}>{invoice.from}</Heading5>
-          </Stack>
+      <div className="flex flex-col mb-8">
+        <Typography variant="h1" className="text-5xl font-light tracking-tight text-white mb-2">
+          {formatMoney(invoice.amount, config.general)}
+        </Typography>
+      </div>
 
-          <Stack spacing={0.5}>
-            <Heading6
-              sx={{
-                fontSize: '0.6875rem',
-                opacity: 0.5,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('Message')}
-            </Heading6>
-            <BodyText sx={{ fontSize: isMobile ? '0.875rem' : '1rem' }}>{invoice.message}</BodyText>
-          </Stack>
-
-          <Stack spacing={0.5}>
-            <Heading6
-              sx={{
-                fontSize: '0.6875rem',
-                opacity: 0.5,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('Expires')}
-            </Heading6>
-            <BodyText sx={{ fontSize: isMobile ? '0.875rem' : '1rem' }}>
-              {expiresDate.format(t('DATE_TIME_FORMAT'))}
-              <Typography component='span' sx={{ opacity: 0.5, ml: 1, fontSize: '0.85em' }}>
-                ({expiresDate.fromNow()})
+      {/* Main Content: Single Column Stack */}
+      <div className="flex flex-col gap-6 flex-1">
+        
+        {/* Details Card */}
+        <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/5 flex flex-col gap-5">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-white/5 border border-white/5 shrink-0">
+              <User className="w-4 h-4 text-slate-400" />
+            </div>
+            <div className="flex flex-col flex-1 min-w-0">
+              <Typography variant="label" className="mb-0.5 text-[10px] opacity-40 uppercase tracking-widest font-medium">
+                {t('From')}
               </Typography>
-            </BodyText>
-          </Stack>
-        </Stack>
+              <Typography className="text-white font-medium text-sm tracking-tight leading-tight break-words">
+                {invoice.from}
+              </Typography>
+            </div>
+          </div>
 
-        <Stack spacing={isMobile ? 3 : 4} flex={1}>
-          <Stack spacing={0.75}>
-            <Heading6
-              sx={{
-                fontSize: '0.6875rem',
-                opacity: 0.5,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-              }}
-            >
-              {t('Account')}
-            </Heading6>
-            <AccountSelect
-              isFromAccount
-              accounts={accounts}
-              onSelect={setSelectedAccountId}
-              selectedId={selectedAccountId}
-            />
-          </Stack>
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-xl bg-white/5 border border-white/5 shrink-0">
+              <MessageSquare className="w-4 h-4 text-slate-400" />
+            </div>
+            <div className="flex flex-col flex-1 min-w-0">
+              <Typography variant="label" className="mb-0.5 text-[10px] opacity-40 uppercase tracking-widest font-medium">
+                {t('Message')}
+              </Typography>
+              <Typography className="text-white/80 text-sm leading-relaxed break-words whitespace-pre-wrap">
+                {invoice.message}
+              </Typography>
+            </div>
+          </div>
 
+          <div className="h-px bg-white/5 w-full" />
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-slate-500 shrink-0">
+              <Calendar className="w-4 h-4" />
+              <Typography variant="pre" className="text-[10px] font-medium uppercase tracking-widest opacity-60">
+                {t('Expires')}
+              </Typography>
+            </div>
+            <Typography className="text-white/90 text-sm font-medium leading-none truncate ml-2">
+              {expiresDate.format(t('DATE_FORMAT'))}
+              <span className="ml-2 opacity-50 font-normal">/ {expiresDate.fromNow()}</span>
+            </Typography>
+          </div>
+        </div>
+
+        {/* Payment Configuration */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-md bg-primary/10 border border-primary/20">
+              <Wallet className="w-4 h-4 text-primary" />
+            </div>
+            <Typography variant="pre" className="font-medium uppercase tracking-widest text-xs text-white/60">
+              {t('Payment Source')}
+            </Typography>
+          </div>
+
+          <AccountSelect
+            isFromAccount
+            accounts={accounts}
+            onSelect={setSelectedAccountId}
+            selectedId={selectedAccountId}
+          />
+        </div>
+
+        {/* Financial Summary */}
+        <div className="mt-2">
           <Summary balance={selectedAccount?.balance ?? 0} payment={invoice.amount} />
+        </div>
 
+        {/* Interaction Region */}
+        <div className="flex flex-col gap-3 mt-auto pt-8">
           {error && (
-            <Alert icon={<ErrorRounded />} color='error' sx={{ borderRadius: '12px' }}>
-              {error}
-            </Alert>
+            <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <Typography variant="pre" className="text-red-500 leading-tight text-[11px]">
+                {error}
+              </Typography>
+            </div>
           )}
 
-          <Stack direction={isMobile ? 'column-reverse' : 'row'} spacing={1.5}>
-            <Button disabled={isLoading} variant='text' color='error' sx={{ flex: 1 }} onClick={onClose}>
-              {t('Cancel')}
-            </Button>
-            <Button
-              sx={{ flex: 2 }}
-              onClick={handlePayInvoice}
-              disabled={!selectedAccountId || !hasEnoughFunds || isLoading}
-            >
-              {isLoading ? t('Processing...') : t('Pay invoice')}
-            </Button>
-          </Stack>
-        </Stack>
-      </Stack>
-    </Paper>
+          <Button
+            className="w-full h-14 text-base font-medium transition-all"
+            onClick={handlePayInvoice}
+            disabled={!selectedAccountId || !hasEnoughFunds || isLoading}
+          >
+            {isLoading ? t('Processing...') : t('Authorize Payment')}
+          </Button>
+          
+          <Button 
+            variant="ghost" 
+            className="w-full h-12 text-xs font-medium text-white/40 hover:text-white transition-all" 
+            onClick={onClose}
+            disabled={isLoading}
+          >
+            {t('Cancel')}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default PayInvoiceModal;
+
+

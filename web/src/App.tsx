@@ -1,7 +1,6 @@
 import Devbar from '@components/DebugBar';
 import { accountsAtom, rawAccountAtom } from '@data/accounts';
 import { transactionBaseAtom, transactionInitialState } from '@data/transactions';
-import styled from '@emotion/styled';
 import { BroadcastsWrapper } from '@hooks/useBroadcasts';
 import { useExitListener } from '@hooks/useExitListener';
 import { useNuiEvent } from '@hooks/useNuiEvent';
@@ -20,7 +19,6 @@ import { useGlobalSettings } from '@hooks/useGlobalSettings';
 import { useLBPhoneSettings } from '@hooks/useLBPhoneSettings';
 import { useLBTabletSettings } from '@hooks/useLBTabletSettings';
 import { useConfig } from './hooks/useConfig';
-import theme from './utils/theme';
 import ATM from './views/ATM/ATM';
 import CardsView from './views/Cards/CardsView';
 import Deposit from './views/Deposit/Deposit';
@@ -37,100 +35,100 @@ dayjs.extend(updateLocale);
 // Layout moved to @components/layout/Shell
 
 const App: React.FC = () => {
-  const config = useConfig();
-  const setRawAccounts = useSetAtom(rawAccountAtom);
-  const setAccounts = useSetAtom(accountsAtom);
-  const setTransactions = useSetAtom(transactionBaseAtom);
-  const [isAtmVisible, setIsAtmVisible] = useState(false);
-  const [isVisible, setIsVisible] = useState(process.env.NODE_ENV === 'development');
-  const { isMobile } = useGlobalSettings();
-  const LBPhoneSettings = useLBPhoneSettings();
-  const LBTabletSettings = useLBTabletSettings();
+ const config = useConfig();
+ const setRawAccounts = useSetAtom(rawAccountAtom);
+ const setAccounts = useSetAtom(accountsAtom);
+ const setTransactions = useSetAtom(transactionBaseAtom);
+ const [isAtmVisible, setIsAtmVisible] = useState(false);
+ const [isVisible, setIsVisible] = useState(process.env.NODE_ENV === 'development');
+ const { isMobile } = useGlobalSettings();
+ const LBPhoneSettings = useLBPhoneSettings();
+ const LBTabletSettings = useLBTabletSettings();
 
-  const [hasLoaded, setHasLoaded] = useState(process.env.NODE_ENV === 'development' || isMobile);
+ const [hasLoaded, setHasLoaded] = useState(process.env.NODE_ENV === 'development' || isMobile);
 
-  useNuiEvent('PEFCL', UserEvents.Loaded, () => setHasLoaded(true));
-  useNuiEvent('PEFCL', UserEvents.Unloaded, () => {
-    setHasLoaded(false);
-    setAccounts([]);
-    setRawAccounts([]);
-    setTransactions();
-    fetchNui(GeneralEvents.CloseUI);
-    setTransactions(transactionInitialState);
-  });
+ useNuiEvent(UserEvents.Loaded, () => setHasLoaded(true));
+ useNuiEvent(UserEvents.Unloaded, () => {
+ setHasLoaded(false);
+ setAccounts([]);
+ setRawAccounts([]);
+ setTransactions();
+ fetchNui(GeneralEvents.CloseUI);
+ setTransactions(transactionInitialState);
+ });
 
-  useEffect(() => {
-    fetchNui(NUIEvents.Loaded);
-    return () => {
-      fetchNui(NUIEvents.Unloaded);
-    };
-  }, []);
+ useEffect(() => {
+ fetchNui(NUIEvents.Loaded);
+ return () => {
+ fetchNui(NUIEvents.Unloaded);
+ };
+ }, []);
 
-  useNuiEvent('PEFCL', 'setVisible', (data) => {
-    setIsVisible(data as boolean);
-    if (data) setHasLoaded(true);
-  });
-  useNuiEvent('PEFCL', 'setVisibleATM', (data) => {
-    setIsAtmVisible(data as boolean);
-    if (data) setHasLoaded(true);
-  });
+ useNuiEvent('setVisible', (data) => {
+ setIsVisible(data as boolean);
+ if (data) setHasLoaded(true);
+ });
+ useNuiEvent('setVisibleATM', (data) => {
+ setIsAtmVisible(data as boolean);
+ if (data) setHasLoaded(true);
+ });
 
-  const { i18n } = useTranslation();
-  useExitListener(isVisible);
+ const { i18n } = useTranslation();
+ useExitListener(isVisible);
 
-  useEffect(() => {
-    i18n
-      .changeLanguage(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language)
-      .catch((e) => console.error(e));
-  }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
+ useEffect(() => {
+ i18n
+ .changeLanguage(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language)
+ .catch((e) => console.error(e));
+ }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
 
-  useEffect(() => {
-    dayjs.locale(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language ?? 'en');
-  }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
+ useEffect(() => {
+ dayjs.locale(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language ?? 'en');
+ }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
 
-  if (!hasLoaded) {
-    return null;
-  }
+ if (!hasLoaded) {
+ return null;
+ }
 
-  return (
-    <>
-      {process.env.NODE_ENV === 'development' && <Devbar />}
+ return (
+ <>
+ {process.env.NODE_ENV === 'development' && <Devbar />}
 
-      <React.Suspense fallback={'Loading bank'}>
-        {!isAtmVisible && isVisible && !isMobile && (
-          <Shell>
-            <Routes>
-              <Route path='/' element={<Dashboard />} />
-              <Route path='accounts' element={<Accounts />} />
-              <Route path='transactions' element={<Transactions />} />
-              <Route path='invoices' element={<Invoices />} />
-              <Route path='transfer' element={<Transfer />} />
-              <Route path='deposit' element={<Deposit />} />
-              <Route path='withdraw' element={<Withdraw />} />
-              <Route path='cards' element={<CardsView />} />
-            </Routes>
-          </Shell>
-        )}
-      </React.Suspense>
+ <React.Suspense fallback={'Loading bank'}>
+ {!isAtmVisible && isVisible && !isMobile && (
+ <Shell>
+ <Routes>
+ <Route path='/' element={<Dashboard />} />
+ <Route path='accounts' element={<Accounts />} />
+ <Route path='transactions' element={<Transactions />} />
+ <Route path='invoices' element={<Invoices />} />
+ <Route path='transfer' element={<Transfer />} />
+ <Route path='deposit' element={<Deposit />} />
+ <Route path='withdraw' element={<Withdraw />} />
+ <Route path='cards' element={<CardsView />} />
+ </Routes>
+ </Shell>
+ )}
+ </React.Suspense>
 
-      <React.Suspense fallback={null}>
-        <ATM />
-      </React.Suspense>
+ <React.Suspense fallback={null}>
+ <ATM />
+ </React.Suspense>
 
-      {!isAtmVisible && isVisible && isMobile && (
-        <React.Suspense fallback={null}>
-          <Routes>
-            <Route path='*' element={<MobileApp />} />
-          </Routes>
-        </React.Suspense>
-      )}
+ {!isAtmVisible && isVisible && isMobile && (
+ <React.Suspense fallback={null}>
+ <Routes>
+ <Route path='*' element={<MobileApp />} />
+ </Routes>
+ </React.Suspense>
+ )}
 
-      {/* No fallback needed for BroadcastsWrapper as it renders nothing visible */}
-      <React.Suspense fallback={null}>
-        <BroadcastsWrapper />
-      </React.Suspense>
-    </>
-  );
+ {/* No fallback needed for BroadcastsWrapper as it renders nothing visible */}
+ <React.Suspense fallback={null}>
+ <BroadcastsWrapper />
+ </React.Suspense>
+ </>
+ );
 };
 
 export default App;

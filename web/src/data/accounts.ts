@@ -6,46 +6,46 @@ import { fetchNui } from '../utils/fetchNui';
 import { isEnvBrowser } from '../utils/misc';
 
 const getAccounts = async (): Promise<Account[]> => {
-  try {
-    const res = await fetchNui<Account[]>(AccountEvents.GetAccounts);
-    return res ?? [];
-  } catch (e) {
-    if (isEnvBrowser()) {
-      return mockedAccounts;
-    }
-    console.error(e);
-    return [];
-  }
+ try {
+ const res = await fetchNui<Account[]>(AccountEvents.GetAccounts);
+ return res ?? [];
+ } catch (e) {
+ if (isEnvBrowser()) {
+ return mockedAccounts;
+ }
+ console.error(e);
+ return [];
+ }
 };
 
 const isLoadedAtom = atom(false);
 
 export const rawAccountAtom = atom<Account[]>([]);
 export const accountsAtom = atom<Promise<Account[]>, Account[] | undefined, Promise<void>>(
-  async (get) => {
-    const isLoaded = get(isLoadedAtom);
-    const raw = get(rawAccountAtom);
+ async (get) => {
+ const isLoaded = get(isLoadedAtom);
+ const raw = get(rawAccountAtom);
 
-    if (!isLoaded && raw.length === 0) {
-      // This is only for the very first load
-      return await getAccounts();
-    }
+ if (!isLoaded && raw.length === 0) {
+ // This is only for the very first load
+ return await getAccounts();
+ }
 
-    return raw;
-  },
-  async (get, set, by) => {
-    const accounts = by ?? (await getAccounts());
-    set(rawAccountAtom, accounts);
-    set(isLoadedAtom, true);
-  },
+ return raw;
+ },
+ async (get, set, by) => {
+ const accounts = by ?? (await getAccounts());
+ set(rawAccountAtom, accounts);
+ set(isLoadedAtom, true);
+ },
 );
 
 export const totalBalanceAtom = atom((get) => get(accountsAtom).reduce((prev, curr) => prev + curr.balance, 0));
 
 export const activeAccountAtomId = atom<number>(0);
 export const activeAccountAtom = atom(
-  (get) => get(accountsAtom).find((account) => account.id === get(activeAccountAtomId)),
-  (_get, set, str: number) => set(activeAccountAtomId, str),
+ (get) => get(accountsAtom).find((account) => account.id === get(activeAccountAtomId)),
+ (_get, set, str: number) => set(activeAccountAtomId, str),
 );
 
 export const defaultAccountAtom = atom((get) => get(accountsAtom).find((account) => account.isDefault));
@@ -57,29 +57,29 @@ type OrderedAccounts = Record<number, number>;
 const accountOrderAtom = atom<string>(localStorage.getItem('order') ?? '');
 
 export const orderedAccountsAtom = atom<Account[], OrderedAccounts>(
-  (get) => {
-    const accounts = get(accountsAtom);
-    const storageOrder = get(accountOrderAtom);
+ (get) => {
+ const accounts = get(accountsAtom);
+ const storageOrder = get(accountOrderAtom);
 
-    try {
-      JSON.parse(storageOrder);
-    } catch {
-      return accounts;
-    }
+ try {
+ JSON.parse(storageOrder);
+ } catch {
+ return accounts;
+ }
 
-    const order = JSON.parse(storageOrder);
+ const order = JSON.parse(storageOrder);
 
-    const sorted = accounts.sort((a, b) => {
-      const aIndex = order?.[a.id] ?? 0;
-      const bIndex = order?.[b.id] ?? 0;
+ const sorted = accounts.sort((a, b) => {
+ const aIndex = order?.[a.id] ?? 0;
+ const bIndex = order?.[b.id] ?? 0;
 
-      return aIndex > bIndex ? 1 : -1;
-    });
+ return aIndex > bIndex ? 1 : -1;
+ });
 
-    return sorted;
-  },
-  (_get, set, by: OrderedAccounts) => {
-    set(accountOrderAtom, JSON.stringify(by));
-    localStorage.setItem('order', JSON.stringify(by));
-  },
+ return sorted;
+ },
+ (_get, set, by: OrderedAccounts) => {
+ set(accountOrderAtom, JSON.stringify(by));
+ localStorage.setItem('order', JSON.stringify(by));
+ },
 );

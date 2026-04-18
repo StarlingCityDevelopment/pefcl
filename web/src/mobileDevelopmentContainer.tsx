@@ -1,4 +1,3 @@
-import styled from '@emotion/styled';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { NuiProvider } from 'react-fivem-hooks';
@@ -6,46 +5,23 @@ import { HashRouter } from 'react-router';
 import image from './bg.png';
 import MobileApp from './views/Mobile/Mobile';
 
-const Container = styled.div`
-  position: relative;
-  width: 500px;
-  height: 1000px;
-`;
-const Background = styled.div<{ src: string }>`
-  z-index: 10;
-  background: url(${(props) => props.src});
-  position: absolute;
-  width: 500px;
-  height: 1000px;
-  pointer-events: none;
-`;
-
-const AppContainer = styled.div`
-  z-index: 2;
-  position: absolute;
-  bottom: 100px;
-  left: 50px;
-  right: 50px;
-  top: 100px;
-  display: flex;
-  flex-direction: column;
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  border-radius: 20px;
-`;
-
 const Root = () => (
   <HashRouter>
     <NuiProvider>
-      <Container>
-        <Background src={image} />
+      <div className="relative w-[500px] h-[1000px]">
+        <div 
+          className="absolute inset-0 z-10 pointer-events-none" 
+          style={{ 
+            backgroundImage: `url(${image})`,
+            backgroundSize: '100% 100%'
+          }} 
+        />
         <React.Suspense fallback='Loading phone'>
-          <AppContainer>
+          <div className="absolute top-[100px] left-[50px] right-[50px] bottom-[100px] z-[2] flex flex-col bg-center bg-cover bg-no-repeat rounded-[20px] overflow-hidden">
             <MobileApp />
-          </AppContainer>
+          </div>
         </React.Suspense>
-      </Container>
+      </div>
     </NuiProvider>
   </HashRouter>
 );
