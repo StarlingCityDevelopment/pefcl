@@ -1,4 +1,3 @@
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
 import { type Account, AccountRole, AccountType, type ExternalAccount } from '@typings/Account';
 import { cn } from '@utils/cn';
 import React, { useState, useMemo } from 'react';
@@ -23,37 +22,42 @@ interface AccountSelectProps {
   onSelect(accountId: number, isExternal?: boolean): void;
 }
 
-const AccountSelectSnapshot = ({
-  account,
-  type,
-}: { account: Account | ExternalAccount; type: 'internal' | 'external' }) => {
+type SnapshotProps =
+  | { type: 'external'; account: ExternalAccount }
+  | { type: 'internal'; account: Account };
+
+const AccountSelectSnapshot = ({ type, account }: SnapshotProps) => {
   const { t } = useTranslation();
   const config = useConfig();
 
   if (type === 'external') {
-    const ext = account as ExternalAccount;
     return (
       <div className='flex flex-col text-left py-0.5 overflow-hidden pr-2'>
-        <Typography className='text-sm font-medium text-[var(--gta-text)] truncate mb-1'>{ext.name}</Typography>
-        <Typography variant='pre' className='text-[10px] text-[var(--gta-text-dim)] font-medium'>
-          {ext.number}
+        <Typography className='text-sm font-medium text-(--gta-text) truncate mb-1'>
+          {account.name}
+        </Typography>
+        <Typography variant='pre' className='text-[10px] text-(--gta-text-dim) font-medium'>
+          {account.number}
         </Typography>
       </div>
     );
   }
 
-  const acc = account as Account;
   return (
     <div className='flex flex-col text-left py-0.5 overflow-hidden pr-2'>
       <div className='flex items-center gap-2 mb-1'>
-        <Typography className='text-sm font-medium text-[var(--gta-text)] truncate'>{acc.accountName}</Typography>
-        <div className='flex items-center justify-center px-2 py-0.5 bg-[var(--gta-surface)] border border-[var(--gta-border)] shrink-0'>
-          <Typography variant='pre' className='text-[8px] text-[var(--gta-text-dim)] uppercase tracking-[0.15em]'>
-            {acc.type === AccountType.Personal ? t('Personal') : t('Shared')}
+        <Typography className='text-sm font-medium text-(--gta-text) truncate'>
+          {account.accountName}
+        </Typography>
+        <div className='flex items-center justify-center px-2 py-0.5 bg-(--gta-surface) border border-(--gta-border) shrink-0'>
+          <Typography variant='pre' className='text-[8px] text-(--gta-text-dim) uppercase tracking-[0.15em]'>
+            {account.type === AccountType.Personal ? t('Personal') : t('Shared')}
           </Typography>
         </div>
       </div>
-      <Typography className='text-sm text-[var(--gta-green)]'>{formatMoney(acc.balance, config.general)}</Typography>
+      <Typography className='text-sm text-(--gta-green)'>
+        {formatMoney(account.balance, config.general)}
+      </Typography>
     </div>
   );
 };
