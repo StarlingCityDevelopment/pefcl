@@ -1,12 +1,12 @@
+import { ThemeProvider, createTheme } from '@mui/material';
+import { render } from '@testing-library/react';
+import { type MemoryHistory, createMemoryHistory } from 'history';
+import type { Resource } from 'i18next';
+import { SnackbarProvider } from 'notistack';
 /* eslint-disable react/display-name */
 import React from 'react';
-import { render } from '@testing-library/react';
-import { Resource } from 'i18next';
-import { ReactElement, ReactNode, Suspense } from 'react';
+import { type ReactElement, type ReactNode, Suspense } from 'react';
 import { Router } from 'react-router';
-import { createMemoryHistory, MemoryHistory } from 'history';
-import { createTheme, ThemeProvider } from '@mui/material';
-import { SnackbarProvider } from 'notistack';
 
 const theme = createTheme({
   palette: {
@@ -42,12 +42,7 @@ export const renderWithProviders = (ui: ReactElement, options?: RenderWithProvid
   const history = options?.history ?? createMemoryHistory();
 
   /* From bottom, to top. Lowest = rendered furthest out. */
-  const providers = [
-    renderWithRouter(history),
-    renderWithSnackbar,
-    renderWithSuspense,
-    renderWithTheme,
-  ];
+  const providers = [renderWithRouter(history), renderWithSnackbar, renderWithSuspense, renderWithTheme];
 
   const renderedElement = providers.reduce((prevUi, provider) => {
     return provider(prevUi);

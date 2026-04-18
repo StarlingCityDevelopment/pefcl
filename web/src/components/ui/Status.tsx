@@ -1,8 +1,8 @@
-import { SerializedStyles } from '@emotion/react';
+import type { SerializedStyles } from '@emotion/react';
 import styled from '@emotion/styled';
-import { ChipProps, css } from '@mui/material';
+import { type ChipProps, css } from '@mui/material';
 import theme from '@utils/theme';
-import React from 'react';
+import type React from 'react';
 import { BodyText } from './Typography/BodyText';
 
 type Color = Exclude<ChipProps['color'], undefined>;

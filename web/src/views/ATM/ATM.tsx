@@ -1,30 +1,30 @@
+import { PIN_CODE_LENGTH } from '@common/constants';
+import BankCard from '@components/BankCard';
 import Button from '@components/ui/Button';
+import PinField from '@components/ui/Fields/PinField';
 import { Heading2, Heading4, Heading6 } from '@components/ui/Typography/Headings';
+import { accountsAtom, defaultAccountAtom } from '@data/accounts';
+import { transactionBaseAtom } from '@data/transactions';
 import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
+import { useExitListener } from '@hooks/useExitListener';
+import { useKeyDown } from '@hooks/useKeyPress';
+import { useNuiEvent } from '@hooks/useNuiEvent';
+import { ErrorRounded } from '@mui/icons-material';
 import { Alert, Paper, Stack } from '@mui/material';
-import { Account, ATMInput, GetATMAccountInput } from '@typings/Account';
+import type { ATMInput, Account, GetATMAccountInput } from '@typings/Account';
+import type { Card, InventoryCard } from '@typings/BankCard';
+import { CardErrors } from '@typings/Errors';
 import { AccountEvents, CardEvents } from '@typings/Events';
 import { defaultWithdrawOptions } from '@utils/constants';
 import { formatMoney } from '@utils/currency';
 import { fetchNui } from '@utils/fetchNui';
 import theme from '@utils/theme';
-import { AnimatePresence } from 'motion/react';
-import React, { FormEvent, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { motion } from 'motion/react';
-import { useNuiEvent } from '@hooks/useNuiEvent';
-import { Card, InventoryCard } from '@typings/BankCard';
-import { useKeyDown } from '@hooks/useKeyPress';
-import { CardErrors } from '@typings/Errors';
-import { PIN_CODE_LENGTH } from '@shared/constants';
-import BankCard from '@components/BankCard';
-import { ErrorRounded } from '@mui/icons-material';
-import PinField from '@components/ui/Fields/PinField';
-import { useExitListener } from '@hooks/useExitListener';
 import { useAtom, useAtomValue } from 'jotai';
-import { defaultAccountAtom, accountsAtom } from '@data/accounts';
-import { transactionBaseAtom } from '@data/transactions';
+import { AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
+import React, { type FormEvent, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const AnimationContainer = styled.div`
   position: absolute;
@@ -87,10 +87,7 @@ const ATM = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useNuiEvent('PEFCL', 'setVisibleATM', (data) => setIsOpen(data as boolean));
-  const initialStatus = React.useMemo<BankState>(
-    () => (isCardsEnabled ? 'select-card' : 'withdraw'),
-    [isCardsEnabled],
-  );
+  const initialStatus = React.useMemo<BankState>(() => (isCardsEnabled ? 'select-card' : 'withdraw'), [isCardsEnabled]);
 
   const [selectedCard, setSelectedCard] = useState<InventoryCard>();
   const [cards, setCards] = useState<InventoryCard[]>([]);
@@ -143,7 +140,7 @@ const ATM = () => {
 
   const input = {
     cardId: selectedCard?.id ?? 0,
-    pin: parseInt(pin, 10),
+    pin: Number.parseInt(pin, 10),
   };
 
   const handleUpdateBalance = async () => {
@@ -177,7 +174,7 @@ const ATM = () => {
       ? {
           amount,
           cardId: selectedCard?.id,
-          cardPin: parseInt(pin, 10),
+          cardPin: Number.parseInt(pin, 10),
           accountId,
           message: t('Withdrew {{amount}} from an ATM with card {{cardNumber}}.', {
             amount,
@@ -267,7 +264,7 @@ const ATM = () => {
     setState('enter-pin');
   };
 
-  const accountBalance = isCardsEnabled ? account?.balance ?? 0 : defaultAccount?.balance ?? 0;
+  const accountBalance = isCardsEnabled ? (account?.balance ?? 0) : (defaultAccount?.balance ?? 0);
   return (
     <>
       <AnimatePresence>
@@ -284,7 +281,7 @@ const ATM = () => {
                   <Heading4>{t('Select a card')}</Heading4>
                 </Header>
 
-                <Stack direction="row" spacing={1}>
+                <Stack direction='row' spacing={1}>
                   {cards.map((card) => (
                     <CardWrapper key={card.number} onClick={() => handleSelectCard(card)}>
                       <BankCard card={card} />
@@ -293,7 +290,7 @@ const ATM = () => {
                 </Stack>
 
                 {error && (
-                  <Alert icon={<ErrorRounded />} color="error" sx={{ mt: 2, borderRadius: '10px' }}>
+                  <Alert icon={<ErrorRounded />} color='error' sx={{ mt: 2, borderRadius: '10px' }}>
                     {error}
                   </Alert>
                 )}
@@ -320,18 +317,14 @@ const ATM = () => {
 
                 <form onSubmit={handleSubmit}>
                   <Stack spacing={2.5}>
-                    <PinField
-                      label={t('Enter pin')}
-                      value={pin}
-                      onChange={(event) => setPin(event.target.value)}
-                    />
+                    <PinField label={t('Enter pin')} value={pin} onChange={(event) => setPin(event.target.value)} />
 
-                    <Button type="submit">{t('Enter pin')}</Button>
+                    <Button type='submit'>{t('Enter pin')}</Button>
                   </Stack>
                 </form>
 
                 {error && (
-                  <Alert icon={<ErrorRounded />} color="error" sx={{ mt: 2, borderRadius: '10px' }}>
+                  <Alert icon={<ErrorRounded />} color='error' sx={{ mt: 2, borderRadius: '10px' }}>
                     {error}
                   </Alert>
                 )}
@@ -353,9 +346,7 @@ const ATM = () => {
               <Container elevation={4}>
                 <Header>
                   <AccountBalance>{t('Account balance')}</AccountBalance>
-                  <Heading2 sx={{ letterSpacing: '-0.025em' }}>
-                    {formatMoney(accountBalance, config.general)}
-                  </Heading2>
+                  <Heading2 sx={{ letterSpacing: '-0.025em' }}>{formatMoney(accountBalance, config.general)}</Heading2>
                 </Header>
 
                 <WithdrawText>{t('Quick withdraw')}</WithdrawText>
@@ -373,7 +364,7 @@ const ATM = () => {
                 </WithdrawContainer>
 
                 {error && (
-                  <Alert icon={<ErrorRounded />} color="error" sx={{ mt: 2, borderRadius: '10px' }}>
+                  <Alert icon={<ErrorRounded />} color='error' sx={{ mt: 2, borderRadius: '10px' }}>
                     {error}
                   </Alert>
                 )}

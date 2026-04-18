@@ -1,5 +1,5 @@
-import { i18n } from 'i18next';
-import { getI18nResources, Language } from '@utils/i18nResourceHelpers';
+import { type Language, getI18nResources } from '@utils/i18nResourceHelpers';
+import type { i18n } from 'i18next';
 
 export const loadPefclResources = (i18n: i18n) => {
   const resources = getI18nResources();

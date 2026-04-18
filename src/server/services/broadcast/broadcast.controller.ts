@@ -1,7 +1,7 @@
-import { Account } from '@server/../../typings/Account';
-import { Card } from '@server/../../typings/BankCard';
-import { Cash } from '@server/../../typings/Cash';
-import { Transaction } from '@server/../../typings/Transaction';
+import type { Account } from '@server/../../typings/Account';
+import type { Card } from '@server/../../typings/BankCard';
+import type { Cash } from '@server/../../typings/Cash';
+import type { Transaction } from '@server/../../typings/Transaction';
 import { Controller } from '@server/decorators/Controller';
 import { Event, EventListener } from '@server/decorators/Event';
 import { BroadcastService } from './broadcast.service';

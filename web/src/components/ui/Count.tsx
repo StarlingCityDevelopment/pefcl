@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
 import theme from '@utils/theme';
-import React from 'react';
+import type React from 'react';
 
 const Total = styled.div<{ focus: boolean }>`
   display: flex;
@@ -27,7 +27,7 @@ const Total = styled.div<{ focus: boolean }>`
   `}
 `;
 
-import { Box, SxProps, Theme } from '@mui/material';
+import { Box, type SxProps, type Theme } from '@mui/material';
 
 interface CountProps extends React.HTMLAttributes<HTMLDivElement> {
   amount: string | number;

@@ -1,4 +1,4 @@
-import { OnlineUser } from '@typings/user';
+import { type OnlineUser } from '@typings/user';
 
 export class UserModule {
   private readonly _source: number;

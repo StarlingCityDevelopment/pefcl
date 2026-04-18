@@ -2,15 +2,16 @@ import Layout from '@components/Layout';
 import TransactionItem, { TransactionSkeleton } from '@components/TransactionItem';
 import Count from '@components/ui/Count';
 import styled from '@emotion/styled';
-import { Pagination, Stack, Typography, Box } from '@mui/material';
+import { Box, Pagination, Stack, Typography } from '@mui/material';
+import { TransactionEvents } from '@typings/Events';
+import type { GetTransactionsResponse, Transaction } from '@typings/Transaction';
+import { DEFAULT_PAGINATION_LIMIT } from '@utils/constants';
+import { fetchNui } from '@utils/fetchNui';
 import theme from '@utils/theme';
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Heading2, Heading6 } from '../../components/ui/Typography/Headings';
-import { fetchNui } from '@utils/fetchNui';
-import { GetTransactionsResponse, Transaction } from '@typings/Transaction';
-import { TransactionEvents } from '@typings/Events';
-import { DEFAULT_PAGINATION_LIMIT } from '@utils/constants';
 
 const TransactionsList = styled(Stack)`
   overflow-y: auto;
@@ -64,8 +65,8 @@ const Transactions = () => {
   return (
     <Layout title={t('Transactions')}>
       <Stack spacing={2} sx={{ height: '100%', overflow: 'hidden' }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Stack direction="row" spacing={1.5} alignItems="center">
+        <Stack direction='row' justifyContent='space-between' alignItems='center'>
+          <Stack direction='row' spacing={1.5} alignItems='center'>
             <Heading6
               sx={{
                 color: theme.palette.text.secondary,
@@ -85,12 +86,10 @@ const Transactions = () => {
           {isLoading ? (
             Array.from({ length: 5 }).map((_, i) => <TransactionSkeleton key={i} />)
           ) : transactions.length > 0 ? (
-            transactions.map((transaction) => (
-              <TransactionItem transaction={transaction} key={transaction.id} />
-            ))
+            transactions.map((transaction) => <TransactionItem transaction={transaction} key={transaction.id} />)
           ) : (
             <Box sx={{ py: 8, textAlign: 'center' }}>
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+              <Typography variant='body2' sx={{ color: theme.palette.text.secondary }}>
                 {t('No transactions found')}
               </Typography>
             </Box>
@@ -98,28 +97,25 @@ const Transactions = () => {
         </TransactionsList>
 
         <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
+          direction='row'
+          alignItems='center'
+          justifyContent='space-between'
           sx={{
             pt: 2,
             borderTop: '1px solid rgba(255, 255, 255, 0.06)',
             mt: 'auto',
           }}
         >
-          <Typography
-            variant="caption"
-            sx={{ color: theme.palette.text.secondary, fontSize: '0.6875rem' }}
-          >
+          <Typography variant='caption' sx={{ color: theme.palette.text.secondary, fontSize: '0.6875rem' }}>
             {t('Showing {{from}}-{{to}} of {{total}} results', { from: offset + 1, to, total })}
           </Typography>
           <Pagination
             count={pages}
-            shape="rounded"
+            shape='rounded'
             onChange={handleChange}
             page={page}
-            color="primary"
-            size="small"
+            color='primary'
+            size='small'
             sx={{
               '& .MuiPaginationItem-root': {
                 color: theme.palette.text.secondary,

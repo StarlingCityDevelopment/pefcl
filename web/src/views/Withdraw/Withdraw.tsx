@@ -5,17 +5,17 @@ import PriceField from '@components/ui/Fields/PriceField';
 import NewBalance from '@components/ui/NewBalance';
 import { Heading2, Heading6 } from '@components/ui/Typography/Headings';
 import { accountsAtom } from '@data/accounts';
+import { cashAtom } from '@data/cash';
 import { transactionBaseAtom } from '@data/transactions';
 import { useConfig } from '@hooks/useConfig';
+import { useMutation } from '@hooks/useMutation';
 import { LinearProgress, Stack, Typography } from '@mui/material';
-import { ATMInput } from '@typings/Account';
+import type { ATMInput } from '@typings/Account';
 import { AccountEvents } from '@typings/Events';
 import { formatMoney } from '@utils/currency';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@hooks/useMutation';
-import { cashAtom } from '@data/cash';
 
 const Withdraw = () => {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ const Withdraw = () => {
   const [accounts] = useAtom(accountsAtom);
   const { general } = useConfig();
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId);
-  const rawValue = parseInt(amount.replace(/\D/g, ''));
+  const rawValue = Number.parseInt(amount.replace(/\D/g, ''));
   const value = isNaN(rawValue) ? 0 : rawValue;
   const newBalance = (selectedAccount?.balance ?? 0) - value;
   const isValidNewBalance = newBalance >= 0;
@@ -75,7 +75,7 @@ const Withdraw = () => {
         </Typography>
       </Stack>
 
-      <Stack spacing={2.5} marginTop={3} maxWidth="24rem">
+      <Stack spacing={2.5} marginTop={3} maxWidth='24rem'>
         <Stack spacing={0.75}>
           <Heading6
             sx={{
@@ -106,15 +106,11 @@ const Withdraw = () => {
           >
             {t('Amount')}
           </Heading6>
-          <PriceField
-            placeholder={t('Amount')}
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-          />
+          <PriceField placeholder={t('Amount')} value={amount} onChange={(event) => setAmount(event.target.value)} />
           <NewBalance amount={newBalance} isValid={isValidNewBalance} />
         </Stack>
 
-        <Button size="large" disabled={isButtonDisabled} onClick={handleWithdrawal}>
+        <Button size='large' disabled={isButtonDisabled} onClick={handleWithdrawal}>
           {t('Withdraw')}
         </Button>
 

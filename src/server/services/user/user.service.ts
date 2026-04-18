@@ -6,22 +6,17 @@ import { OnlineUser, UserDTO } from '../../../../typings/user';
 import { getPlayerIdentifier, getPlayerName } from '../../utils/misc';
 import { UserModule } from './user.module';
 import { UserEvents } from '@server/../../typings/Events';
-import { CHECK_PLAYER_LOADED_INTERVAL } from '@shared/constants';
+import { CHECK_PLAYER_LOADED_INTERVAL } from '@common/constants';
 
 const logger = mainLogger.child({ module: 'user' });
 
 @singleton()
 export class UserService {
-  private readonly usersBySource: Map<number, UserModule>; // Player class
-  private loadedSources: number[];
-
-  constructor() {
-    this.loadedSources = [];
-    this.usersBySource = new Map<number, UserModule>();
-  }
+  private readonly usersBySource = new Map<number, UserModule>();
+  private loadedSources: number[] = [];
 
   loadClient(source: number) {
-    logger.debug('Loaded client for source: ' + source);
+    logger.debug(`Loaded client for source: ${source}`);
     this.loadedSources.push(source);
   }
 
@@ -40,13 +35,12 @@ export class UserService {
   }
 
   getUserByIdentifier(identifier: string): UserModule | undefined {
-    let user: UserModule | undefined;
-
-    this.getAllUsers().forEach((onlineUser) => {
-      user = onlineUser.getIdentifier() === identifier ? onlineUser : user;
-    });
-
-    return user;
+    for (const onlineUser of this.usersBySource.values()) {
+      if (onlineUser.getIdentifier() === identifier) {
+        return onlineUser;
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -69,12 +63,11 @@ export class UserService {
   }
 
   async unloadPlayer(source: number) {
-    logger.debug('Unloading player for pefcl with export');
-    logger.debug(source);
+    logger.debug(`Unloading player for pefcl with export: ${source}`);
 
     this.deletePlayer(source);
 
-    logger.debug('Player unloaded, emitting: ' + UserEvents.Unloaded);
+    logger.debug(`Player unloaded, emitting: ${UserEvents.Unloaded}`);
     emit(UserEvents.Unloaded, source);
     emitNet(UserEvents.Unloaded, source);
   }

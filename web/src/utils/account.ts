@@ -1,4 +1,4 @@
-import { Account, AccountRole, AccountType } from '@typings/Account';
+import { type Account, AccountRole, AccountType } from '@typings/Account';
 
 export const getIsAdmin = (account: Account) => {
   return [AccountRole.Admin, AccountRole.Owner].includes(account.role);

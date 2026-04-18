@@ -2,17 +2,17 @@ import Layout from '@components/Layout';
 import { PreHeading } from '@components/ui/Typography/BodyText';
 import { Heading2, Heading6 } from '@components/ui/Typography/Headings';
 import { accountsAtom } from '@data/accounts';
+import { selectedAccountIdAtom } from '@data/cards';
+import styled from '@emotion/styled';
+import { useConfig } from '@hooks/useConfig';
+import { AccountBalanceRounded } from '@mui/icons-material';
 import { Box, Stack, alpha } from '@mui/material';
+import { formatMoney } from '@utils/currency';
+import theme from '@utils/theme';
 import { useAtom } from 'jotai';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from '@emotion/styled';
-import theme from '@utils/theme';
 import BankCards from './components/BankCards';
-import { selectedAccountIdAtom } from '@data/cards';
-import { formatMoney } from '@utils/currency';
-import { useConfig } from '@hooks/useConfig';
-import { AccountBalanceRounded } from '@mui/icons-material';
 
 const AccountTabsContainer = styled.div`
   display: flex;
@@ -33,10 +33,8 @@ const AccountTab = styled.button<{ isActive: boolean }>`
   border-radius: 10px;
   border: 1px solid
     ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.3)' : 'rgba(255, 255, 255, 0.06)')};
-  background: ${({ isActive }) =>
-    isActive ? 'rgba(59, 130, 246, 0.08)' : 'rgba(255, 255, 255, 0.02)'};
-  color: ${({ isActive }) =>
-    isActive ? theme.palette.text.primary : theme.palette.text.secondary};
+  background: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.08)' : 'rgba(255, 255, 255, 0.02)')};
+  color: ${({ isActive }) => (isActive ? theme.palette.text.primary : theme.palette.text.secondary)};
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
   white-space: nowrap;
@@ -46,10 +44,8 @@ const AccountTab = styled.button<{ isActive: boolean }>`
   font-weight: 500;
 
   &:hover {
-    background: ${({ isActive }) =>
-      isActive ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.04)'};
-    border-color: ${({ isActive }) =>
-      isActive ? 'rgba(59, 130, 246, 0.4)' : 'rgba(255, 255, 255, 0.1)'};
+    background: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.04)')};
+    border-color: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.4)' : 'rgba(255, 255, 255, 0.1)')};
     color: ${theme.palette.text.primary};
   }
 
@@ -65,13 +61,11 @@ const AccountIcon = styled.div<{ isActive: boolean }>`
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: ${({ isActive }) =>
-    isActive ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)'};
+  background: ${({ isActive }) => (isActive ? 'rgba(59, 130, 246, 0.15)' : 'rgba(255, 255, 255, 0.04)')};
 
   svg {
     font-size: 0.875rem;
-    color: ${({ isActive }) =>
-      isActive ? theme.palette.primary.main : theme.palette.text.secondary};
+    color: ${({ isActive }) => (isActive ? theme.palette.primary.main : theme.palette.text.secondary)};
   }
 `;
 
@@ -114,15 +108,11 @@ const CardsView = () => {
           {accounts.map((account) => {
             const isActive = account.id === selectedAccountId;
             return (
-              <AccountTab
-                key={account.id}
-                isActive={isActive}
-                onClick={() => handleSelectAccount(account.id)}
-              >
+              <AccountTab key={account.id} isActive={isActive} onClick={() => handleSelectAccount(account.id)}>
                 <AccountIcon isActive={isActive}>
                   <AccountBalanceRounded />
                 </AccountIcon>
-                <Stack spacing={0} alignItems="flex-start">
+                <Stack spacing={0} alignItems='flex-start'>
                   <span>{account.accountName}</span>
                   <BalanceLabel>{formatMoney(account.balance, config.general)}</BalanceLabel>
                 </Stack>
@@ -133,11 +123,7 @@ const CardsView = () => {
 
         {/* Bank cards for selected account */}
         {selectedAccountId > 0 && (
-          <BankCards
-            selectedCardId={selectedCardId}
-            onSelectCardId={setSelectedCardId}
-            accountId={selectedAccountId}
-          />
+          <BankCards selectedCardId={selectedCardId} onSelectCardId={setSelectedCardId} accountId={selectedAccountId} />
         )}
       </Stack>
     </Layout>

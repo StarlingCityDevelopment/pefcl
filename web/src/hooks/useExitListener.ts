@@ -1,7 +1,7 @@
+import { GeneralEvents } from '@typings/Events';
+import { isEnvBrowser } from '@utils/misc';
 import { useEffect } from 'react';
 import { fetchNui } from '../utils/fetchNui';
-import { isEnvBrowser } from '@utils/misc';
-import { GeneralEvents } from '@typings/Events';
 
 const LISTENED_KEYS = ['Escape'];
 

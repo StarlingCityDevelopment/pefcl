@@ -1,7 +1,7 @@
 import languages from '@locales/index';
 
 export type Namespace = 'translation' | 'pefcl';
-export type LanguageContent = typeof languages['en'];
+export type LanguageContent = (typeof languages)['en'];
 export type Language = keyof typeof languages;
 export type Locale = Record<Language, LanguageContent>;
 export type Resource = Record<Language, Record<Namespace, LanguageContent>>;
@@ -22,7 +22,7 @@ export const getI18nResourcesNamespaced = (namespace: Namespace) => {
 
 const language = cl_config.general?.language;
 export const load = async () => {
-  console.debug('Loading language from config: ' + language);
+  console.debug(`Loading language from config: ${language}`);
   const resources = getI18nResourcesNamespaced('translation');
 
   await i18next

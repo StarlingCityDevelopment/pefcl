@@ -3,9 +3,10 @@ import { Settings } from '@mui/icons-material';
 import { Fab, Stack, Typography } from '@mui/material';
 import theme from '@utils/theme';
 import { AnimatePresence, motion } from 'motion/react';
-import React, { useEffect, useState } from 'react';
-import Button from './ui/Button';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { data } from 'react-router';
+import Button from './ui/Button';
 
 const Container = styled(motion.div)<{ children?: React.ReactNode }>`
   width: 100%;
@@ -51,14 +52,10 @@ const Devbar = () => {
         {isOpen && (
           <Container exit={{ y: -100 }} initial={{ y: -100 }} animate={{ y: 0 }}>
             <Stack spacing={1}>
-              <Typography variant="caption">Devbar</Typography>
-              <Stack direction="row" spacing={2}>
-                <Button onClick={() => setIsAtmOpen((prev) => !prev)}>
-                  {isAtmOpen ? 'Close' : 'Open'} ATM
-                </Button>
-                <Button onClick={() => setIsBankOpen((prev) => !prev)}>
-                  {isBankOpen ? 'Close' : 'Open'} Bank
-                </Button>
+              <Typography variant='caption'>Devbar</Typography>
+              <Stack direction='row' spacing={2}>
+                <Button onClick={() => setIsAtmOpen((prev) => !prev)}>{isAtmOpen ? 'Close' : 'Open'} ATM</Button>
+                <Button onClick={() => setIsBankOpen((prev) => !prev)}>{isBankOpen ? 'Close' : 'Open'} Bank</Button>
               </Stack>
             </Stack>
           </Container>
@@ -66,7 +63,7 @@ const Devbar = () => {
       </AnimatePresence>
 
       <FabContainer>
-        <Fab color="secondary" onClick={() => setIsOpen((prev) => !prev)}>
+        <Fab color='secondary' onClick={() => setIsOpen((prev) => !prev)}>
           <Settings />
         </Fab>
       </FabContainer>

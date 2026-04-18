@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Divider } from '@mui/material';
 import { fontWeight } from '@mui/system';
-import React from 'react';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useConfig } from '../hooks/useConfig';
 import { formatMoney } from '../utils/currency';
@@ -44,10 +44,10 @@ const Summary: React.FC<SummaryProps> = ({ balance, payment }) => {
   return (
     <div>
       <Heading6>{t('Summary')}</Heading6>
-      <SummaryRow label={t('Balance')} amount={balance}></SummaryRow>
-      <SummaryRow label={t('Cost')} amount={-payment}></SummaryRow>
+      <SummaryRow label={t('Balance')} amount={balance} />
+      <SummaryRow label={t('Cost')} amount={-payment} />
       <Divider sx={{ m: '0.5rem 0' }} />
-      <SummaryRow label={t('New balance')} amount={balance - payment}></SummaryRow>
+      <SummaryRow label={t('New balance')} amount={balance - payment} />
     </div>
   );
 };

@@ -1,21 +1,14 @@
-import React, { useState } from 'react';
-import Button from '@components/ui/Button';
-import {
-  Alert,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Stack,
-} from '@mui/material';
-import { Heading4 } from '@components/ui/Typography/Headings';
-import { PreHeading } from '@components/ui/Typography/BodyText';
-import { useTranslation } from 'react-i18next';
 import BaseDialog from '@components/Modals/BaseDialog';
-import { CardEvents } from '@typings/Events';
-import { ErrorRounded } from '@mui/icons-material';
+import Button from '@components/ui/Button';
 import PinField from '@components/ui/Fields/PinField';
+import { PreHeading } from '@components/ui/Typography/BodyText';
+import { Heading4 } from '@components/ui/Typography/Headings';
 import { useMutation } from '@hooks/useMutation';
+import { ErrorRounded } from '@mui/icons-material';
+import { Alert, DialogActions, DialogContent, DialogContentText, DialogTitle, Stack } from '@mui/material';
+import { CardEvents } from '@typings/Events';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface CardActionsProps {
   cardId: number;
@@ -76,7 +69,7 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
     if (confirmNewPin !== newPin) {
       return;
     }
-    await mutateUpdatePin({ cardId, newPin: parseInt(newPin, 10) });
+    await mutateUpdatePin({ cardId, newPin: Number.parseInt(newPin, 10) });
   };
 
   return (
@@ -90,7 +83,7 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
         <Stack spacing={0.75}>
           <Button
             fullWidth
-            size="small"
+            size='small'
             onClick={() => !isBlocked && setDialog('update')}
             disabled={isLoading || isBlocked}
           >
@@ -99,33 +92,16 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
 
           {isBlocked ? (
             <>
-              <Button
-                fullWidth
-                size="small"
-                onClick={() => setDialog('unblock')}
-                disabled={isLoading}
-              >
+              <Button fullWidth size='small' onClick={() => setDialog('unblock')} disabled={isLoading}>
                 {t('Unlock card')}
               </Button>
 
-              <Button
-                fullWidth
-                size="small"
-                color="error"
-                onClick={() => setDialog('delete')}
-                disabled={isLoading}
-              >
+              <Button fullWidth size='small' color='error' onClick={() => setDialog('delete')} disabled={isLoading}>
                 {t('Delete card')}
               </Button>
             </>
           ) : (
-            <Button
-              fullWidth
-              size="small"
-              color="error"
-              onClick={() => setDialog('block')}
-              disabled={isLoading}
-            >
+            <Button fullWidth size='small' color='error' onClick={() => setDialog('block')} disabled={isLoading}>
               {t('Block card')}
             </Button>
           )}
@@ -138,18 +114,14 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
         <DialogContent>
           <Stack spacing={3}>
             <Stack spacing={1}>
-              <PinField
-                label={t('New pin')}
-                value={newPin}
-                onChange={(event) => setNewPin(event.target.value)}
-              />
+              <PinField label={t('New pin')} value={newPin} onChange={(event) => setNewPin(event.target.value)} />
               <PinField
                 value={confirmNewPin}
                 label={t('Confirm new pin')}
                 onChange={(event) => setConfirmNewPin(event.target.value)}
               />
               {confirmNewPin !== newPin && confirmNewPin.length > 0 && (
-                <Alert icon={<ErrorRounded />} color="error">
+                <Alert icon={<ErrorRounded />} color='error'>
                   {t('Pins do not match')}
                 </Alert>
               )}
@@ -158,7 +130,7 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
         </DialogContent>
 
         <DialogActions>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color='inherit' onClick={handleClose}>
             {t('Cancel')}
           </Button>
           <Button onClick={handleUpdatePin} disabled={isLoading}>
@@ -172,17 +144,15 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
         <DialogTitle>{t('Blocking card')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t(
-              'Are you sure you want to block this card? You can unlock it later from card actions.',
-            )}
+            {t('Are you sure you want to block this card? You can unlock it later from card actions.')}
           </DialogContentText>
         </DialogContent>
 
         <DialogActions>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color='inherit' onClick={handleClose}>
             {t('Cancel')}
           </Button>
-          <Button color="error" onClick={handleBlockCard} disabled={isLoading}>
+          <Button color='error' onClick={handleBlockCard} disabled={isLoading}>
             {t('Block card')}
           </Button>
         </DialogActions>
@@ -193,14 +163,12 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
         <DialogTitle>{t('Unlock card')}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t(
-              'Are you sure you want to unlock this card? It will be usable again for transactions.',
-            )}
+            {t('Are you sure you want to unlock this card? It will be usable again for transactions.')}
           </DialogContentText>
         </DialogContent>
 
         <DialogActions>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color='inherit' onClick={handleClose}>
             {t('Cancel')}
           </Button>
           <Button onClick={handleUnblockCard} disabled={isLoading}>
@@ -219,10 +187,10 @@ const CardActions = ({ cardId, onBlock, onUnblock, onDelete, isBlocked }: CardAc
         </DialogContent>
 
         <DialogActions>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color='inherit' onClick={handleClose}>
             {t('Cancel')}
           </Button>
-          <Button color="error" onClick={handleDeleteCard} disabled={isLoading}>
+          <Button color='error' onClick={handleDeleteCard} disabled={isLoading}>
             {t('Delete card')}
           </Button>
         </DialogActions>

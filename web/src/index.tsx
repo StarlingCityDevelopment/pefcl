@@ -1,15 +1,15 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App';
+import { GlobalSettingsProvider } from '@hooks/useGlobalSettings';
 import { ThemeProvider } from '@mui/material';
-import theme from './utils/theme';
-import { HashRouter } from 'react-router';
-import i18n from './utils/i18n';
 import { SnackbarProvider } from 'notistack';
 import { NuiProvider } from 'react-fivem-hooks';
 import { I18nextProvider } from 'react-i18next';
-import { GlobalSettingsProvider } from '@hooks/useGlobalSettings';
+import { HashRouter } from 'react-router';
+import App from './App';
+import i18n from './utils/i18n';
+import theme from './utils/theme';
 
 const container = document.getElementById('root');
 if (!container) {

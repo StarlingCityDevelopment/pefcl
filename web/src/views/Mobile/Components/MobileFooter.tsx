@@ -1,18 +1,13 @@
+import BadgeAtom from '@components/ui/BadgeAtom';
+import { totalUnpaidInvoicesAtom } from '@data/invoices';
 import styled from '@emotion/styled';
-import {
-  CreditCardRounded,
-  DashboardRounded,
-  ReceiptRounded,
-  SwapHorizRounded,
-} from '@mui/icons-material';
+import { CreditCardRounded, DashboardRounded, ReceiptRounded, SwapHorizRounded } from '@mui/icons-material';
 import { Badge } from '@mui/material';
 import theme from '@utils/theme';
-import React, { ReactNode } from 'react';
-import { Link, useMatch } from 'react-router';
+import type { Atom } from 'jotai';
+import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Atom } from 'jotai';
-import { totalUnpaidInvoicesAtom } from '@data/invoices';
-import BadgeAtom from '@components/ui/BadgeAtom';
+import { Link, useMatch } from 'react-router';
 
 export const FooterHeight = '5rem';
 
@@ -96,11 +91,11 @@ const ListItem = ({ to, icon, label, amount, countAtom }: ListItemProps) => {
     <Link to={to}>
       <ListItemContainer isActive={Boolean(match)}>
         {countAtom ? (
-          <BadgeAtom color="error" countAtom={countAtom}>
+          <BadgeAtom color='error' countAtom={countAtom}>
             {icon}
           </BadgeAtom>
         ) : (
-          <Badge color="error" badgeContent={amount}>
+          <Badge color='error' badgeContent={amount}>
             {icon}
           </Badge>
         )}
@@ -116,13 +111,13 @@ const MobileFooter = () => {
   return (
     <Container>
       <List>
-        <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to="../mobile/dashboard" />
-        <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to="../mobile/accounts" />
-        <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to="../mobile/transfer" />
+        <ListItem icon={<DashboardRounded />} label={t('Dashboard')} to='../mobile/dashboard' />
+        <ListItem icon={<CreditCardRounded />} label={t('Accounts')} to='../mobile/accounts' />
+        <ListItem icon={<SwapHorizRounded />} label={t('Transfer')} to='../mobile/transfer' />
         <ListItem
           icon={<ReceiptRounded />}
           label={t('Invoices')}
-          to="../mobile/invoices"
+          to='../mobile/invoices'
           countAtom={totalUnpaidInvoicesAtom}
         />
       </List>

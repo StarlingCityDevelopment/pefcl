@@ -1,7 +1,7 @@
 import { DEFAULT_CLEARING_NUMBER } from '@utils/constants';
 import { generateClearingNumber, getClearingNumber } from '@utils/misc';
 import { createMockedConfig } from '@utils/test';
-import { regexExternalNumber } from '@shared/utils/regexes';
+import { regexExternalNumber } from '@common/utils/regexes';
 
 const defaultValue = DEFAULT_CLEARING_NUMBER.toString();
 const clearingNumberConfig = (input: any) => {

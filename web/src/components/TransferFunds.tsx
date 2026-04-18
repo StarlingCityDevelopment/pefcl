@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import { externalAccountsAtom } from '@data/externalAccounts';
+import { transactionBaseAtom } from '@data/transactions';
+import { useMutation } from '@hooks/useMutation';
 import { Box, LinearProgress, Stack } from '@mui/material';
+import { TransactionEvents } from '@typings/Events';
+import { type CreateTransferInput, TransferType } from '@typings/Transaction';
 import { useAtom } from 'jotai';
+import type React from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { accountsAtom, defaultAccountAtom } from '../data/accounts';
-import { Heading6 } from './ui/Typography/Headings';
 import AccountSelect from './AccountSelect';
 import Button from './ui/Button';
-import { useTranslation } from 'react-i18next';
 import PriceField from './ui/Fields/PriceField';
-import { transactionBaseAtom } from '@data/transactions';
-import { TransactionEvents } from '@typings/Events';
-import { CreateTransferInput, TransferType } from '@typings/Transaction';
-import { externalAccountsAtom } from '@data/externalAccounts';
 import NewBalance from './ui/NewBalance';
-import { useMutation } from '@hooks/useMutation';
+import { Heading6 } from './ui/Typography/Headings';
 
 const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
   const { t } = useTranslation();
@@ -25,18 +26,15 @@ const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
   const [toAccountId, setToAccountId] = useState(0);
   const [isToExternal, setIsToExternal] = useState(false);
 
-  const { mutate: mutateTransfer, isLoading: isTransfering } = useMutation(
-    TransactionEvents.CreateTransfer,
-    {
-      successMessage: t('Successfully transferred funds'),
-      onSuccess: async () => {
-        await updateAccounts();
-        await updateTransactions();
-        onClose?.();
-        setAmount('');
-      },
+  const { mutate: mutateTransfer, isLoading: isTransfering } = useMutation(TransactionEvents.CreateTransfer, {
+    successMessage: t('Successfully transferred funds'),
+    onSuccess: async () => {
+      await updateAccounts();
+      await updateTransactions();
+      onClose?.();
+      setAmount('');
     },
-  );
+  });
 
   const parsedAmount = Number(amount.replace(/\D/g, ''));
   const fromAccount = accounts.find((account) => account.id === fromAccountId);
@@ -64,19 +62,18 @@ const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
   const isAmountTooLow = parsedAmount <= 0;
   const isToAccountSelected = toAccountId > 0;
   const isSameAccount = !isToExternal && toAccountId === fromAccountId;
-  const isDisabled =
-    isSameAccount || !parsedAmount || !isToAccountSelected || isAmountTooHigh || isAmountTooLow;
+  const isDisabled = isSameAccount || !parsedAmount || !isToAccountSelected || isAmountTooHigh || isAmountTooLow;
 
-  const rawValue = parseInt(amount.replace(/\D/g, ''));
+  const rawValue = Number.parseInt(amount.replace(/\D/g, ''));
   const value = isNaN(rawValue) ? 0 : rawValue;
   const newBalance = (fromAccount?.balance ?? 0) - value;
   const isValidNewBalance = newBalance >= 0;
 
   return (
     <>
-      <Box pt={2} display="flex" flexDirection="column">
+      <Box pt={2} display='flex' flexDirection='column'>
         <Stack spacing={3}>
-          <Stack direction="row" spacing={3}>
+          <Stack direction='row' spacing={3}>
             <Stack flex={1} spacing={0.75}>
               <Heading6
                 sx={{
@@ -129,17 +126,13 @@ const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
             >
               {t('Amount')}
             </Heading6>
-            <PriceField
-              placeholder={t('Amount')}
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-            />
+            <PriceField placeholder={t('Amount')} value={amount} onChange={(event) => setAmount(event.target.value)} />
             <NewBalance amount={newBalance} isValid={isValidNewBalance} />
           </Stack>
 
           {/* useMutation handles error reporting via snackbar */}
 
-          <Stack alignSelf="flex-end" direction="row" spacing={2}>
+          <Stack alignSelf='flex-end' direction='row' spacing={2}>
             <Button disabled={isDisabled} onClick={handleTransfer}>
               {t('Transfer funds')}
             </Button>

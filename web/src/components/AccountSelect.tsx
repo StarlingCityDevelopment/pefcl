@@ -1,19 +1,19 @@
 import styled from '@emotion/styled';
-import { ListSubheader, MenuItem, SelectChangeEvent, Stack, Typography } from '@mui/material';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
+import { ListSubheader, MenuItem, type SelectChangeEvent, Stack, Typography } from '@mui/material';
+import { Box } from '@mui/system';
+import { type Account, AccountRole, AccountType, type ExternalAccount } from '@typings/Account';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Account, AccountRole, AccountType, ExternalAccount } from '@typings/Account';
-import { ResourceConfig } from '../../../typings/config';
+import type { ResourceConfig } from '../../../typings/config';
 import { useConfig } from '../hooks/useConfig';
 import { formatMoney } from '../utils/currency';
 import theme from '../utils/theme';
+import AddExternalAccountModal from './Modals/AddExternalAccount';
+import Button from './ui/Button';
+import Select from './ui/Select';
 import { BodyText } from './ui/Typography/BodyText';
 import { Heading6 } from './ui/Typography/Headings';
-import Select from './ui/Select';
-import Button from './ui/Button';
-import { Box } from '@mui/system';
-import AddExternalAccountModal from './Modals/AddExternalAccount';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
 
 // Prefix to namespace external account IDs so they never collide with internal ones
 const EXT_PREFIX = 'ext-';
@@ -54,18 +54,16 @@ const Option: React.FC<{
   const { t } = useTranslation();
   return (
     <ListItem>
-      <Stack p="0rem 0.5rem">
+      <Stack p='0rem 0.5rem'>
         <BodyText>{account.accountName}</BodyText>
         {isDisabledByContributor ? (
-          <Typography variant="caption">
-            {t('Contributors cannot use money in shared accounts.')}
-          </Typography>
+          <Typography variant='caption'>{t('Contributors cannot use money in shared accounts.')}</Typography>
         ) : (
           <BalanceText>{formatMoney(account.balance, config.general)}</BalanceText>
         )}
       </Stack>
 
-      <Stack direction="row" spacing={2}>
+      <Stack direction='row' spacing={2}>
         <Heading6>{account.type === AccountType.Personal ? t('Personal') : t('Shared')}</Heading6>
       </Stack>
     </ListItem>
@@ -103,8 +101,8 @@ const AccountSelect = ({
     selectedId === undefined || selectedId === 0
       ? '0'
       : isExternalSelected
-      ? `${EXT_PREFIX}${selectedId}`
-      : selectedId.toString();
+        ? `${EXT_PREFIX}${selectedId}`
+        : selectedId.toString();
 
   const handleChange = (event: SelectChangeEvent<string | number>) => {
     const val = event.target.value.toString();
@@ -136,7 +134,7 @@ const AccountSelect = ({
       <Select
         value={currentValue}
         onChange={handleChange}
-        variant="filled"
+        variant='filled'
         sx={{
           width: '100%',
         }}
@@ -206,9 +204,9 @@ const AccountSelect = ({
         }}
       >
         {currentValue === '0' && (
-          <StyledMenuItem value="0" disabled>
+          <StyledMenuItem value='0' disabled>
             <ListItem>
-              <Stack p="0rem 0.5rem">
+              <Stack p='0rem 0.5rem'>
                 <Heading6>{t('Select account')}</Heading6>
               </Stack>
             </ListItem>
@@ -219,19 +217,14 @@ const AccountSelect = ({
         {accounts
           .filter((account) => account.id !== excludeId)
           .map((account) => {
-            const isDisabledByContributor =
-              isFromAccount && account.role === AccountRole.Contributor;
+            const isDisabledByContributor = isFromAccount && account.role === AccountRole.Contributor;
             return (
               <StyledMenuItem
                 key={`int-${account.id}`}
                 value={account.id.toString()}
                 disabled={currentValue === account.id.toString() || isDisabledByContributor}
               >
-                <Option
-                  account={account}
-                  config={config}
-                  isDisabledByContributor={isDisabledByContributor}
-                />
+                <Option account={account} config={config} isDisabledByContributor={isDisabledByContributor} />
               </StyledMenuItem>
             );
           })}
@@ -240,7 +233,7 @@ const AccountSelect = ({
         {externalAccounts.map((account) => (
           <StyledMenuItem key={`ext-${account.id}`} value={`${EXT_PREFIX}${account.id}`}>
             <ListItem>
-              <Stack p="0rem 0.5rem">
+              <Stack p='0rem 0.5rem'>
                 <BodyText>{account.name}</BodyText>
                 <Heading6>{account.number}</Heading6>
               </Stack>

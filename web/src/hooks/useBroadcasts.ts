@@ -1,12 +1,12 @@
 import { accountsAtom, rawAccountAtom } from '@data/accounts';
+import { rawCashAtom } from '@data/cash';
 import { invoicesAtom } from '@data/invoices';
 import { transactionBaseAtom } from '@data/transactions';
-import { rawCashAtom } from '@data/cash';
-import { Account } from '@typings/Account';
+import { useNuiEvent } from '@hooks/useNuiEvent';
+import type { Account } from '@typings/Account';
 import { Broadcasts } from '@typings/Events';
 import { updateAccount } from '@utils/account';
 import { useAtom, useSetAtom } from 'jotai';
-import { useNuiEvent } from '@hooks/useNuiEvent';
 
 export const useBroadcasts = () => {
   const updateInvoices = useSetAtom(invoicesAtom);

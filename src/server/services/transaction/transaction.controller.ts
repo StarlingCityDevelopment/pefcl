@@ -1,6 +1,6 @@
 import { TransactionEvents } from '@typings/Events';
-import { Request, Response } from '@typings/http';
-import {
+import type { Request, Response } from '@typings/http';
+import type {
   GetTransactionHistoryResponse,
   GetTransactionsInput,
   GetTransactionsResponse,

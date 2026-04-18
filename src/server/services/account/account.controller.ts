@@ -22,14 +22,14 @@ import {
   SharedAccountEvents,
   UserEvents,
 } from '@typings/Events';
-import { Request, Response } from '@typings/http';
+import type { Request, Response } from '@typings/http';
 import { ServerExports } from '@typings/exports/server';
 import { AccountService } from './account.service';
 import { Event, EventListener } from '@decorators/Event';
 import { ExternalAccountService } from '@services/accountExternal/externalAccount.service';
 import { AuthService } from '@services/auth/auth.service';
 import { Export, ExportListener } from '@decorators/Export';
-import { OnlineUser } from '@server/../../typings/user';
+import { type OnlineUser } from '@server/../../typings/user';
 
 @Controller('Account')
 @PromiseEventListener()

@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
 import InvoiceItem from '@components/InvoiceItem';
+import TotalBalance from '@components/TotalBalance';
 import { Heading2, Heading4, Heading5 } from '@components/ui/Typography/Headings';
 import { invoicesAtom } from '@data/invoices';
 import { Box, Stack } from '@mui/material';
 import { useAtom } from 'jotai';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import TotalBalance from '@components/TotalBalance';
 
 const MobileInvoicesView = () => {
   const { t } = useTranslation();

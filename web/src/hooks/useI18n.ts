@@ -1,8 +1,8 @@
-import { Language } from '@utils/i18nResourceHelpers';
-import { i18n } from 'i18next';
-import updateLocale from 'dayjs/plugin/updateLocale';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
+import type { Language } from '@utils/i18nResourceHelpers';
 import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import type { i18n } from 'i18next';
 import { useCallback, useEffect, useState } from 'react';
 import { loadPefclResources } from '../views/Mobile/i18n';
 

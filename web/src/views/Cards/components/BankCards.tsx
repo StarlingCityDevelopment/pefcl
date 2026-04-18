@@ -1,27 +1,27 @@
+import AccountSelect from '@components/AccountSelect';
+import BankCard from '@components/BankCard';
+import BaseDialog from '@components/Modals/BaseDialog';
+import Summary from '@components/Summary';
+import Button from '@components/ui/Button';
+import PinField from '@components/ui/Fields/PinField';
 import { PreHeading } from '@components/ui/Typography/BodyText';
 import { Heading4, Heading6 } from '@components/ui/Typography/Headings';
-import React, { useEffect, useState } from 'react';
-import BankCard from '@components/BankCard';
-import { AddRounded, ErrorRounded, InfoRounded } from '@mui/icons-material';
-import { Alert, DialogActions, DialogContent, DialogTitle, Stack, Box } from '@mui/material';
-import { Card, CreateCardInput } from '@typings/BankCard';
-import theme from '@utils/theme';
+import { accountsAtom } from '@data/accounts';
+import { cardsAtom } from '@data/cards';
 import styled from '@emotion/styled';
+import { useConfig } from '@hooks/useConfig';
+import { AddRounded, ErrorRounded, InfoRounded } from '@mui/icons-material';
+import { Alert, Box, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
+import { AccountRole, AccountType } from '@typings/Account';
+import type { Card, CreateCardInput } from '@typings/BankCard';
+import { CardEvents } from '@typings/Events';
+import { fetchNui } from '@utils/fetchNui';
+import theme from '@utils/theme';
+import { useAtom } from 'jotai';
+import { AnimatePresence, motion } from 'motion/react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CardActions from './CardActions';
-import { useConfig } from '@hooks/useConfig';
-import BaseDialog from '@components/Modals/BaseDialog';
-import { fetchNui } from '@utils/fetchNui';
-import { CardEvents } from '@typings/Events';
-import { useAtom } from 'jotai';
-import { cardsAtom } from '@data/cards';
-import Button from '@components/ui/Button';
-import AccountSelect from '@components/AccountSelect';
-import Summary from '@components/Summary';
-import { accountsAtom } from '@data/accounts';
-import PinField from '@components/ui/Fields/PinField';
-import { AccountRole, AccountType } from '@typings/Account';
-import { AnimatePresence, motion } from 'motion/react';
 
 const CreateCard = styled.div`
   cursor: pointer;
@@ -135,13 +135,12 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
         return;
       }
 
-      const cardEvent =
-        accountType === AccountType.Personal ? CardEvents.OrderPersonal : CardEvents.OrderShared;
+      const cardEvent = accountType === AccountType.Personal ? CardEvents.OrderPersonal : CardEvents.OrderShared;
 
       const newCard = await fetchNui<Card, CreateCardInput>(cardEvent, {
         accountId,
         paymentAccountId: selectedAccountId,
-        pin: parseInt(pin, 10),
+        pin: Number.parseInt(pin, 10),
       });
 
       if (!newCard) {
@@ -167,7 +166,7 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
 
   return (
     <>
-      <Stack direction="row" spacing={2} sx={{ minHeight: 0, flex: 1 }}>
+      <Stack direction='row' spacing={2} sx={{ minHeight: 0, flex: 1 }}>
         {/* Cards grid */}
         <Box flex={1} minWidth={0}>
           <CardsGrid>
@@ -186,9 +185,7 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
 
           {cards.length === 0 && (
             <Box sx={{ py: 4, textAlign: 'center' }}>
-              <Heading6 sx={{ color: theme.palette.text.secondary }}>
-                {t('No cards issued for this account')}
-              </Heading6>
+              <Heading6 sx={{ color: theme.palette.text.secondary }}>{t('No cards issued for this account')}</Heading6>
               <PreHeading sx={{ mt: 0.5 }}>{t('Order a new card to get started')}</PreHeading>
             </Box>
           )}
@@ -228,13 +225,9 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
       <BaseDialog open={isOrderingCard} onClose={handleClose}>
         <DialogTitle>{t('Order a new card')}</DialogTitle>
         <DialogContent>
-          <Stack direction="row" spacing={4}>
+          <Stack direction='row' spacing={4}>
             <Stack spacing={2.5}>
-              <PinField
-                label={t('Enter pin')}
-                value={pin}
-                onChange={(event) => setPin(event.target.value)}
-              />
+              <PinField label={t('Enter pin')} value={pin} onChange={(event) => setPin(event.target.value)} />
 
               <PinField
                 label={t('Confirm pin')}
@@ -267,7 +260,7 @@ const BankCards = ({ onSelectCardId, selectedCardId, accountId }: BankCardsProps
         </DialogContent>
 
         <DialogActions>
-          <Button color="inherit" onClick={handleClose}>
+          <Button color='inherit' onClick={handleClose}>
             {t('Cancel')}
           </Button>
           <Button onClick={handleOrderCard} disabled={isLoading || !isAffordable}>

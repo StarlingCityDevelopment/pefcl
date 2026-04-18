@@ -1,7 +1,7 @@
 import { ServerExports } from '@server/../../typings/exports/server';
 import { Export, ExportListener } from '@server/decorators/Export';
 import { InvoiceEvents } from '@typings/Events';
-import { Request, Response } from '@typings/http';
+import type { Request, Response } from '@typings/http';
 import {
   Invoice,
   CreateInvoiceInput,

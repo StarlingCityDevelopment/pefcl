@@ -31,11 +31,11 @@
       "@utils/*": ["./src/utils/*"],
       "@locales/*": ["../locales/*"],
       "@typings/*": ["../typings/*"],
-      "@shared/*": ["../shared/*"]
+      "@common/*": ["../src/common/*"]
     }
   },
   "include": [
     "src/**/*",
-    "../shared/**/*"
+    "../src/common/**/*"
   ]
 }

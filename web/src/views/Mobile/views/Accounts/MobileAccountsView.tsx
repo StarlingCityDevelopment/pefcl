@@ -1,13 +1,13 @@
-import React from 'react';
 import { AccountCard } from '@components/AccountCard';
 import TotalBalance from '@components/TotalBalance';
 import { Heading2, Heading5 } from '@components/ui/Typography/Headings';
 import { accountsAtom } from '@data/accounts';
 import { Stack } from '@mui/material';
 import { Box } from '@mui/system';
-import { useAtom } from 'jotai';
-import { useTranslation } from 'react-i18next';
 import theme from '@utils/theme';
+import { useAtom } from 'jotai';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const MobileAccountsView = () => {
   const { t } = useTranslation();

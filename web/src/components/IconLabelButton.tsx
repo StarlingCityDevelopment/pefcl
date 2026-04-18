@@ -1,6 +1,6 @@
-import React from 'react';
-import { Button, ButtonProps } from '@mui/material';
 import styled from '@emotion/styled';
+import { Button, type ButtonProps } from '@mui/material';
+import type React from 'react';
 
 interface IconLabelButtonProps extends ButtonProps {
   icon: React.ReactElement;

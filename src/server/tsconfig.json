@@ -16,7 +16,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["./../../shared/*"],
+      "@common/*": ["./../common/*"],
       "@server/*": ["./*"],
       "@utils/*": ["utils/*"],
       "@services/*": ["services/*"],
@@ -25,6 +25,6 @@
       "@typings/*": ["../../typings/*"]
     }
   },
-  "include": ["./**/*", "../../shared/**/*"],
+  "include": ["./**/*", "../common/**/*"],
   "exclude": ["**/node_modules"]
 }

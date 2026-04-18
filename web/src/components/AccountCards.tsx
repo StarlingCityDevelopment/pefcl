@@ -58,12 +58,7 @@ const AccountCards = ({ onSelectAccount, selectedAccountId, hideCreate }: Accoun
 
   return (
     <>
-      <Dialog
-        open={isCreateAccountOpen}
-        onClose={() => setIsCreateAccountOpen(false)}
-        maxWidth="md"
-        fullWidth
-      >
+      <Dialog open={isCreateAccountOpen} onClose={() => setIsCreateAccountOpen(false)} maxWidth='md' fullWidth>
         <CreateAccountModal onClose={() => setIsCreateAccountOpen(false)} />
       </Dialog>
 
@@ -75,7 +70,7 @@ const AccountCards = ({ onSelectAccount, selectedAccountId, hideCreate }: Accoun
         ))}
 
         {!hideCreate && orderedAccounts.length < (config.accounts.maximumNumberOfAccounts || 4) && (
-          <CreateCard onClick={() => setIsCreateAccountOpen(true)} title="create-account">
+          <CreateCard onClick={() => setIsCreateAccountOpen(true)} title='create-account'>
             <Add />
           </CreateCard>
         )}

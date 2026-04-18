@@ -1,7 +1,7 @@
 import { DATABASE_PREFIX } from '@utils/constants';
 import { DataTypes, Model, Optional } from 'sequelize';
 import { config } from '@utils/server-config';
-import { Account, AccountRole, AccountType } from '@typings/Account';
+import { type Account, AccountRole, AccountType } from '@typings/Account';
 import { sequelize } from '@utils/pool';
 import { generateClearingNumber } from '@utils/misc';
 import { timestamps } from '../timestamps.model';

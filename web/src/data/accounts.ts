@@ -1,4 +1,4 @@
-import { Account } from '@typings/Account';
+import type { Account } from '@typings/Account';
 import { AccountEvents } from '@typings/Events';
 import { atom } from 'jotai';
 import { mockedAccounts } from '../utils/constants';
@@ -40,9 +40,7 @@ export const accountsAtom = atom<Promise<Account[]>, Account[] | undefined, Prom
   },
 );
 
-export const totalBalanceAtom = atom((get) =>
-  get(accountsAtom).reduce((prev, curr) => prev + curr.balance, 0),
-);
+export const totalBalanceAtom = atom((get) => get(accountsAtom).reduce((prev, curr) => prev + curr.balance, 0));
 
 export const activeAccountAtomId = atom<number>(0);
 export const activeAccountAtom = atom(
@@ -50,9 +48,7 @@ export const activeAccountAtom = atom(
   (_get, set, str: number) => set(activeAccountAtomId, str),
 );
 
-export const defaultAccountAtom = atom((get) =>
-  get(accountsAtom).find((account) => account.isDefault),
-);
+export const defaultAccountAtom = atom((get) => get(accountsAtom).find((account) => account.isDefault));
 
 export const defaultAccountBalance = atom((get) => get(defaultAccountAtom)?.balance);
 

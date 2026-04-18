@@ -1,12 +1,12 @@
 import React from 'react';
 import './mobile.module.css';
+import { Heading6 } from '@components/ui/Typography/Headings';
 import styled from '@emotion/styled';
+import { CircularProgress, Stack } from '@mui/material';
+import { Box } from '@mui/system';
 import theme from '@utils/theme';
 import MobileFooter, { FooterHeight } from './Components/MobileFooter';
 import MobileRoutes from './Routes';
-import { Box } from '@mui/system';
-import { Heading6 } from '@components/ui/Typography/Headings';
-import { CircularProgress, Stack } from '@mui/material';
 
 const Container = styled.div`
   color: ${theme.palette.text.primary};
@@ -46,11 +46,9 @@ const LoadingFallback = (props: LoadingFallbackProps) => (
       justifyContent: 'center',
     }}
   >
-    <Stack spacing={2} alignItems="center">
+    <Stack spacing={2} alignItems='center'>
       <CircularProgress size={32} thickness={3} />
-      <Heading6 sx={{ opacity: 0.5, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-        {props.message}
-      </Heading6>
+      <Heading6 sx={{ opacity: 0.5, letterSpacing: '0.1em', textTransform: 'uppercase' }}>{props.message}</Heading6>
     </Stack>
   </Box>
 );

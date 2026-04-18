@@ -7,14 +7,14 @@ import { unpaidInvoicesAtom } from '@data/invoices';
 import { useFetchNui } from '@hooks/useFetchNui';
 import { Divider, Stack } from '@mui/material';
 import { Box } from '@mui/system';
-import { Account } from '@typings/Account';
+import type { Account } from '@typings/Account';
 import { AccountEvents, TransactionEvents } from '@typings/Events';
-import { Transaction } from '@typings/Transaction';
+import type { Transaction } from '@typings/Transaction';
 import { fetchNui } from '@utils/fetchNui';
+import theme from '@utils/theme';
 import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import theme from '@utils/theme';
 
 const SectionHeader = ({ title }: { title: string }) => (
   <Heading4
@@ -49,10 +49,7 @@ const MobileDashboardView = () => {
     offset: 0,
     limit: 5,
   };
-  const { data } = useFetchNui<{ total: number; transactions: Transaction[] }>(
-    TransactionEvents.Get,
-    options,
-  );
+  const { data } = useFetchNui<{ total: number; transactions: Transaction[] }>(TransactionEvents.Get, options);
 
   return (
     <Box p={3} pb={12}>
@@ -81,30 +78,24 @@ const MobileDashboardView = () => {
             {data?.transactions?.map((transaction, index) => (
               <React.Fragment key={transaction.id}>
                 <TransactionItem transaction={transaction} isLimitedSpace />
-                {index < (data?.transactions?.length || 0) - 1 && (
-                  <Divider sx={{ opacity: 0.05, my: 1 }} />
-                )}
+                {index < (data?.transactions?.length || 0) - 1 && <Divider sx={{ opacity: 0.05, my: 1 }} />}
               </React.Fragment>
             ))}
             {(!data?.transactions || data.transactions.length === 0) && (
-              <Heading5 sx={{ opacity: 0.4, textAlign: 'center', py: 2 }}>
-                {t('No recent transactions')}
-              </Heading5>
+              <Heading5 sx={{ opacity: 0.4, textAlign: 'center', py: 2 }}>{t('No recent transactions')}</Heading5>
             )}
           </Stack>
         </Stack>
 
         <Stack spacing={2}>
           <SectionHeader title={t('Unpaid invoices')} />
-          <Stack spacing={1.5} overflow="hidden">
+          <Stack spacing={1.5} overflow='hidden'>
             {invoices.map((invoice) => (
               <InvoiceItem key={invoice.id} invoice={invoice} />
             ))}
 
             {invoices.length <= 0 && (
-              <Heading5 sx={{ opacity: 0.4, textAlign: 'center', py: 2 }}>
-                {t('All caught up!')}
-              </Heading5>
+              <Heading5 sx={{ opacity: 0.4, textAlign: 'center', py: 2 }}>{t('All caught up!')}</Heading5>
             )}
           </Stack>
         </Stack>

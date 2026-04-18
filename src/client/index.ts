@@ -3,10 +3,10 @@ import './cl_events';
 import './cl_exports';
 import './cl_integrations';
 import './cl_blips';
-import { GeneralEvents } from '@typings/Events';
 import { RegisterNuiCB } from '@project-error/pe-utils';
-import { createInvoice, giveCash } from './functions';
+import { GeneralEvents } from '@typings/Events';
 import config from './cl_config';
+import { createInvoice, giveCash } from './functions';
 
 let isAtmOpen = false;
 let isBankOpen = false;
@@ -49,12 +49,7 @@ if (!useFrameworkIntegration) {
       // Get position x amount units forward of the player or default to 5.0
       const plyPed = PlayerPedId();
       const [xp, yp, zp] = GetEntityCoords(plyPed, false);
-      const [xf, yf, zf] = GetOffsetFromEntityInWorldCoords(
-        plyPed,
-        0.0,
-        config.atms?.distance ?? 5.0,
-        0.0,
-      );
+      const [xf, yf, zf] = GetOffsetFromEntityInWorldCoords(plyPed, 0.0, config.atms?.distance ?? 5.0, 0.0);
 
       // Create a test capsule and get raycast result
       const tc = StartShapeTestCapsule(xp, yp, zp, xf, yf, zf, 0.5, 16, 0, 4);

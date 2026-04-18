@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { ResourceConfig } from '../../../typings/config';
+import type { ResourceConfig } from '../../../typings/config';
 import { configAtom } from '../data/resourceConfig';
 
 export const useConfig = (): ResourceConfig => {

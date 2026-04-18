@@ -1,6 +1,6 @@
-import { Badge, BadgeProps } from '@mui/material';
-import { Atom, useAtom } from 'jotai';
-import React, { ReactNode } from 'react';
+import { Badge, type BadgeProps } from '@mui/material';
+import { type Atom, useAtom } from 'jotai';
+import React, { type ReactNode } from 'react';
 
 interface BadgeAtomProps extends BadgeProps {
   children: ReactNode;

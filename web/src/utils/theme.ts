@@ -1,4 +1,4 @@
-import { createTheme, alpha } from '@mui/material';
+import { alpha, createTheme } from '@mui/material';
 
 const theme = createTheme({
   palette: {
@@ -44,8 +44,7 @@ const theme = createTheme({
     borderRadius: 14,
   },
   typography: {
-    fontFamily:
-      "'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif",
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif",
     h1: {
       fontSize: '2.5rem',
       fontWeight: 600,
@@ -171,8 +170,7 @@ const theme = createTheme({
         root: {
           backgroundColor: 'rgba(255, 255, 255, 0.04)',
           '&::after': {
-            background:
-              'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent)',
+            background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.03), transparent)',
           },
         },
       },

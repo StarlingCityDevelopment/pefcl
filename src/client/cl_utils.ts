@@ -87,7 +87,7 @@ export const getNearestPlayer = (maxDistance?: number): GetNearestPlayerResult |
   }
 
   return {
-    distance: distance ?? Infinity,
+    distance: distance ?? Number.POSITIVE_INFINITY,
     source: closestPlayer,
   };
 };

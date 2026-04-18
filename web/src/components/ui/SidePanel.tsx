@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
-import { IconButton } from '@mui/material';
 import { Close } from '@mui/icons-material';
-import { AnimatePresence, motion } from 'motion/react';
-import React from 'react';
+import { IconButton } from '@mui/material';
 import theme from '@utils/theme';
+import { AnimatePresence, motion } from 'motion/react';
+import type React from 'react';
 
 const Overlay = styled(motion.div)<{ zIndex: number }>`
   position: absolute;
@@ -60,19 +60,13 @@ interface SidePanelProps {
   zIndex?: number;
 }
 
-const SidePanel: React.FC<SidePanelProps> = ({
-  isOpen,
-  onClose,
-  width,
-  children,
-  zIndex = 100,
-}) => {
+const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, width, children, zIndex = 100 }) => {
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <Overlay
-            key="side-panel-overlay"
+            key='side-panel-overlay'
             zIndex={zIndex - 1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -85,7 +79,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
             }}
           />
           <Panel
-            key="side-panel-content"
+            key='side-panel-content'
             width={width}
             zIndex={zIndex}
             initial={{ x: '100%' }}

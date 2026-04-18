@@ -1,4 +1,4 @@
-import { Card, GetCardInput } from '@typings/BankCard';
+import type { Card, GetCardInput } from '@typings/BankCard';
 import { CardEvents } from '@typings/Events';
 import { mockedAccounts } from '@utils/constants';
 import { fetchNui } from '@utils/fetchNui';

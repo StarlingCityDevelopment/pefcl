@@ -1,15 +1,15 @@
+import { regexExternalNumber } from '@common/utils/regexes';
 import Button from '@components/ui/Button';
 import TextField from '@components/ui/Fields/TextField';
+import { externalAccountsAtom } from '@data/externalAccounts';
 import { Box, DialogContent, DialogTitle, FormHelperText, Stack } from '@mui/material';
-import { ExternalAccountEvents } from '@typings/Events';
 import { AccountErrors, ExternalAccountErrors, GenericErrors } from '@typings/Errors';
+import { ExternalAccountEvents } from '@typings/Events';
 import { fetchNui } from '@utils/fetchNui';
+import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useAtom } from 'jotai';
-import { externalAccountsAtom } from '@data/externalAccounts';
-import { regexExternalNumber } from '@shared/utils/regexes';
 import BaseDialog from './BaseDialog';
 
 interface FormValues {
@@ -73,7 +73,7 @@ const AddExternalAccountModal = ({ isOpen, onClose }: AddExternalAccountModalPro
   };
 
   return (
-    <BaseDialog open={isOpen} onClose={handleClose} maxWidth="xs">
+    <BaseDialog open={isOpen} onClose={handleClose} maxWidth='xs'>
       <Box p={2}>
         <DialogTitle>
           <span>{t('Add external account')}</span>
@@ -84,7 +84,7 @@ const AddExternalAccountModal = ({ isOpen, onClose }: AddExternalAccountModalPro
             <Stack spacing={4}>
               <Stack spacing={1}>
                 <Controller
-                  name="number"
+                  name='number'
                   control={control}
                   rules={{
                     required: {
@@ -111,7 +111,7 @@ const AddExternalAccountModal = ({ isOpen, onClose }: AddExternalAccountModalPro
 
               <Stack spacing={1}>
                 <Controller
-                  name="name"
+                  name='name'
                   control={control}
                   rules={{
                     required: {
@@ -136,12 +136,12 @@ const AddExternalAccountModal = ({ isOpen, onClose }: AddExternalAccountModalPro
             <FormHelperText>{error}</FormHelperText>
           </DialogContent>
 
-          <Box p="0.5rem 1.5rem 1.5rem">
-            <Stack justifyContent="flex-end" spacing={1}>
-              <Button type="submit" disabled={isLoading}>
+          <Box p='0.5rem 1.5rem 1.5rem'>
+            <Stack justifyContent='flex-end' spacing={1}>
+              <Button type='submit' disabled={isLoading}>
                 {t('Add external account')}
               </Button>
-              <Button color="error" onClick={handleClose} disabled={isLoading}>
+              <Button color='error' onClick={handleClose} disabled={isLoading}>
                 {t('Cancel')}
               </Button>
             </Stack>

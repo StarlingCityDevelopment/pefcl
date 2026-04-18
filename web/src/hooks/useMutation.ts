@@ -12,10 +12,7 @@ interface MutationOptions<T> {
  * A hook for handling NUI mutations (POST requests with side effects).
  * Manages loading state, error handling, and provides snackbar notifications.
  */
-export const useMutation = <T = unknown, I = unknown>(
-  event: string,
-  options?: MutationOptions<T>,
-) => {
+export const useMutation = <T = unknown, I = unknown>(event: string, options?: MutationOptions<T>) => {
   const [isLoading, setIsLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 

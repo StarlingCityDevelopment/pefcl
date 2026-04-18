@@ -13,24 +13,24 @@ import updateLocale from 'dayjs/plugin/updateLocale';
 import { useSetAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Routes, Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 import './App.css';
+import Shell from '@components/layout/Shell';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
+import { useLBPhoneSettings } from '@hooks/useLBPhoneSettings';
+import { useLBTabletSettings } from '@hooks/useLBTabletSettings';
 import { useConfig } from './hooks/useConfig';
 import theme from './utils/theme';
 import ATM from './views/ATM/ATM';
+import CardsView from './views/Cards/CardsView';
 import Deposit from './views/Deposit/Deposit';
 import Invoices from './views/Invoices/Invoices';
+import MobileApp from './views/Mobile/Mobile';
 import Withdraw from './views/Withdraw/Withdraw';
 import Accounts from './views/accounts/Accounts';
 import Dashboard from './views/dashboard/Dashboard';
 import Transactions from './views/transactions/Transactions';
 import Transfer from './views/transfer/Transfer';
-import CardsView from './views/Cards/CardsView';
-import MobileApp from './views/Mobile/Mobile';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
-import { useLBPhoneSettings } from '@hooks/useLBPhoneSettings';
-import { useLBTabletSettings } from '@hooks/useLBTabletSettings';
-import Shell from '@components/layout/Shell';
 
 dayjs.extend(updateLocale);
 
@@ -80,16 +80,12 @@ const App: React.FC = () => {
 
   useEffect(() => {
     i18n
-      .changeLanguage(
-        LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language,
-      )
+      .changeLanguage(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language)
       .catch((e) => console.error(e));
   }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
 
   useEffect(() => {
-    dayjs.locale(
-      LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language ?? 'en',
-    );
+    dayjs.locale(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language ?? 'en');
   }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
 
   if (!hasLoaded) {
@@ -104,14 +100,14 @@ const App: React.FC = () => {
         {!isAtmVisible && isVisible && !isMobile && (
           <Shell>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="accounts" element={<Accounts />} />
-              <Route path="transactions" element={<Transactions />} />
-              <Route path="invoices" element={<Invoices />} />
-              <Route path="transfer" element={<Transfer />} />
-              <Route path="deposit" element={<Deposit />} />
-              <Route path="withdraw" element={<Withdraw />} />
-              <Route path="cards" element={<CardsView />} />
+              <Route path='/' element={<Dashboard />} />
+              <Route path='accounts' element={<Accounts />} />
+              <Route path='transactions' element={<Transactions />} />
+              <Route path='invoices' element={<Invoices />} />
+              <Route path='transfer' element={<Transfer />} />
+              <Route path='deposit' element={<Deposit />} />
+              <Route path='withdraw' element={<Withdraw />} />
+              <Route path='cards' element={<CardsView />} />
             </Routes>
           </Shell>
         )}
@@ -124,7 +120,7 @@ const App: React.FC = () => {
       {!isAtmVisible && isVisible && isMobile && (
         <React.Suspense fallback={null}>
           <Routes>
-            <Route path="*" element={<MobileApp />} />
+            <Route path='*' element={<MobileApp />} />
           </Routes>
         </React.Suspense>
       )}

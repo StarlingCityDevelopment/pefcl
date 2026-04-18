@@ -1,21 +1,21 @@
 import { RegisterNuiCB } from '@project-error/pe-utils';
-import { Account, AccountType } from '@typings/Account';
+import { type Account, AccountType } from '@typings/Account';
 import {
   AccountEvents,
+  BalanceEvents,
+  Broadcasts,
+  CardEvents,
+  CashEvents,
   ExternalAccountEvents,
   InvoiceEvents,
+  NUIEvents,
   SharedAccountEvents,
   TransactionEvents,
   UserEvents,
-  BalanceEvents,
-  Broadcasts,
-  NUIEvents,
-  CashEvents,
-  CardEvents,
 } from '@typings/Events';
-import { Invoice } from '@typings/Invoice';
-import { Transaction, TransactionType } from '@typings/Transaction';
-import { OnlineUser } from '@typings/user';
+import type { Invoice } from '@typings/Invoice';
+import { type Transaction, TransactionType } from '@typings/Transaction';
+import type { OnlineUser } from '@typings/user';
 import { RegisterNuiProxy } from 'cl_utils';
 import { translations } from 'i18n';
 import API from './cl_api';
@@ -78,18 +78,13 @@ onNet(Broadcasts.NewTransaction, (payload: Transaction) => {
   SendBankUIMessage('PEFCL', Broadcasts.NewTransaction, payload);
   if (GetResourceState('lb-phone') === 'started') {
     if (
-      (payload?.type == TransactionType.Incoming &&
-        payload?.toAccount?.type === AccountType.Personal) ||
-      (payload?.type == TransactionType.Outgoing &&
-        payload?.fromAccount?.type === AccountType.Personal)
+      (payload?.type === TransactionType.Incoming && payload?.toAccount?.type === AccountType.Personal) ||
+      (payload?.type === TransactionType.Outgoing && payload?.fromAccount?.type === AccountType.Personal)
     ) {
       lbPhoneExports.SendNotification({
         app: 'pefcl',
         title: translations.t('New Transaction'),
-        content:
-          (payload.type === TransactionType.Outgoing
-            ? translations.t('Removed')
-            : translations.t('Received')) + `: ${translations.t('$')}${payload.amount}`,
+        content: `${payload.type === TransactionType.Outgoing ? translations.t('Removed') : translations.t('Received')}: ${translations.t('$')}${payload.amount}`,
       });
     }
   }

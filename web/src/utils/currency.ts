@@ -1,4 +1,4 @@
-import { ResourceConfig } from '../../../typings/config';
+import type { ResourceConfig } from '../../../typings/config';
 
 type FormatMoneyOptions = {
   currency: string;

@@ -2,7 +2,7 @@ import { singleton } from 'tsyringe';
 import { CreateInvoiceInput, GetInvoicesInput, InvoiceStatus } from '@typings/Invoice';
 import { InvoiceModel } from './invoice.model';
 import { MS_TWO_WEEKS } from '@utils/constants';
-import { Transaction } from 'sequelize/types';
+import { type Transaction } from 'sequelize/types';
 
 @singleton()
 export class InvoiceDB {

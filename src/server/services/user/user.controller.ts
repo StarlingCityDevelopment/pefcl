@@ -5,8 +5,8 @@ import { ServerExports } from '@server/../../typings/exports/server';
 import { Export, ExportListener } from '@server/decorators/Export';
 import { config } from '@server/utils/server-config';
 import { GeneralEvents, UserEvents } from '@typings/Events';
-import { Request, Response } from '@typings/http';
-import { OnlineUser } from '@typings/user';
+import type { Request, Response } from '@typings/http';
+import { type OnlineUser } from '@typings/user';
 import { UserService } from './user.service';
 
 @Controller('User')

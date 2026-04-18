@@ -1,13 +1,14 @@
 import styled from '@emotion/styled';
-import { Alert, Box, Paper, Stack, Typography, alpha } from '@mui/material';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
 import { CheckRounded, ErrorRounded } from '@mui/icons-material';
+import { Alert, Box, Paper, Stack, Typography, alpha } from '@mui/material';
+import { InvoiceEvents } from '@typings/Events';
+import type { Invoice, PayInvoiceInput } from '@typings/Invoice';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InvoiceEvents } from '@typings/Events';
-import { Invoice, PayInvoiceInput } from '@typings/Invoice';
 import { accountsAtom, defaultAccountAtom } from '../../data/accounts';
 import { invoicesAtom } from '../../data/invoices';
 import { transactionBaseAtom } from '../../data/transactions';
@@ -20,7 +21,6 @@ import Summary from '../Summary';
 import Button from '../ui/Button';
 import { BodyText } from '../ui/Typography/BodyText';
 import { Heading2, Heading3, Heading5, Heading6 } from '../ui/Typography/Headings';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
 
 dayjs.extend(calendar);
 
@@ -81,7 +81,7 @@ const PayInvoiceModal = ({ onClose, invoice }: PayInvoiceModalProps) => {
           justifyContent: 'center',
         }}
       >
-        <Stack spacing={2} alignItems="center">
+        <Stack spacing={2} alignItems='center'>
           <Box
             sx={{
               width: 80,
@@ -108,14 +108,10 @@ const PayInvoiceModal = ({ onClose, invoice }: PayInvoiceModalProps) => {
 
   return (
     <Paper>
-      <Stack
-        p={isMobile ? 3 : 4}
-        spacing={isMobile ? 3 : 8}
-        direction={isMobile ? 'column' : 'row'}
-      >
+      <Stack p={isMobile ? 3 : 4} spacing={isMobile ? 3 : 8} direction={isMobile ? 'column' : 'row'}>
         <Stack spacing={isMobile ? 2.5 : 4} flex={1}>
           <Stack>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction='row' justifyContent='space-between' alignItems='center'>
               <Heading2 sx={{ fontSize: isMobile ? '1.5rem' : '2rem' }}>{t('Invoice')}</Heading2>
               <Amount sx={{ fontSize: isMobile ? '1.25rem' : '1.75rem' }}>
                 {formatMoney(invoice.amount, config.general)}
@@ -152,7 +148,7 @@ const PayInvoiceModal = ({ onClose, invoice }: PayInvoiceModalProps) => {
             </Heading6>
             <BodyText sx={{ fontSize: isMobile ? '0.875rem' : '1rem' }}>
               {expiresDate.format(t('DATE_TIME_FORMAT'))}
-              <Typography component="span" sx={{ opacity: 0.5, ml: 1, fontSize: '0.85em' }}>
+              <Typography component='span' sx={{ opacity: 0.5, ml: 1, fontSize: '0.85em' }}>
                 ({expiresDate.fromNow()})
               </Typography>
             </BodyText>
@@ -182,19 +178,13 @@ const PayInvoiceModal = ({ onClose, invoice }: PayInvoiceModalProps) => {
           <Summary balance={selectedAccount?.balance ?? 0} payment={invoice.amount} />
 
           {error && (
-            <Alert icon={<ErrorRounded />} color="error" sx={{ borderRadius: '12px' }}>
+            <Alert icon={<ErrorRounded />} color='error' sx={{ borderRadius: '12px' }}>
               {error}
             </Alert>
           )}
 
           <Stack direction={isMobile ? 'column-reverse' : 'row'} spacing={1.5}>
-            <Button
-              disabled={isLoading}
-              variant="text"
-              color="error"
-              sx={{ flex: 1 }}
-              onClick={onClose}
-            >
+            <Button disabled={isLoading} variant='text' color='error' sx={{ flex: 1 }} onClick={onClose}>
               {t('Cancel')}
             </Button>
             <Button

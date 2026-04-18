@@ -22,7 +22,7 @@ const players: any = {
 };
 
 if (isMocking) {
-  const baseDir = path.resolve(__dirname + '/../../');
+  const baseDir = path.resolve(`${__dirname}/../`);
   const ServerEmitter = new EventEmitter().setMaxListeners(25);
   const NetEmitter = new EventEmitter().setMaxListeners(25);
 

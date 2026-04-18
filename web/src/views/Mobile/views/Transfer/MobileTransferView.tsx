@@ -11,13 +11,14 @@ import { Alert, Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import { GenericErrors } from '@typings/Errors';
 import { TransactionEvents } from '@typings/Events';
-import { CreateTransferInput, TransferType } from '@typings/Transaction';
+import { type CreateTransferInput, TransferType } from '@typings/Transaction';
 import { formatMoney } from '@utils/currency';
 import { fetchNui } from '@utils/fetchNui';
-import { useAtom } from 'jotai';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import theme from '@utils/theme';
+import { useAtom } from 'jotai';
+import type React from 'react';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const MobileTransferView = () => {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ const MobileTransferView = () => {
 
   const selectedFromAccount = accounts.find((account) => account.id === selectedFromAccountId);
 
-  const rawValue = parseInt(amount.replace(/\D/g, ''));
+  const rawValue = Number.parseInt(amount.replace(/\D/g, ''));
   const value = isNaN(rawValue) ? 0 : rawValue;
   const newBalance = (selectedFromAccount?.balance ?? 0) - value;
   const isValidNewBalance = newBalance >= 0;

@@ -1,4 +1,4 @@
-import { LBSettings } from '@typings/LBAddons';
+import type { LBSettings } from '@typings/LBAddons';
 import { atom } from 'jotai';
 
 export const LBTabletSettingsAtom = atom<Promise<LBSettings | null>>(async () => {

@@ -1,9 +1,9 @@
-import { InputAdornment, InputBase, InputBaseProps, alpha, Stack, Typography } from '@mui/material';
-import React, { ChangeEventHandler } from 'react';
 import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
+import { InputAdornment, InputBase, type InputBaseProps, Stack, Typography, alpha } from '@mui/material';
 import { formatMoneyWithoutCurrency, getCurrencySign, getSignLocation } from '@utils/currency';
 import theme from '@utils/theme';
+import React, { type ChangeEventHandler } from 'react';
 
 const InputContainer = styled('div', {
   shouldForwardProp: (prop) => prop !== 'isFocused',
@@ -15,8 +15,7 @@ const InputContainer = styled('div', {
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.04);
   border: 1px solid
-    ${(props) =>
-      props.isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.06)'};
+    ${(props) => (props.isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.06)')};
   transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
   width: 100%;
 
@@ -96,7 +95,7 @@ const PriceField: React.FC<Props> = ({ label, ...props }) => {
           startAdornment={
             !isLocationBefore ? null : (
               <InputAdornment
-                position="start"
+                position='start'
                 sx={{
                   '& p': {
                     fontWeight: 600,
@@ -112,7 +111,7 @@ const PriceField: React.FC<Props> = ({ label, ...props }) => {
           endAdornment={
             isLocationBefore ? null : (
               <InputAdornment
-                position="end"
+                position='end'
                 sx={{
                   '& p': {
                     fontWeight: 600,

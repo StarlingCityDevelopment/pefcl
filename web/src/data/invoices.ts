@@ -1,7 +1,7 @@
-import { atom } from 'jotai';
-import { mockedInvoices } from '@utils/constants';
 import { InvoiceEvents } from '@typings/Events';
-import { GetInvoicesInput, GetInvoicesResponse, InvoiceStatus } from '../../../typings/Invoice';
+import { mockedInvoices } from '@utils/constants';
+import { atom } from 'jotai';
+import { type GetInvoicesInput, type GetInvoicesResponse, InvoiceStatus } from '../../../typings/Invoice';
 import { fetchNui } from '../utils/fetchNui';
 import { isEnvBrowser } from '../utils/misc';
 
@@ -31,11 +31,7 @@ const getInvoices = async (input: GetInvoicesInput): Promise<GetInvoicesResponse
 
 const isLoadedAtom = atom(false);
 const invoicesAtomRaw = atom<GetInvoicesResponse>(initialState);
-export const invoicesAtom = atom<
-  Promise<GetInvoicesResponse>,
-  GetInvoicesInput | undefined,
-  Promise<void>
->(
+export const invoicesAtom = atom<Promise<GetInvoicesResponse>, GetInvoicesInput | undefined, Promise<void>>(
   async (get) => {
     const isLoaded = get(isLoadedAtom);
     const raw = get(invoicesAtomRaw);

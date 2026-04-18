@@ -1,16 +1,16 @@
-import React from 'react';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
+import { ArrowDropDownRounded } from '@mui/icons-material';
 import {
-  InputBase,
   Select as BaseSelect,
-  SelectProps as BaseSelectProps,
+  type SelectProps as BaseSelectProps,
+  Box,
+  InputBase,
+  Typography,
   alpha,
   styled,
-  Box,
-  Typography,
 } from '@mui/material';
 import theme from '@utils/theme';
-import { ArrowDropDownRounded } from '@mui/icons-material';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
+import React from 'react';
 
 const InputContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'isFocused',
@@ -20,9 +20,7 @@ const InputContainer = styled(Box, {
   alignItems: 'center',
   borderRadius: '10px',
   backgroundColor: 'rgba(255, 255, 255, 0.04)',
-  border: `1px solid ${
-    isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.06)'
-  }`,
+  border: `1px solid ${isFocused ? alpha(theme.palette.primary.main, 0.6) : 'rgba(255, 255, 255, 0.06)'}`,
   transition: 'all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1)',
   '&:hover': {
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
@@ -58,7 +56,7 @@ const Select = (props: SelectProps) => {
     <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
       {props.label && (
         <Typography
-          variant="caption"
+          variant='caption'
           sx={{
             fontWeight: 600,
             textTransform: 'uppercase',

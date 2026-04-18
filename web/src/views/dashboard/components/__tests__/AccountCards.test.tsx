@@ -1,16 +1,16 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { screen, waitFor } from '@testing-library/react';
 import AccountCards from '@components/AccountCards';
-import { renderWithProviders } from '@utils/test';
+import { screen, waitFor } from '@testing-library/react';
 import { mockedAccounts } from '@utils/constants';
+import { renderWithProviders } from '@utils/test';
 
 jest.mock('@utils/fetchNui', () => ({
   fetchNui: () => [mockedAccounts[0], mockedAccounts[1]],
 }));
 
 const Loading = () => {
-  return <div data-testid="loading" />;
+  return <div data-testid='loading' />;
 };
 describe('Component: <AccountCards />', () => {
   test('should display add card button', async () => {

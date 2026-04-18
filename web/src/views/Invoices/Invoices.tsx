@@ -1,17 +1,18 @@
 import InvoiceItem from '@components/InvoiceItem';
 import Layout from '@components/Layout';
-import React, { useEffect, useState } from 'react';
 import { Heading3, Heading6 } from '@components/ui/Typography/Headings';
-import { Pagination, Stack, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import theme from '@utils/theme';
-import styled from '@emotion/styled';
-import { GetInvoicesResponse, Invoice } from '@typings/Invoice';
-import { InvoiceEvents } from '@typings/Events';
-import { fetchNui } from '@utils/fetchNui';
-import { DEFAULT_PAGINATION_LIMIT } from '@utils/constants';
-import { useAtom } from 'jotai';
 import { invoicesAtom } from '@data/invoices';
+import styled from '@emotion/styled';
+import { Pagination, Stack, Typography } from '@mui/material';
+import { InvoiceEvents } from '@typings/Events';
+import { GetInvoicesResponse, Invoice } from '@typings/Invoice';
+import { DEFAULT_PAGINATION_LIMIT } from '@utils/constants';
+import { fetchNui } from '@utils/fetchNui';
+import theme from '@utils/theme';
+import { useAtom } from 'jotai';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const NoInvoicesText = styled(Heading3)`
   padding-top: 4rem;
@@ -49,7 +50,7 @@ const Invoices = () => {
 
   return (
     <Layout title={t('Invoices')}>
-      <Stack paddingBottom="1rem">
+      <Stack paddingBottom='1rem'>
         <Heading6>{t('Pay your bills')}</Heading6>
       </Stack>
 
@@ -60,22 +61,9 @@ const Invoices = () => {
 
         {invoices.length === 0 && <NoInvoicesText>{t('No invoices, yet.')}</NoInvoicesText>}
 
-        <Stack
-          pt={2}
-          sx={{ marginTop: 'auto !important', alignSelf: 'flex-end' }}
-          direction="row"
-          alignItems="center"
-        >
-          <Typography variant="caption">
-            {t('{{from}}-{{to}} of {{total}}', { from: offset, to, total })}
-          </Typography>
-          <Pagination
-            count={pages}
-            shape="rounded"
-            onChange={handleChange}
-            page={page}
-            color="primary"
-          />
+        <Stack pt={2} sx={{ marginTop: 'auto !important', alignSelf: 'flex-end' }} direction='row' alignItems='center'>
+          <Typography variant='caption'>{t('{{from}}-{{to}} of {{total}}', { from: offset, to, total })}</Typography>
+          <Pagination count={pages} shape='rounded' onChange={handleChange} page={page} color='primary' />
         </Stack>
       </InvoicesContainer>
     </Layout>

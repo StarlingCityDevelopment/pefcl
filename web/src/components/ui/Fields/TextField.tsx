@@ -1,12 +1,5 @@
 import styled from '@emotion/styled';
-import {
-  InputBase,
-  InputBaseProps,
-  StandardTextFieldProps,
-  Typography,
-  alpha,
-  Stack,
-} from '@mui/material';
+import { InputBase, type InputBaseProps, Stack, type StandardTextFieldProps, Typography, alpha } from '@mui/material';
 import React from 'react';
 import theme from '../../../utils/theme';
 
@@ -20,25 +13,19 @@ const InputContainer = styled('div', {
   border-radius: 10px;
   background-color: rgba(255, 255, 255, 0.04);
   border: 1px solid
-    ${(props) =>
-      props.isError ? alpha(theme.palette.error.main, 0.5) : 'rgba(255, 255, 255, 0.06)'};
+    ${(props) => (props.isError ? alpha(theme.palette.error.main, 0.5) : 'rgba(255, 255, 255, 0.06)')};
   transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.06);
-    border-color: ${(props) =>
-      props.isError ? theme.palette.error.main : 'rgba(255, 255, 255, 0.12)'};
+    border-color: ${(props) => (props.isError ? theme.palette.error.main : 'rgba(255, 255, 255, 0.12)')};
   }
 
   &:focus-within {
     background-color: rgba(255, 255, 255, 0.02);
-    border-color: ${(props) =>
-      props.isError ? theme.palette.error.main : alpha(theme.palette.primary.main, 0.6)};
+    border-color: ${(props) => (props.isError ? theme.palette.error.main : alpha(theme.palette.primary.main, 0.6))};
     box-shadow: 0 0 0 3px
-      ${(props) =>
-        props.isError
-          ? alpha(theme.palette.error.main, 0.1)
-          : alpha(theme.palette.primary.main, 0.08)};
+      ${(props) => (props.isError ? alpha(theme.palette.error.main, 0.1) : alpha(theme.palette.primary.main, 0.08))};
   }
 
   & > div {
@@ -91,11 +78,7 @@ const TextField = ({ InputProps, InputLabelProps, helperText, error, ...props }:
       </InputContainer>
 
       {helperText && (
-        <Typography
-          variant="caption"
-          color="error"
-          sx={{ px: 0.5, fontWeight: 500, fontSize: '0.75rem' }}
-        >
+        <Typography variant='caption' color='error' sx={{ px: 0.5, fontWeight: 500, fontSize: '0.75rem' }}>
           {helperText}
         </Typography>
       )}

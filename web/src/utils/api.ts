@@ -1,6 +1,6 @@
-import { ResourceConfig } from '../../../typings/config';
+import defaultConfig from '../../../static/config.json';
+import type { ResourceConfig } from '../../../typings/config';
 import { getResourceName, isEnvBrowser } from './misc';
-import defaultConfig from '../../../config.json';
 
 export const getConfig = async (): Promise<ResourceConfig> => {
   if (isEnvBrowser()) {
@@ -8,9 +8,7 @@ export const getConfig = async (): Promise<ResourceConfig> => {
   }
 
   const resourceName = getResourceName();
-  const config = await fetch(`https://cfx-nui-${resourceName}/config.json`).then((res) =>
-    res.json(),
-  );
+  const config = await fetch(`https://cfx-nui-${resourceName}/static/config.json`).then((res) => res.json());
 
   return config;
 };

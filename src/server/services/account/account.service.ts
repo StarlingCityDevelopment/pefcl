@@ -38,7 +38,7 @@ import {
 import { SharedAccountDB } from '@services/accountShared/sharedAccount.db';
 import { AccountEvents, Broadcasts } from '@server/../../typings/Events';
 import { getFrameworkExports } from '@server/utils/frameworkIntegration';
-import { Transaction } from 'sequelize/types';
+import { type Transaction } from 'sequelize/types';
 import { CardDB } from '../card/card.db';
 
 const logger = mainLogger.child({ module: 'accounts' });
@@ -52,33 +52,18 @@ const isFrameworkIntegrationEnabled = enabled;
 
 @singleton()
 export class AccountService {
-  _cardDB: CardDB;
-  _accountDB: AccountDB;
-  _sharedAccountDB: SharedAccountDB;
-  _cashService: CashService;
-  _userService: UserService;
-  _transactionService: TransactionService;
-
   constructor(
-    accountDB: AccountDB,
-    sharedAccountDB: SharedAccountDB,
-    userService: UserService,
-    cashService: CashService,
-    transactionService: TransactionService,
-    cardDB: CardDB,
-  ) {
-    this._cardDB = cardDB;
-    this._accountDB = accountDB;
-    this._sharedAccountDB = sharedAccountDB;
-    this._cashService = cashService;
-    this._userService = userService;
-    this._transactionService = transactionService;
-  }
+    private readonly _accountDB: AccountDB,
+    private readonly _sharedAccountDB: SharedAccountDB,
+    private readonly _userService: UserService,
+    private readonly _cashService: CashService,
+    private readonly _transactionService: TransactionService,
+    private readonly _cardDB: CardDB,
+  ) {}
 
   private async getMyAccounts(source: number) {
     const user = this._userService.getUser(source);
-    const accounts = await this._accountDB.getAccountsByIdentifier(user.getIdentifier());
-    return accounts;
+    return this._accountDB.getAccountsByIdentifier(user.getIdentifier());
   }
 
   private async getMySharedAccounts(source: number): Promise<Account[]> {
@@ -86,40 +71,31 @@ export class AccountService {
     const accounts = await this._sharedAccountDB.getSharedAccountsByIdentifier(
       user.getIdentifier(),
     );
-    const mappedAccounts = accounts.map((sharedAccount) => {
+
+    return accounts.map((sharedAccount) => {
       const acc = sharedAccount.getDataValue('account') as unknown as AccountModel;
-      const sharedAcc = sharedAccount.toJSON();
+      const { role } = sharedAccount.toJSON();
 
       /* Override role by the shared one. */
       return {
         ...acc?.toJSON(),
-        role: sharedAcc.role,
+        role,
       };
     });
-
-    return mappedAccounts;
   }
 
   async getAccountsByIdentifier(identifier: string): Promise<AccountModel[]> {
-    return await this._accountDB.getAccountsByIdentifier(identifier);
+    return this._accountDB.getAccountsByIdentifier(identifier);
   }
 
   async getTotalBankBalance(source: number): Promise<number> {
     const accounts = await this.getMyAccounts(source);
-    const totalBalance = accounts.reduce((total, account) => {
-      return total + account.getDataValue('balance');
-    }, 0);
-
-    return totalBalance;
+    return accounts.reduce((total, account) => total + account.getDataValue('balance'), 0);
   }
 
   async getTotalBankBalanceByIdentifier(identifier: string): Promise<number> {
     const accounts = await this.getAccountsByIdentifier(identifier);
-    const totalBalance = accounts.reduce((total, account) => {
-      return total + account.getDataValue('balance');
-    }, 0);
-
-    return totalBalance;
+    return accounts.reduce((total, account) => total + account.getDataValue('balance'), 0);
   }
 
   async getUniqueAccount(identifier: string) {
@@ -129,7 +105,7 @@ export class AccountService {
 
   async getDefaultAccountBySource(source: number, t?: Transaction) {
     const user = this._userService.getUser(source);
-    return await this._accountDB.getDefaultAccountByIdentifier(user.getIdentifier(), t);
+    return this._accountDB.getDefaultAccountByIdentifier(user.getIdentifier(), t);
   }
 
   async getDefaultAccountBalance(req: Request<number>) {
@@ -147,14 +123,10 @@ export class AccountService {
     const accounts = accountModels.map((account) => account.toJSON());
     const filteredAccounts = accounts.filter((account) => account.type !== AccountType.Shared);
 
-    const accs = [...filteredAccounts, ...sharedAccounts];
-    return accs.map((account) => {
-      const date = new Date(account.createdAt ?? '');
-      return {
-        ...account,
-        createdAt: date.toLocaleString(),
-      };
-    });
+    return [...filteredAccounts, ...sharedAccounts].map((account) => ({
+      ...account,
+      createdAt: new Date(account.createdAt ?? '').toLocaleString(),
+    }));
   }
 
   async addUserToShared(req: Request<AddToSharedAccountInput>) {
@@ -877,7 +849,7 @@ export class AccountService {
   async createUniqueAccount(req: Request<CreateBasicAccountInput>) {
     logger.debug('Creating unique account ..');
 
-    const { identifier, name, type } = req.data;
+    const { identifier, name, } = req.data;
 
     const existingAccount = await this._accountDB.getAccountsByIdentifier(req.data.identifier);
 

@@ -2,10 +2,11 @@ import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
 import { Divider, Popover, Stack } from '@mui/material';
 import { Box } from '@mui/system';
-import { GetTransactionHistoryResponse } from '@typings/Transaction';
+import type { GetTransactionHistoryResponse } from '@typings/Transaction';
 import { formatMoney } from '@utils/currency';
 import theme from '@utils/theme';
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Count from './ui/Count';
 import { Heading6 } from './ui/Typography/Headings';
@@ -85,9 +86,7 @@ const Column = ({ date, income, expenses, maxHeight }: ColumnProps) => {
               >
                 {t('Income')}
               </Heading6>
-              <IncomeText sx={{ fontSize: '0.8125rem' }}>
-                {formatMoney(income, config.general)}
-              </IncomeText>
+              <IncomeText sx={{ fontSize: '0.8125rem' }}>{formatMoney(income, config.general)}</IncomeText>
             </Stack>
             <Divider sx={{ borderColor: 'rgba(255,255,255,0.04)' }} />
             <Stack spacing={0.25}>
@@ -100,23 +99,21 @@ const Column = ({ date, income, expenses, maxHeight }: ColumnProps) => {
               >
                 {t('Expense')}
               </Heading6>
-              <ExpenseText sx={{ fontSize: '0.8125rem' }}>
-                {formatMoney(expenses, config.general)}
-              </ExpenseText>
+              <ExpenseText sx={{ fontSize: '0.8125rem' }}>{formatMoney(expenses, config.general)}</ExpenseText>
             </Stack>
           </Stack>
         </Box>
       </Popover>
 
       <Stack
-        alignItems="center"
+        alignItems='center'
         spacing={1}
-        justifyContent="flex-end"
+        justifyContent='flex-end'
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
         sx={{ cursor: 'default' }}
       >
-        <Stack direction="row" spacing={0.75} alignItems="flex-end" sx={{ minHeight: '3.5rem' }}>
+        <Stack direction='row' spacing={0.75} alignItems='flex-end' sx={{ minHeight: '3.5rem' }}>
           <ExpenseCol height={(Math.abs(expenses) / (maxHeight || 1)) * 3.5} />
           <Col height={(income / (maxHeight || 1)) * 3.5} />
         </Stack>
@@ -145,7 +142,7 @@ const WeekGraph = ({ data }: WeekGraphProps) => {
 
   return (
     <Box>
-      <Stack direction="row" spacing={2.5} justifyContent="flex-end" alignItems="flex-end">
+      <Stack direction='row' spacing={2.5} justifyContent='flex-end' alignItems='flex-end'>
         {Object.entries(data).map(([key, value]) => (
           <Column key={key} {...value} maxHeight={maxHeight} date={new Date(key)} />
         ))}

@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
 import { CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
+import theme from '@utils/theme';
+import { motion } from 'motion/react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Heading2, Heading5, Heading6 } from './ui/Typography/Headings';
-import theme from '@utils/theme';
-import { motion } from 'motion/react';
 
 const Content = styled(motion.div)<{ children?: React.ReactNode }>`
   position: relative;
@@ -54,9 +54,9 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
 
   return (
     <Content
-      initial="initial"
-      animate="animate"
-      exit="exit"
+      initial='initial'
+      animate='animate'
+      exit='exit'
       variants={pageVariants}
       transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
     >
@@ -69,11 +69,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
       <React.Suspense
         fallback={
           <LoadingContainer>
-            <CircularProgress
-              size={20}
-              thickness={2.5}
-              sx={{ color: 'rgba(255, 255, 255, 0.15)' }}
-            />
+            <CircularProgress size={20} thickness={2.5} sx={{ color: 'rgba(255, 255, 255, 0.15)' }} />
             <Heading6
               sx={{
                 color: theme.palette.text.secondary,

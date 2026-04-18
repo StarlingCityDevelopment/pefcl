@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { Button as MuiButton, ButtonProps, alpha } from '@mui/material';
-import React from 'react';
+import { type ButtonProps, Button as MuiButton, alpha } from '@mui/material';
+import type React from 'react';
 import theme from '../../utils/theme';
 
 const StyledButton = styled(MuiButton)<ButtonProps>`

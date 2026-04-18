@@ -1,11 +1,11 @@
 import styled from '@emotion/styled';
-import { CircularProgress, Stack, Box } from '@mui/material';
-import { Atom, useAtom } from 'jotai';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { Box, CircularProgress, Stack } from '@mui/material';
 import Button from '@ui/Button';
 import { Heading6 } from '@ui/Typography/Headings';
+import { type Atom, useAtom } from 'jotai';
+import type React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
 import theme from '../../../utils/theme';
 
 const Container = styled.div`
@@ -50,20 +50,15 @@ interface DashboardContainerProps {
   viewAllRoute: string;
 }
 
-const DashboardContainer: React.FC<DashboardContainerProps> = ({
-  title,
-  children,
-  totalAtom,
-  viewAllRoute,
-}) => {
+const DashboardContainer: React.FC<DashboardContainerProps> = ({ title, children, totalAtom, viewAllRoute }) => {
   const [total] = useAtom(totalAtom);
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <Container>
-      <Header direction="row" justifyContent="space-between" alignItems="center">
-        <Stack direction="row" spacing={1} alignItems="center">
+      <Header direction='row' justifyContent='space-between' alignItems='center'>
+        <Stack direction='row' spacing={1} alignItems='center'>
           <Heading6
             sx={{
               fontWeight: 600,
@@ -78,8 +73,8 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
           <TotalBadge>{total}</TotalBadge>
         </Stack>
         <Button
-          size="small"
-          variant="text"
+          size='small'
+          variant='text'
           onClick={() => navigate(viewAllRoute)}
           sx={{
             fontSize: '0.75rem',
@@ -104,7 +99,7 @@ const DashboardContainer: React.FC<DashboardContainerProps> = ({
 export const DashboardContainerFallback: React.FC<{ title: string }> = ({ title }) => {
   return (
     <Container>
-      <Header direction="row" justifyContent="space-between" alignItems="center">
+      <Header direction='row' justifyContent='space-between' alignItems='center'>
         <Heading6
           sx={{
             fontWeight: 600,

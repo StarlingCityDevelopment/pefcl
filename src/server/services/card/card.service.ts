@@ -23,7 +23,7 @@ import {
   DeleteCardInput,
 } from '@server/../../typings/BankCard';
 import { AccountDB } from '../account/account.db';
-import { PIN_CODE_LENGTH } from '@shared/constants';
+import { PIN_CODE_LENGTH } from '@common/constants';
 import {
   GetATMAccountResponse,
   GetATMAccountInput,

@@ -1,10 +1,10 @@
+import styled from '@emotion/styled';
 import { Stack } from '@mui/material';
-import { Card, InventoryCard } from '@typings/BankCard';
+import type { Card, InventoryCard } from '@typings/BankCard';
 import theme from '@utils/theme';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MasterCardIcon } from '../icons/MasterCardIcon';
-import styled from '@emotion/styled';
 import { BodyText } from './ui/Typography/BodyText';
 import { Heading4, Heading6 } from './ui/Typography/Headings';
 
@@ -64,14 +64,10 @@ const BankCard = ({ card, selected = false, isBlocked = false }: BankCardProps) 
   return (
     <Container selected={selected} blocked={isBlocked}>
       <Stack spacing={2}>
-        <Heading4 sx={{ fontSize: '0.9375rem', letterSpacing: '0.03em', fontWeight: 500 }}>
-          {card.number}
-        </Heading4>
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
+        <Heading4 sx={{ fontSize: '0.9375rem', letterSpacing: '0.03em', fontWeight: 500 }}>{card.number}</Heading4>
+        <Stack direction='row' justifyContent='space-between' alignItems='flex-end'>
           <Stack spacing={0.25}>
-            <Heading6 sx={{ fontSize: '0.5625rem', letterSpacing: '0.06em' }}>
-              {t('Card holder')}
-            </Heading6>
+            <Heading6 sx={{ fontSize: '0.5625rem', letterSpacing: '0.06em' }}>{t('Card holder')}</Heading6>
             <BodyText sx={{ fontSize: '0.8125rem', fontWeight: 500 }}>{card.holder}</BodyText>
           </Stack>
 

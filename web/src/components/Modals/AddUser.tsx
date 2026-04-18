@@ -1,11 +1,11 @@
+import UserSelect from '@components/UserSelect';
 import Button from '@components/ui/Button';
 import Select from '@components/ui/Select';
 import { Heading6 } from '@components/ui/Typography/Headings';
-import UserSelect from '@components/UserSelect';
 import { Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Stack } from '@mui/material';
-import { AccountRole, SharedAccountUser } from '@typings/Account';
+import { AccountRole, type SharedAccountUser } from '@typings/Account';
 import { UserEvents } from '@typings/Events';
-import { OnlineUser } from '@typings/user';
+import type { OnlineUser } from '@typings/user';
 import { fetchNui } from '@utils/fetchNui';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,12 +16,7 @@ interface SelectUserModalProps {
   onClose(): void;
   onSelect(user: OnlineUser, role: AccountRole): void;
 }
-const AddUserModal = ({
-  isOpen,
-  onSelect,
-  onClose,
-  users: existingUsers,
-}: SelectUserModalProps) => {
+const AddUserModal = ({ isOpen, onSelect, onClose, users: existingUsers }: SelectUserModalProps) => {
   const { t } = useTranslation();
   const [users, setUsers] = useState<OnlineUser[]>([]);
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -41,14 +36,12 @@ const AddUserModal = ({
   };
 
   const filteredUsers = users.filter((user) => {
-    const exists = existingUsers.find(
-      (existingUser) => existingUser.userIdentifier === user.identifier,
-    );
+    const exists = existingUsers.find((existingUser) => existingUser.userIdentifier === user.identifier);
     return !exists;
   });
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="xs">
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth='xs'>
       <DialogTitle>
         <span>{t('Add user to shared account')}</span>
       </DialogTitle>
@@ -60,10 +53,7 @@ const AddUserModal = ({
         </Stack>
         <Stack spacing={1}>
           <Heading6>{t('Choose role')}</Heading6>
-          <Select
-            onChange={(event) => setSelectedRole(event.target.value as AccountRole)}
-            value={selectedRole}
-          >
+          <Select onChange={(event) => setSelectedRole(event.target.value as AccountRole)} value={selectedRole}>
             <MenuItem value={AccountRole.Admin}>{t('Admin')}</MenuItem>
             <MenuItem value={AccountRole.Contributor}>{t('Contributor')}</MenuItem>
           </Select>
@@ -71,7 +61,7 @@ const AddUserModal = ({
       </DialogContent>
 
       <DialogActions>
-        <Button color="error" onClick={onClose}>
+        <Button color='error' onClick={onClose}>
           {t('Cancel')}
         </Button>
         <Button onClick={handleSubmit} disabled={!selectedUserId}>

@@ -1,5 +1,3 @@
-import { DeepPartial, ResourceConfig } from '@typings/config';
+import type { DeepPartial, ResourceConfig } from '@typings/config';
 
-export default JSON.parse(
-  LoadResourceFile(GetCurrentResourceName(), 'config.json'),
-) as DeepPartial<ResourceConfig>;
+export default JSON.parse(LoadResourceFile(GetCurrentResourceName(), 'config.json')) as DeepPartial<ResourceConfig>;

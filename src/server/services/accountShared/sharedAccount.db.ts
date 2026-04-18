@@ -1,10 +1,10 @@
-import { AccountRole, SharedAccountInput } from '@typings/Account';
+import type { AccountRole, SharedAccountInput } from '@typings/Account';
 import { AuthorizationErrors } from '@typings/Errors';
 import { ServerError } from '@utils/errors';
 import { AccountModel } from '@services/account/account.model';
 import { singleton } from 'tsyringe';
 import { SharedAccountModel } from './sharedAccount.model';
-import { Transaction } from 'sequelize/types';
+import { type Transaction } from 'sequelize/types';
 
 const include = [{ model: AccountModel, as: 'account' }];
 

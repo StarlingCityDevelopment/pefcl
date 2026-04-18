@@ -1,10 +1,10 @@
+import UserSelect from '@components/UserSelect';
 import Button from '@components/ui/Button';
 import { Heading6 } from '@components/ui/Typography/Headings';
-import UserSelect from '@components/UserSelect';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
+import { AccountRole, type SharedAccountUser } from '@typings/Account';
 import { SharedAccountEvents } from '@typings/Events';
-import { AccountRole, SharedAccountUser } from '@typings/Account';
-import { OnlineUser } from '@typings/user';
+import type { OnlineUser } from '@typings/user';
 import { fetchNui } from '@utils/fetchNui';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,9 +29,7 @@ const RemoveUserModal = ({ isOpen, onSelect, onClose, accountId }: SelectUserMod
 
   useEffect(() => {
     if (isOpen) {
-      fetchNui<SharedAccountUser[]>(SharedAccountEvents.GetUsers, { accountId }).then((users) =>
-        setUsers(users ?? []),
-      );
+      fetchNui<SharedAccountUser[]>(SharedAccountEvents.GetUsers, { accountId }).then((users) => setUsers(users ?? []));
     }
   }, [accountId, isOpen]);
 
@@ -44,7 +42,7 @@ const RemoveUserModal = ({ isOpen, onSelect, onClose, accountId }: SelectUserMod
     .filter((user) => !user.isDisabled);
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="xs">
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth='xs'>
       <DialogTitle>
         <span>{t('Remove user from a shared account')}</span>
       </DialogTitle>
@@ -57,7 +55,7 @@ const RemoveUserModal = ({ isOpen, onSelect, onClose, accountId }: SelectUserMod
       </DialogContent>
 
       <DialogActions>
-        <Button color="error" onClick={onClose}>
+        <Button color='error' onClick={onClose}>
           {t('Cancel')}
         </Button>
         <Button onClick={handleSubmit} disabled={!selectedUserIdentifier}>

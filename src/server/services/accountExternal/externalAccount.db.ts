@@ -1,4 +1,4 @@
-import { ExternalAccountInput } from '@typings/Account';
+import type { ExternalAccountInput } from '@typings/Account';
 import { singleton } from 'tsyringe';
 import { ExternalAccountModel } from './externalAccount.model';
 

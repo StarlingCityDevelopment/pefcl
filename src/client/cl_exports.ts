@@ -1,6 +1,6 @@
 import { NUIEvents } from '@typings/Events';
-import { setBankIsOpen, setAtmIsOpen } from 'client';
 import { createInvoice, depositMoney, giveCash, withdrawMoney } from 'functions';
+import { setAtmIsOpen, setBankIsOpen } from './index';
 
 const exp = global.exports;
 

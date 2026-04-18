@@ -1,4 +1,4 @@
-import { Card } from '@server/../../typings/BankCard';
+import { type Card } from '@server/../../typings/BankCard';
 import { generateCardNumber } from '@server/utils/misc';
 import { DATABASE_PREFIX } from '@utils/constants';
 import { DataTypes, Model, Optional } from 'sequelize';

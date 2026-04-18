@@ -2,29 +2,20 @@ import AddUserModal from '@components/Modals/AddUser';
 import RemoveUserModal from '@components/Modals/RemoveUser';
 import Button from '@components/ui/Button';
 import { Heading5 } from '@components/ui/Typography/Headings';
-import {
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
-import {
+import { accountsAtom } from '@data/accounts';
+import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import type {
   AccountRole,
   AddToSharedAccountInput,
   RemoveFromSharedAccountInput,
   SharedAccountUser,
 } from '@typings/Account';
 import { SharedAccountEvents } from '@typings/Events';
-import { OnlineUser } from '@typings/user';
+import type { OnlineUser } from '@typings/user';
 import { fetchNui } from '@utils/fetchNui';
 import { useAtom } from 'jotai';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { accountsAtom } from '@data/accounts';
 
 interface Props {
   isAdmin: boolean;
@@ -39,9 +30,7 @@ const SharedSettings = ({ accountId, isAdmin }: Props) => {
   const [users, setUsers] = useState<SharedAccountUser[]>([]);
 
   const handleUpdateUsers = useCallback(() => {
-    fetchNui<SharedAccountUser[]>(SharedAccountEvents.GetUsers, { accountId }).then((users) =>
-      setUsers(users ?? []),
-    );
+    fetchNui<SharedAccountUser[]>(SharedAccountEvents.GetUsers, { accountId }).then((users) => setUsers(users ?? []));
   }, [accountId]);
 
   const handleUpdateAccounts = () => {
@@ -94,7 +83,7 @@ const SharedSettings = ({ accountId, isAdmin }: Props) => {
         onSelect={handleRemoveUserFromAccount}
       />
 
-      <Stack spacing={5} alignItems="flex-start">
+      <Stack spacing={5} alignItems='flex-start'>
         <Stack spacing={1.5} sx={{ maxHeight: 250 }}>
           <Heading5>{t('Account users')}</Heading5>
           <TableContainer component={Paper}>
@@ -111,11 +100,7 @@ const SharedSettings = ({ accountId, isAdmin }: Props) => {
               </TableHead>
               <TableBody>
                 {users.map((user) => (
-                  <TableRow
-                    hover
-                    key={user.userIdentifier}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
+                  <TableRow hover key={user.userIdentifier} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                     {/* TODO: Add (You) to yourself. */}
                     <TableCell>
                       {user.name ?? t('owner')} {/* isUserMe(user) ? t('You') : '' */}
@@ -130,12 +115,12 @@ const SharedSettings = ({ accountId, isAdmin }: Props) => {
 
         <Stack spacing={1.5}>
           <Heading5>{t('Shared account actions')}</Heading5>
-          <Stack direction="row" spacing={4} alignItems="flex-start">
+          <Stack direction='row' spacing={4} alignItems='flex-start'>
             <Button onClick={() => setIsAddUserOpen(true)} disabled={!isAdmin}>
               {t('Add user to account')}
             </Button>
 
-            <Button onClick={() => setIsRemoveUserOpen(true)} disabled={!isAdmin} color="error">
+            <Button onClick={() => setIsRemoveUserOpen(true)} disabled={!isAdmin} color='error'>
               {t('Remove user from account')}
             </Button>
           </Stack>

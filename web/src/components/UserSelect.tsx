@@ -1,6 +1,6 @@
 import { Autocomplete, FormHelperText, Stack } from '@mui/material';
-import { User } from '@typings/user';
-import React, { SyntheticEvent, useState } from 'react';
+import type { User } from '@typings/user';
+import React, { type SyntheticEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import TextField from './ui/Fields/TextField';
 
@@ -38,7 +38,7 @@ const UserSelect = ({ users, onSelect }: UserSelectProps) => {
         sx={{ width: '100%' }}
         options={users.map((user) => user.name)}
       />
-      {users.length === 0 && <FormHelperText color="red">{t('No users found.')}</FormHelperText>}
+      {users.length === 0 && <FormHelperText color='red'>{t('No users found.')}</FormHelperText>}
     </Stack>
   );
 };

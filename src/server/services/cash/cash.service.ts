@@ -1,5 +1,5 @@
 import { singleton } from 'tsyringe';
-import { Cash, ChangeCashInput } from '@typings/Cash';
+import type { Cash, ChangeCashInput } from '@typings/Cash';
 import { config } from '@utils/server-config';
 import { mainLogger } from '../../sv_logger';
 import { UserService } from '../user/user.service';

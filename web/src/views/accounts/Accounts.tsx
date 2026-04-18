@@ -1,15 +1,16 @@
 import TextField from '@components/ui/Fields/TextField';
+import { transactionBaseAtom } from '@data/transactions';
 import styled from '@emotion/styled';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from '@mui/material';
 import { Box } from '@mui/system';
-import copy from 'copy-to-clipboard';
 import { AccountType } from '@typings/Account';
 import { AccountEvents } from '@typings/Events';
 import { getIsAdmin, getIsOwner } from '@utils/account';
+import copy from 'copy-to-clipboard';
 import { useAtom } from 'jotai';
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { type FormEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { transactionBaseAtom } from '@data/transactions';
+import AccountCards from '../../components/AccountCards';
 import Layout from '../../components/Layout';
 import Button from '../../components/ui/Button';
 import { PreHeading } from '../../components/ui/Typography/BodyText';
@@ -19,7 +20,6 @@ import { useConfig } from '../../hooks/useConfig';
 import { formatMoney } from '../../utils/currency';
 import { fetchNui } from '../../utils/fetchNui';
 import theme from '../../utils/theme';
-import AccountCards from '../../components/AccountCards';
 import SharedSettings from './SharedSettings';
 
 const Dangerzone = styled.div`
@@ -86,7 +86,7 @@ const Accounts = () => {
 
   return (
     <Layout>
-      <Dialog fullWidth maxWidth="xs" open={isRenameOpen} onClose={() => setIsRenameOpen(false)}>
+      <Dialog fullWidth maxWidth='xs' open={isRenameOpen} onClose={() => setIsRenameOpen(false)}>
         <DialogTitle>{t('Rename account')}</DialogTitle>
         <form onSubmit={handleRename}>
           <DialogContent>
@@ -99,10 +99,10 @@ const Accounts = () => {
               />
 
               <DialogActions>
-                <Button color="error" onClick={() => setIsRenameOpen(false)}>
+                <Button color='error' onClick={() => setIsRenameOpen(false)}>
                   {t('Cancel')}
                 </Button>
-                <Button type="submit">{t('Rename')}</Button>
+                <Button type='submit'>{t('Rename')}</Button>
               </DialogActions>
             </Stack>
           </DialogContent>
@@ -120,34 +120,24 @@ const Accounts = () => {
         >
           {t('Total balance')}
         </Heading6>
-        <Heading1 sx={{ letterSpacing: '-0.03em' }}>
-          {formatMoney(totalBalance, config.general)}
-        </Heading1>
+        <Heading1 sx={{ letterSpacing: '-0.03em' }}>{formatMoney(totalBalance, config.general)}</Heading1>
       </Stack>
 
       <Box paddingTop={3}>
-        <AccountCards
-          onSelectAccount={setSelectedAccountId}
-          selectedAccountId={selectedAccountId}
-        />
+        <AccountCards onSelectAccount={setSelectedAccountId} selectedAccountId={selectedAccountId} />
       </Box>
 
-      <Stack direction="row" spacing={4} marginTop={4}>
+      <Stack direction='row' spacing={4} marginTop={4}>
         <Stack spacing={4}>
-          <Stack spacing={1.5} alignItems="flex-start">
+          <Stack spacing={1.5} alignItems='flex-start'>
             <Heading5>{t('General')}</Heading5>
-            <Stack direction="row" spacing={3} alignItems="flex-start">
+            <Stack direction='row' spacing={3} alignItems='flex-start'>
               <Stack spacing={0.5}>
-                <Button
-                  onClick={handleSetDefault}
-                  disabled={isDefaultAccountSelected || !isAdmin || isShared}
-                >
+                <Button onClick={handleSetDefault} disabled={isDefaultAccountSelected || !isAdmin || isShared}>
                   {t('Set account to default')}
                 </Button>
                 {!isAdmin && <HelperText>{t('Admin role required')}</HelperText>}
-                {isAdmin && isShared && (
-                  <HelperText>{t('Shared account cannot be default account')}</HelperText>
-                )}
+                {isAdmin && isShared && <HelperText>{t('Shared account cannot be default account')}</HelperText>}
               </Stack>
 
               <Stack spacing={0.5}>
@@ -158,24 +148,18 @@ const Accounts = () => {
               </Stack>
 
               <Stack spacing={0.5}>
-                <Button onClick={() => copy(selectedAccount?.number ?? '')}>
-                  {t('Copy account number')}
-                </Button>
+                <Button onClick={() => copy(selectedAccount?.number ?? '')}>{t('Copy account number')}</Button>
               </Stack>
             </Stack>
           </Stack>
 
           {isOwner && (
-            <Stack spacing={1.5} alignItems="flex-start">
+            <Stack spacing={1.5} alignItems='flex-start'>
               <Heading5>{t('Danger zone')}</Heading5>
               <Dangerzone>
                 <Stack spacing={1}>
                   <span>
-                    <Button
-                      color="error"
-                      onClick={handleDeleteAccount}
-                      disabled={isDefaultAccountSelected}
-                    >
+                    <Button color='error' onClick={handleDeleteAccount} disabled={isDefaultAccountSelected}>
                       {t('Delete account')}
                     </Button>
                   </span>
@@ -191,9 +175,7 @@ const Accounts = () => {
           )}
         </Stack>
 
-        <Stack>
-          {isShared && <SharedSettings accountId={selectedAccountId} isAdmin={isAdmin} />}
-        </Stack>
+        <Stack>{isShared && <SharedSettings accountId={selectedAccountId} isAdmin={isAdmin} />}</Stack>
       </Stack>
     </Layout>
   );

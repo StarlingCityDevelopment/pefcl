@@ -1,17 +1,17 @@
-import styled from '@emotion/styled';
-import { Skeleton, Stack } from '@mui/material';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { transactionsTotalAtom } from '@data/transactions';
-import Layout from '@components/Layout';
-import theme from '@utils/theme';
-import DashboardContainer, { DashboardContainerFallback } from './components/DashboardContainer';
-import Transactions from './components/Transactions';
-import DashboardSummary from './components/Summary';
 import AccountCards, { LoadingCards } from '@components/AccountCards';
+import Layout from '@components/Layout';
 import TotalBalance from '@components/TotalBalance';
 import { PreHeading } from '@components/ui/Typography/BodyText';
 import { Heading1 } from '@components/ui/Typography/Headings';
+import { transactionsTotalAtom } from '@data/transactions';
+import styled from '@emotion/styled';
+import { Skeleton, Stack } from '@mui/material';
+import theme from '@utils/theme';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import DashboardContainer, { DashboardContainerFallback } from './components/DashboardContainer';
+import DashboardSummary from './components/Summary';
+import Transactions from './components/Transactions';
 
 const Lists = styled.section`
   display: grid;
@@ -30,10 +30,10 @@ const Dashboard = () => {
           fallback={
             <Stack>
               <PreHeading>
-                <Skeleton variant="text" width={80} height={18} />
+                <Skeleton variant='text' width={80} height={18} />
               </PreHeading>
               <Heading1>
-                <Skeleton variant="text" width={200} height={48} />
+                <Skeleton variant='text' width={200} height={48} />
               </Heading1>
             </Stack>
           }
@@ -54,7 +54,7 @@ const Dashboard = () => {
         <React.Suspense fallback={<DashboardContainerFallback title={t('Loading transactions')} />}>
           <DashboardContainer
             title={t('Latest transactions')}
-            viewAllRoute="/transactions"
+            viewAllRoute='/transactions'
             totalAtom={transactionsTotalAtom}
           >
             <Transactions />

@@ -5,17 +5,17 @@ import PriceField from '@components/ui/Fields/PriceField';
 import NewBalance from '@components/ui/NewBalance';
 import { Heading2, Heading6 } from '@components/ui/Typography/Headings';
 import { accountsAtom } from '@data/accounts';
+import { cashAtom } from '@data/cash';
 import { transactionBaseAtom } from '@data/transactions';
 import { useConfig } from '@hooks/useConfig';
+import { useMutation } from '@hooks/useMutation';
 import { LinearProgress, Stack, Typography } from '@mui/material';
-import { ATMInput } from '@typings/Account';
+import type { ATMInput } from '@typings/Account';
 import { AccountEvents } from '@typings/Events';
 import { formatMoney } from '@utils/currency';
 import { useAtom } from 'jotai';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useMutation } from '@hooks/useMutation';
-import { cashAtom } from '@data/cash';
 
 const Deposit = () => {
   const { t } = useTranslation();
@@ -27,7 +27,7 @@ const Deposit = () => {
   const [accounts] = useAtom(accountsAtom);
   const { general } = useConfig();
 
-  const rawValue = parseInt(amount.replace(/\D/g, ''));
+  const rawValue = Number.parseInt(amount.replace(/\D/g, ''));
   const value = isNaN(rawValue) ? 0 : rawValue;
   const newCash = currentCash - value;
   const isValidNewBalance = newCash >= 0;
@@ -75,7 +75,7 @@ const Deposit = () => {
         </Typography>
       </Stack>
 
-      <Stack spacing={2.5} marginTop={3} maxWidth="24rem">
+      <Stack spacing={2.5} marginTop={3} maxWidth='24rem'>
         <Stack spacing={0.75}>
           <Heading6
             sx={{
@@ -87,11 +87,7 @@ const Deposit = () => {
           >
             {t('Amount')}
           </Heading6>
-          <PriceField
-            placeholder={t('Amount')}
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-          />
+          <PriceField placeholder={t('Amount')} value={amount} onChange={(event) => setAmount(event.target.value)} />
           <NewBalance amount={newCash} isValid={isValidNewBalance} newBalanceText={t('New cash')} />
         </Stack>
         <Stack spacing={0.75}>
@@ -113,11 +109,11 @@ const Deposit = () => {
           />
         </Stack>
 
-        <Button size="large" disabled={isButtonDisabled} onClick={handleDeposit}>
+        <Button size='large' disabled={isButtonDisabled} onClick={handleDeposit}>
           {t('Deposit')}
         </Button>
 
-        <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.6875rem' }}>
+        <Typography variant='caption' sx={{ color: 'text.secondary', fontSize: '0.6875rem' }}>
           {t('This will take cash from your person and insert into selected bank account')}
         </Typography>
 

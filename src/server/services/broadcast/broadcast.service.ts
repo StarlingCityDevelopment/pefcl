@@ -1,13 +1,13 @@
 import { singleton } from 'tsyringe';
-import { Transaction } from '@typings/Transaction';
+import { type Transaction } from '@typings/Transaction';
 import { mainLogger } from '@server/sv_logger';
 import { UserService } from '../user/user.service';
 import { Broadcasts } from '@typings/Events';
 import { TransactionDB } from '../transaction/transaction.db';
 import { Account, AccountType } from '@server/../../typings/Account';
-import { Cash } from '@server/../../typings/Cash';
+import { type Cash } from '@server/../../typings/Cash';
 import { AccountService } from '../account/account.service';
-import { Card } from '@server/../../typings/BankCard';
+import { type Card } from '@server/../../typings/BankCard';
 
 const logger = mainLogger.child({ module: 'broadcastService' });
 

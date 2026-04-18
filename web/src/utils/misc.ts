@@ -1,4 +1,4 @@
-import { LBSettings } from '@typings/LBAddons';
+import type { LBSettings } from '@typings/LBAddons';
 
 declare global {
   interface Window {

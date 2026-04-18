@@ -1,3 +1,4 @@
+import mysql from 'mysql2';
 import { Sequelize } from 'sequelize';
 import { CONNECTION_STRING, parseUri } from './dbUtils';
 
@@ -13,18 +14,18 @@ const config = parseUri(mysqlConnectionString);
 
 export const sequelize = new Sequelize({
   dialect: 'mysql',
-  dialectModule: require('mysql2'),
+  dialectModule: mysql,
   logging: false,
   host: config.host,
-  port: typeof config.port === 'string' ? parseInt(config.port, 10) : config.port,
+  port: Number(config.port),
   username: config.user,
   password: config.password,
   database: config.database,
   pool: {
     max: 300,
     min: 0,
-    acquire: 200000,
-    idle: 60000,
+    acquire: 200_000,
+    idle: 60_000,
   },
   sync: {
     alter: true,

@@ -1,12 +1,9 @@
+import type { ServerPromiseResp } from '@typings/http';
 import { getResourceName } from './misc';
-import { ServerPromiseResp } from '@typings/http';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-export const fetchNui = async <T = object, I = object>(
-  eventName: string,
-  data?: I,
-): Promise<T | undefined> => {
+export const fetchNui = async <T = object, I = object>(eventName: string, data?: I): Promise<T | undefined> => {
   const resourceName = getResourceName();
   const url = isDevelopment
     ? `http://localhost:3005/${eventName.replace(':', '-')}`

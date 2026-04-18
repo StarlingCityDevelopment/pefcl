@@ -1,8 +1,8 @@
-import { useAtom } from 'jotai';
-import React from 'react';
-import { unpaidInvoicesAtom } from '../../../data/invoices';
 import InvoiceItem from '@components/InvoiceItem';
 import { Stack } from '@mui/material';
+import { useAtom } from 'jotai';
+import type React from 'react';
+import { unpaidInvoicesAtom } from '../../../data/invoices';
 
 const PendingInvoices: React.FC = () => {
   const [invoices] = useAtom(unpaidInvoicesAtom);

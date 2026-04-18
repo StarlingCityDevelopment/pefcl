@@ -1,11 +1,11 @@
-import { Heading5, Heading6 } from '@components/ui/Typography/Headings';
 import WeekGraph from '@components/WeekGraph';
+import { Heading5, Heading6 } from '@components/ui/Typography/Headings';
 import styled from '@emotion/styled';
 import { useConfig } from '@hooks/useConfig';
 import { Divider, Stack } from '@mui/material';
 import { Box } from '@mui/system';
 import { TransactionEvents } from '@typings/Events';
-import { GetTransactionHistoryResponse } from '@typings/Transaction';
+import type { GetTransactionHistoryResponse } from '@typings/Transaction';
 import { formatMoney } from '@utils/currency';
 import { fetchNui } from '@utils/fetchNui';
 import theme from '@utils/theme';
@@ -66,15 +66,9 @@ const DashboardSummary = () => {
 
       <ExpensesIncomeContainer p={1.5}>
         <Stack
-          direction="row"
+          direction='row'
           spacing={2}
-          divider={
-            <Divider
-              orientation="vertical"
-              flexItem
-              sx={{ borderColor: 'rgba(255,255,255,0.04)' }}
-            />
-          }
+          divider={<Divider orientation='vertical' flexItem sx={{ borderColor: 'rgba(255,255,255,0.04)' }} />}
         >
           <Stack spacing={0.25} flex={1}>
             <Heading6

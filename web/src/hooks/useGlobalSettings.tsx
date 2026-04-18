@@ -31,7 +31,5 @@ export const GlobalSettingsProvider = ({ children }: GlobalSettingsProviderProps
     };
   }, []);
 
-  return (
-    <GlobalSettingsContext.Provider value={{ isMobile }}>{children}</GlobalSettingsContext.Provider>
-  );
+  return <GlobalSettingsContext.Provider value={{ isMobile }}>{children}</GlobalSettingsContext.Provider>;
 };

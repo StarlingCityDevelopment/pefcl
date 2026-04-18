@@ -12,7 +12,7 @@ import {
 } from '@server/../../typings/Events';
 import { container } from 'tsyringe';
 import { AccountController } from '../account.controller';
-import { RemoveFromSharedAccountInput } from '../account.db';
+import type { RemoveFromSharedAccountInput } from '../account.db';
 
 jest.mock('../account.service');
 jest.mock('../../auth/auth.service');

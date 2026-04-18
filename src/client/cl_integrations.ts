@@ -1,6 +1,6 @@
-import { setBankIsOpen, setAtmIsOpen } from 'client';
 import cl_config from 'cl_config';
 import { translations } from 'i18n';
+import { setAtmIsOpen, setBankIsOpen } from './index';
 const exp = global.exports;
 
 const isTargetEnabled = cl_config.target?.enabled ?? false;
@@ -13,7 +13,7 @@ if (isTargetEnabled && isTargetAvailable) {
   const atmModels = cl_config.atms?.props ?? [];
 
   atmModels.forEach((model) => {
-    exp[targetType]['AddTargetModel'](model, {
+    exp[targetType].AddTargetModel(model, {
       options: [
         {
           event: 'pefcl:open:atm',
@@ -25,13 +25,13 @@ if (isTargetEnabled && isTargetAvailable) {
   });
 
   bankZones.forEach((zone, index) => {
-    const name = 'bank_' + index;
+    const name = `bank_${index}`;
 
     if (!zone) {
       throw new Error('Missing zone. Check your "qtarget.bankZones" config.');
     }
 
-    exp[targetType]['AddBoxZone'](
+    exp[targetType].AddBoxZone(
       name,
       zone.position,
       zone.length,

@@ -1,6 +1,6 @@
-import { atom } from 'jotai';
 import { TransactionEvents } from '@typings/Events';
-import { GetTransactionsInput, GetTransactionsResponse } from '@typings/Transaction';
+import type { GetTransactionsInput, GetTransactionsResponse } from '@typings/Transaction';
+import { atom } from 'jotai';
 import { mockedTransactions } from '../utils/constants';
 import { fetchNui } from '../utils/fetchNui';
 import { isEnvBrowser } from '../utils/misc';

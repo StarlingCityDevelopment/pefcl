@@ -1,6 +1,6 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import theme from '@utils/theme';
+import type React from 'react';
 import Sidebar from '../Sidebar';
 
 const AppShell = styled.div`
@@ -58,7 +58,7 @@ const Shell: React.FC<ShellProps> = ({ children }) => {
     <AppShell>
       <MainContainer>
         <Sidebar />
-        <ContentArea id="main-content">{children}</ContentArea>
+        <ContentArea id='main-content'>{children}</ContentArea>
       </MainContainer>
     </AppShell>
   );

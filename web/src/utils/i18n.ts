@@ -4,8 +4,8 @@ import 'dayjs/locale/sv';
 import { initReactI18next } from 'react-i18next';
 
 import { getConfig } from '@utils/api';
-import updateLocale from 'dayjs/plugin/updateLocale';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import updateLocale from 'dayjs/plugin/updateLocale';
 import { getI18nResourcesNamespaced } from './i18nResourceHelpers';
 
 dayjs.extend(updateLocale);
@@ -23,8 +23,7 @@ const load = async () => {
   const config = await getConfig();
   const LBPhoneSettings = await getLBPhoneSettings();
   const LBTabletSettings = await getLBTabletSettings();
-  const language =
-    LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config.general.language ?? 'en';
+  const language = LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config.general.language ?? 'en';
   const resources = getI18nResourcesNamespaced('translation');
 
   await i18n
@@ -52,6 +51,6 @@ const load = async () => {
 
 load();
 
-export type TranslateFunction = typeof i18n['t'];
+export type TranslateFunction = (typeof i18n)['t'];
 
 export default i18n;

@@ -1,4 +1,6 @@
-import React, { ReactNode } from 'react';
+import { totalUnpaidInvoicesAtom } from '@data/invoices';
+import styled from '@emotion/styled';
+import { useConfig } from '@hooks/useConfig';
 import {
   AccountBalanceRounded,
   Add,
@@ -9,15 +11,13 @@ import {
   Remove,
   SwapHoriz,
 } from '@mui/icons-material';
-import styled from '@emotion/styled';
+import { Badge, alpha } from '@mui/material';
 import theme from '@utils/theme';
-import { alpha, Badge } from '@mui/material';
-import { Link, useMatch } from 'react-router';
+import type { Atom } from 'jotai';
+import React, { type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Atom } from 'jotai';
-import { totalUnpaidInvoicesAtom } from '@data/invoices';
+import { Link, useMatch } from 'react-router';
 import BadgeAtom from './ui/BadgeAtom';
-import { useConfig } from '@hooks/useConfig';
 
 const SidebarNav = styled.nav`
   display: flex;
@@ -51,16 +51,14 @@ const ListItemContainer = styled.li<{ isActive: boolean }>`
   width: 100%;
   padding: 0.625rem 0.875rem;
   border-radius: 10px;
-  color: ${({ isActive }) =>
-    isActive ? theme.palette.text.primary : theme.palette.text.secondary};
+  color: ${({ isActive }) => (isActive ? theme.palette.text.primary : theme.palette.text.secondary)};
   background-color: ${({ isActive }) => (isActive ? 'rgba(255, 255, 255, 0.06)' : 'transparent')};
 
   transition: all 0.15s cubic-bezier(0.25, 0.1, 0.25, 1);
 
   &:hover {
     color: ${theme.palette.text.primary};
-    background-color: ${({ isActive }) =>
-      isActive ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)'};
+    background-color: ${({ isActive }) => (isActive ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.03)')};
   }
 
   &:active {
@@ -95,13 +93,13 @@ const ListItem = ({ to, icon, label, amount, countAtom }: ListItemProps) => {
     <Link to={to}>
       <ListItemContainer isActive={!!match}>
         {countAtom ? (
-          <BadgeAtom color="error" countAtom={countAtom}>
+          <BadgeAtom color='error' countAtom={countAtom}>
             {icon}
           </BadgeAtom>
         ) : (
           <Badge
-            color="primary"
-            variant="dot"
+            color='primary'
+            variant='dot'
             invisible={!amount}
             sx={{
               '& .MuiBadge-badge': {
@@ -128,16 +126,16 @@ const Sidebar = () => {
   return (
     <SidebarNav>
       <List>
-        <ListItem to="../" icon={<DashboardRounded />} label={t('Dashboard')} />
-        <ListItem to="../accounts" icon={<AccountBalanceRounded />} label={t('Accounts')} />
-        <ListItem to="../transfer" icon={<SwapHoriz />} label={t('Transfer')} />
-        <ListItem to="../transactions" icon={<Paid />} label={t('Transactions')} />
-        <ListItem to="../invoices" icon={<Receipt />} label={t('Invoices')} />
-        <ListItem to="../deposit" icon={<Add />} label={t('Deposit Cash')} />
-        <ListItem to="../withdraw" icon={<Remove />} label={t('Withdraw Cash')} />
+        <ListItem to='../' icon={<DashboardRounded />} label={t('Dashboard')} />
+        <ListItem to='../accounts' icon={<AccountBalanceRounded />} label={t('Accounts')} />
+        <ListItem to='../transfer' icon={<SwapHoriz />} label={t('Transfer')} />
+        <ListItem to='../transactions' icon={<Paid />} label={t('Transactions')} />
+        <ListItem to='../invoices' icon={<Receipt />} label={t('Invoices')} />
+        <ListItem to='../deposit' icon={<Add />} label={t('Deposit Cash')} />
+        <ListItem to='../withdraw' icon={<Remove />} label={t('Withdraw Cash')} />
 
         {config?.frameworkIntegration?.isCardsEnabled && (
-          <ListItem to="../cards" icon={<CreditCardRounded />} label={t('Cards')} />
+          <ListItem to='../cards' icon={<CreditCardRounded />} label={t('Cards')} />
         )}
       </List>
     </SidebarNav>

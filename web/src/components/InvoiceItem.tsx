@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import { Stack, Box, Divider } from '@mui/material';
 import styled from '@emotion/styled';
+import { useConfig } from '@hooks/useConfig';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
+import { Box, Divider, Stack } from '@mui/material';
+import { type Invoice, InvoiceStatus } from '@typings/Invoice';
+import { formatMoney } from '@utils/currency';
+import theme from '@utils/theme';
+import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import relative from 'dayjs/plugin/relativeTime';
-import dayjs from 'dayjs';
-import { Heading6 } from './ui/Typography/Headings';
-import theme from '@utils/theme';
-import { Invoice, InvoiceStatus } from '@typings/Invoice';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@hooks/useConfig';
+import BaseDialog from './Modals/BaseDialog';
 import PayInvoiceModal from './Modals/PayInvoice';
-import { BodyText } from './ui/Typography/BodyText';
-import { formatMoney } from '@utils/currency';
 import Button from './ui/Button';
 import Status from './ui/Status';
-import BaseDialog from './Modals/BaseDialog';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
+import { BodyText } from './ui/Typography/BodyText';
+import { Heading6 } from './ui/Typography/Headings';
 
 dayjs.extend(calendar);
 dayjs.extend(relative);
@@ -31,11 +31,9 @@ const InvoiceContainer = styled.div<{ isPending: boolean }>`
 
   @media (hover: hover) {
     &:hover {
-      background: ${({ isPending }) =>
-        isPending ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.02)'};
+      background: ${({ isPending }) => (isPending ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.02)')};
       transform: ${({ isPending }) => (isPending ? 'translateY(-2px)' : 'none')};
-      border-color: ${({ isPending }) =>
-        isPending ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.04)'};
+      border-color: ${({ isPending }) => (isPending ? 'rgba(255, 255, 255, 0.08)' : 'rgba(255, 255, 255, 0.04)')};
     }
   }
 
@@ -86,29 +84,27 @@ const InvoiceItem: React.FC<{ invoice: Invoice }> = ({ invoice, ...props }) => {
 
   return (
     <>
-      <BaseDialog open={isPayOpen} onClose={handleCloseModal} maxWidth="md">
+      <BaseDialog open={isPayOpen} onClose={handleCloseModal} maxWidth='md'>
         <PayInvoiceModal onClose={handleCloseModal} invoice={invoice} />
       </BaseDialog>
 
       <InvoiceContainer {...props} key={id} isPending={isPending} onClick={handleCardClick}>
         <Stack spacing={2}>
-          <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+          <Stack direction='row' justifyContent='space-between' alignItems='flex-start'>
             <Stack spacing={0.25} sx={{ minWidth: 0, flex: 1, pr: 2 }}>
               <From>{from}</From>
               <Message title={message}>{message}</Message>
             </Stack>
-            <Stack alignItems="flex-end" sx={{ flexShrink: 0 }}>
+            <Stack alignItems='flex-end' sx={{ flexShrink: 0 }}>
               <BodyText sx={{ fontWeight: 700, color: theme.palette.primary.main }}>
                 {formatMoney(amount, config.general)}
               </BodyText>
-              <Heading6 sx={{ opacity: 0.5, fontSize: '0.65rem' }}>
-                {createdDate.fromNow()}
-              </Heading6>
+              <Heading6 sx={{ opacity: 0.5, fontSize: '0.65rem' }}>{createdDate.fromNow()}</Heading6>
             </Stack>
           </Stack>
 
           {(invoice.status === InvoiceStatus.PENDING || invoice.status === InvoiceStatus.PAID) && (
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Stack direction='row' justifyContent='space-between' alignItems='center'>
               {invoice.status === InvoiceStatus.PENDING ? (
                 <Stack spacing={0}>
                   <Heading6 sx={{ fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase' }}>
@@ -124,7 +120,7 @@ const InvoiceItem: React.FC<{ invoice: Invoice }> = ({ invoice, ...props }) => {
 
               {invoice.status === InvoiceStatus.PENDING ? (
                 <Button
-                  size="small"
+                  size='small'
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsPayOpen(true);
@@ -133,7 +129,7 @@ const InvoiceItem: React.FC<{ invoice: Invoice }> = ({ invoice, ...props }) => {
                   {t('Pay invoice')}
                 </Button>
               ) : (
-                <Status label={t('Paid')} color="success" />
+                <Status label={t('Paid')} color='success' />
               )}
             </Stack>
           )}

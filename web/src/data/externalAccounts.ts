@@ -1,4 +1,4 @@
-import { ExternalAccount } from '@typings/Account';
+import type { ExternalAccount } from '@typings/Account';
 import { ExternalAccountEvents } from '@typings/Events';
 import { fetchNui } from '@utils/fetchNui';
 import { isEnvBrowser } from '@utils/misc';
@@ -27,9 +27,7 @@ const rawExternalAccountsAtom = atom<ExternalAccount[]>([]);
 export const externalAccountsAtom = atom(
   async (get) => {
     const accounts =
-      get(rawExternalAccountsAtom).length === 0
-        ? await getExternalAccounts()
-        : get(rawExternalAccountsAtom);
+      get(rawExternalAccountsAtom).length === 0 ? await getExternalAccounts() : get(rawExternalAccountsAtom);
     return accounts;
   },
   async (_get, set) => {

@@ -1,8 +1,8 @@
 import { ClientUtils } from '@project-error/pe-utils';
-import { ATMInput } from '@typings/Account';
+import type { ATMInput } from '@typings/Account';
 import { AccountEvents, CashEvents, InvoiceEvents } from '@typings/Events';
-import { ServerPromiseResp } from '@typings/http';
-import { Invoice, InvoiceOnlineInput } from '@typings/Invoice';
+import type { Invoice, InvoiceOnlineInput } from '@typings/Invoice';
+import type { ServerPromiseResp } from '@typings/http';
 import { translations } from 'i18n';
 
 export class Api {
@@ -14,10 +14,7 @@ export class Api {
 
   async getInvoices(): Promise<Invoice[]> {
     try {
-      const serverRes = await this.utils.emitNetPromise<ServerPromiseResp<Invoice[]>>(
-        InvoiceEvents.Get,
-        {},
-      );
+      const serverRes = await this.utils.emitNetPromise<ServerPromiseResp<Invoice[]>>(InvoiceEvents.Get, {});
 
       if (serverRes.status !== 'ok') {
         throw new Error(serverRes.errorMsg);
@@ -46,10 +43,7 @@ export class Api {
 
   async getMyCash(): Promise<number | undefined> {
     try {
-      const serverRes = await this.utils.emitNetPromise<ServerPromiseResp<number>>(
-        CashEvents.GetMyCash,
-        {},
-      );
+      const serverRes = await this.utils.emitNetPromise<ServerPromiseResp<number>>(CashEvents.GetMyCash, {});
 
       if (serverRes.status !== 'ok') {
         throw new Error(serverRes.errorMsg);

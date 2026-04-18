@@ -1,6 +1,6 @@
 import styled from '@emotion/styled';
-import { CheckboxProps, Checkbox as BaseCheckbox } from '@mui/material';
-import React from 'react';
+import { Checkbox as BaseCheckbox, type CheckboxProps } from '@mui/material';
+import type React from 'react';
 import CheckIcon from '../../icons/CheckIcon';
 import theme from '../../utils/theme';
 

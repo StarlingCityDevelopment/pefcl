@@ -26,15 +26,14 @@ export const parseUri = (connectionUri: string) => {
       params: splitMatchGroups[6],
     };
 
-  return connectionUri
+  const parameters = connectionUri
     .replace(/(?:host(?:name)|ip|server|data\s?source|addr(?:ess)?)=/gi, 'host=')
     .replace(/(?:user\s?(?:id|name)?|uid)=/gi, 'user=')
     .replace(/(?:pwd|pass)=/gi, 'password=')
     .replace(/(?:db)=/gi, 'database=')
-    .split(';')
-    .reduce<Record<string, string>>((connectionInfo, parameter) => {
-      const [key, value] = parameter.split('=');
-      connectionInfo[key] = value;
-      return connectionInfo;
-    }, {});
+    .split(';');
+
+  return Object.fromEntries(
+    parameters.map((parameter) => parameter.split('='))
+  );
 };

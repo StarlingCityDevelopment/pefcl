@@ -1,5 +1,5 @@
-import React from 'react';
-import { InputAdornment, StandardTextFieldProps, TextField } from '@mui/material';
+import { InputAdornment, type StandardTextFieldProps, TextField } from '@mui/material';
+import type React from 'react';
 
 interface IconTextFieldProps extends StandardTextFieldProps {
   icon: React.ReactElement;
@@ -7,10 +7,7 @@ interface IconTextFieldProps extends StandardTextFieldProps {
 
 const IconTextField: React.FC<IconTextFieldProps> = ({ icon, ...props }) => (
   <>
-    <TextField
-      {...props}
-      InputProps={{ startAdornment: <InputAdornment position="start">{icon}</InputAdornment> }}
-    />
+    <TextField {...props} InputProps={{ startAdornment: <InputAdornment position='start'>{icon}</InputAdornment> }} />
   </>
 );
 

@@ -1,5 +1,5 @@
 import { NetPromise, PromiseEventListener } from '@decorators/NetPromise';
-import { GetATMAccountInput, GetATMAccountResponse } from '@server/../../typings/Account';
+import type { GetATMAccountInput, GetATMAccountResponse } from '@server/../../typings/Account';
 import {
   BlockCardInput,
   Card,
@@ -10,7 +10,7 @@ import {
   UpdateCardPinInput,
 } from '@server/../../typings/BankCard';
 import { AccountEvents, CardEvents } from '@typings/Events';
-import { Request, Response } from '@typings/http';
+import type { Request, Response } from '@typings/http';
 import { Controller } from '../../decorators/Controller';
 import { EventListener } from '../../decorators/Event';
 import { CardService } from './card.service';

@@ -7,7 +7,7 @@ import { ExternalAccountDB } from './externalAccount.db';
 import { AccountErrors, ExternalAccountErrors, GenericErrors } from '@typings/Errors';
 import { ServerError } from '@utils/errors';
 import { AccountDB } from '@services/account/account.db';
-import { Transaction } from 'sequelize/types';
+import { type Transaction } from 'sequelize/types';
 
 const logger = mainLogger.child({ module: 'externalAccounts' });
 

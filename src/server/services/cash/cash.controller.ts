@@ -1,11 +1,11 @@
 import { Export, ExportListener } from '@decorators/Export';
 import { NetPromise, PromiseEventListener } from '@decorators/NetPromise';
-import { OnlineUser } from '@server/../../typings/user';
+import { type OnlineUser } from '@server/../../typings/user';
 import { config } from '@server/utils/server-config';
-import { ChangeCashInput } from '@typings/Cash';
+import type { ChangeCashInput } from '@typings/Cash';
 import { CashEvents, UserEvents } from '@typings/Events';
 import { ServerExports } from '@typings/exports/server';
-import { Request, Response } from '@typings/http';
+import type { Request, Response } from '@typings/http';
 import { Controller } from '../../decorators/Controller';
 import { Event, EventListener } from '../../decorators/Event';
 import { CashService } from './cash.service';

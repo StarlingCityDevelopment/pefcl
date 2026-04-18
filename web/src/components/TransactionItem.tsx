@@ -1,15 +1,15 @@
-import React from 'react';
-import calendar from 'dayjs/plugin/calendar';
-import dayjs from 'dayjs';
-import { ArrowDownwardRounded, ArrowUpwardRounded, SwapHorizRounded } from '@mui/icons-material';
 import styled from '@emotion/styled';
-import { BodyText } from '@ui/Typography/BodyText';
-import theme from '@utils/theme';
 import { useConfig } from '@hooks/useConfig';
-import { Transaction, TransactionType } from '@typings/Transaction';
-import { Stack, alpha, Skeleton, Box } from '@mui/material';
+import { ArrowDownwardRounded, ArrowUpwardRounded, SwapHorizRounded } from '@mui/icons-material';
+import { Box, Skeleton, Stack, alpha } from '@mui/material';
+import { type Transaction, TransactionType } from '@typings/Transaction';
+import { BodyText } from '@ui/Typography/BodyText';
 import { Heading6 } from '@ui/Typography/Headings';
 import { formatMoney } from '@utils/currency';
+import theme from '@utils/theme';
+import dayjs from 'dayjs';
+import calendar from 'dayjs/plugin/calendar';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
 dayjs.extend(calendar);
@@ -89,11 +89,11 @@ const TransactionItem: React.FC<{ transaction: Transaction; isLimitedSpace?: boo
 
   return (
     <Container key={id} type={type} {...rest}>
-      <Stack direction="row" spacing={1.5} alignItems="center">
+      <Stack direction='row' spacing={1.5} alignItems='center'>
         <IconWrapper type={type}>{getIcon()}</IconWrapper>
 
         <Stack flex={1} spacing={0.25} minWidth={0}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
             <Heading6
               sx={{
                 fontWeight: 500,
@@ -111,10 +111,7 @@ const TransactionItem: React.FC<{ transaction: Transaction; isLimitedSpace?: boo
               sx={{
                 fontWeight: 600,
                 fontSize: '0.8125rem',
-                color:
-                  type === TransactionType.Incoming
-                    ? theme.palette.success.main
-                    : theme.palette.text.primary,
+                color: type === TransactionType.Incoming ? theme.palette.success.main : theme.palette.text.primary,
                 letterSpacing: '-0.01em',
                 flexShrink: 0,
                 ml: 1,
@@ -124,8 +121,8 @@ const TransactionItem: React.FC<{ transaction: Transaction; isLimitedSpace?: boo
             </Heading6>
           </Stack>
 
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Stack direction="row" spacing={0.75} alignItems="center">
+          <Stack direction='row' justifyContent='space-between' alignItems='center'>
+            <Stack direction='row' spacing={0.75} alignItems='center'>
               <TransactionDate>{createdAtDate.fromNow()}</TransactionDate>
               {!isLimitedSpace && (
                 <>
@@ -143,15 +140,13 @@ const TransactionItem: React.FC<{ transaction: Transaction; isLimitedSpace?: boo
             </Stack>
 
             {!isLimitedSpace && (fromAccount || toAccount) && (
-              <Stack direction="row" spacing={0.75} alignItems="center">
+              <Stack direction='row' spacing={0.75} alignItems='center'>
                 {fromAccount && (
                   <BodyText sx={{ fontSize: '0.6875rem', color: theme.palette.text.secondary }}>
                     {fromAccount.accountName}
                   </BodyText>
                 )}
-                {fromAccount && toAccount && (
-                  <SwapHorizRounded sx={{ fontSize: '0.75rem', opacity: 0.2 }} />
-                )}
+                {fromAccount && toAccount && <SwapHorizRounded sx={{ fontSize: '0.75rem', opacity: 0.2 }} />}
                 {toAccount && (
                   <BodyText sx={{ fontSize: '0.6875rem', color: theme.palette.text.secondary }}>
                     {toAccount.accountName}
@@ -168,16 +163,16 @@ const TransactionItem: React.FC<{ transaction: Transaction; isLimitedSpace?: boo
 
 export const TransactionSkeleton = () => (
   <Container type={TransactionType.Transfer} style={{ pointerEvents: 'none' }}>
-    <Stack direction="row" spacing={1.5} alignItems="center">
-      <Skeleton variant="rectangular" width={36} height={36} sx={{ borderRadius: '8px' }} />
+    <Stack direction='row' spacing={1.5} alignItems='center'>
+      <Skeleton variant='rectangular' width={36} height={36} sx={{ borderRadius: '8px' }} />
       <Stack flex={1} spacing={0.75}>
-        <Stack direction="row" justifyContent="space-between">
-          <Skeleton variant="text" width="40%" />
-          <Skeleton variant="text" width="20%" />
+        <Stack direction='row' justifyContent='space-between'>
+          <Skeleton variant='text' width='40%' />
+          <Skeleton variant='text' width='20%' />
         </Stack>
-        <Stack direction="row" justifyContent="space-between">
-          <Skeleton variant="text" width="30%" />
-          <Skeleton variant="text" width="20%" />
+        <Stack direction='row' justifyContent='space-between'>
+          <Skeleton variant='text' width='30%' />
+          <Skeleton variant='text' width='20%' />
         </Stack>
       </Stack>
     </Stack>

@@ -1,12 +1,12 @@
 import { totalBalanceAtom } from '@data/accounts';
 import { useConfig } from '@hooks/useConfig';
+import { useGlobalSettings } from '@hooks/useGlobalSettings';
 import { Stack, Typography } from '@mui/material';
 import { formatMoney } from '@utils/currency';
 import { useAtom } from 'jotai';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Heading1 } from './ui/Typography/Headings';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
 
 const TotalBalance = () => {
   const config = useConfig();

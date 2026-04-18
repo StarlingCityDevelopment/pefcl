@@ -1,7 +1,7 @@
+import { PIN_CODE_LENGTH } from '@common/constants';
 import styled from '@emotion/styled';
-import { InputBaseProps, Stack, Typography } from '@mui/material';
-import { PIN_CODE_LENGTH } from '@shared/constants';
-import React, { ChangeEvent, useState } from 'react';
+import { type InputBaseProps, Stack, Typography } from '@mui/material';
+import React, { type ChangeEvent, useState } from 'react';
 import Count from '../Count';
 
 const Container = styled.div`
@@ -32,7 +32,7 @@ const PinField = ({ onChange, value, label }: PinFieldProps) => {
     const newValue = event.target.value;
     const newLength = newValue.length;
 
-    if (newValue && isNaN(parseInt(newValue, 10))) {
+    if (newValue && isNaN(Number.parseInt(newValue, 10))) {
       return;
     }
 
@@ -48,7 +48,7 @@ const PinField = ({ onChange, value, label }: PinFieldProps) => {
   return (
     <Stack spacing={0.5}>
       {label && (
-        <Typography variant="caption" color="text.secondary">
+        <Typography variant='caption' color='text.secondary'>
           {label}
         </Typography>
       )}

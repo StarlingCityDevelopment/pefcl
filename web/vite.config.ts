@@ -1,31 +1,12 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import topLevelAwait from 'vite-plugin-top-level-await';
+import path from 'node:path';
 import federation from '@originjs/vite-plugin-federation';
-import path from 'path';
-const packageJson = require('./package.json');
-const { dependencies, name } = packageJson;
-
-delete dependencies['@emotion/styled'];
-delete dependencies['@mui/material'];
-delete dependencies['@mui/styles'];
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import topLevelAwait from 'vite-plugin-top-level-await';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    federation({
-      name,
-      filename: 'remoteEntry.js',
-      shared: ['react', 'react-dom', '@emotion/react', 'react-router', 'jotai'],
-    }),
-    topLevelAwait({
-      // The export name of top-level await promise for each chunk module
-      promiseExportName: '__tla',
-      // The function to generate import names of top-level await promise in each chunk module
-      promiseImportName: (i) => `__tla_${i}`,
-    }),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       '@hooks': path.resolve(__dirname, './src/hooks/'),
@@ -36,7 +17,7 @@ export default defineConfig({
       src: path.resolve(__dirname, './src/'),
       '@locales': path.resolve(__dirname, '../locales/'),
       '@data': path.resolve(__dirname, './src/data/'),
-      '@shared': path.resolve(__dirname, '../shared'),
+      '@common': path.resolve(__dirname, '../src/common'),
     },
   },
   base: './',
@@ -51,9 +32,27 @@ export default defineConfig({
     port: 3002,
   },
   build: {
-    outDir: 'dist',
+    outDir: '../dist/web',
     emptyOutDir: true,
-    modulePreload: false,
-    assetsDir: '',
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name][extname]',
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (
+              id.includes('@mui') ||
+              id.includes('@emotion') ||
+              id.includes('framer-motion') ||
+              id.includes('motion')
+            ) {
+              return 'vendor_ui';
+            }
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
 });

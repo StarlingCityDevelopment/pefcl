@@ -1,16 +1,16 @@
 import styled from '@emotion/styled';
+import { ContentCopyRounded, StarRounded } from '@mui/icons-material';
+import { IconButton, Skeleton, Stack, alpha } from '@mui/material';
+import { type Account, AccountType } from '@typings/Account';
+import copy from 'copy-to-clipboard';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Account, AccountType } from '@typings/Account';
 import { useConfig } from '../hooks/useConfig';
 import { MasterCardIcon } from '../icons/MasterCardIcon';
 import { formatMoney } from '../utils/currency';
 import theme from '../utils/theme';
 import { BodyText } from './ui/Typography/BodyText';
 import { Heading3, Heading5, Heading6 } from './ui/Typography/Headings';
-import { IconButton, Skeleton, Stack, alpha } from '@mui/material';
-import { ContentCopyRounded, StarRounded } from '@mui/icons-material';
-import copy from 'copy-to-clipboard';
 
 interface ContainerProps {
   isDisabled: boolean;
@@ -100,7 +100,7 @@ export const AccountCard = ({
 
   return (
     <Container {...props} accountType={type} selected={selected} isDisabled={isDisabled}>
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
+      <Stack direction='row' justifyContent='space-between' alignItems='flex-start'>
         <Stack spacing={0.25}>
           <Heading6
             sx={{
@@ -124,7 +124,7 @@ export const AccountCard = ({
             {formatMoney(balance, config.general)}
           </Heading3>
         </Stack>
-        <Stack direction="row" spacing={0.75}>
+        <Stack direction='row' spacing={0.75}>
           {isDefault && (
             <Badge>
               <StarRounded sx={{ fontSize: '0.75rem', color: theme.palette.primary.main }} />
@@ -141,9 +141,9 @@ export const AccountCard = ({
         </Stack>
       </Stack>
 
-      <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
+      <Stack direction='row' justifyContent='space-between' alignItems='flex-end'>
         <Stack spacing={0.75}>
-          <Stack direction="row" alignItems="center" spacing={0.75}>
+          <Stack direction='row' alignItems='center' spacing={0.75}>
             <CardNumber>{number}</CardNumber>
             {withCopy && (
               <IconButton
@@ -151,7 +151,7 @@ export const AccountCard = ({
                   e.stopPropagation();
                   copy(number);
                 }}
-                size="small"
+                size='small'
                 sx={{
                   p: 0.375,
                   color: 'rgba(255,255,255,0.15)',
@@ -202,14 +202,14 @@ export const LoadingAccountCard = () => {
   return (
     <Container accountType={AccountType.Personal} selected={false} isDisabled={false}>
       <Stack spacing={3}>
-        <Stack direction="row" justifyContent="space-between">
-          <Skeleton variant="rectangular" width={100} height={18} sx={{ borderRadius: 1 }} />
-          <Skeleton variant="rectangular" width={60} height={18} sx={{ borderRadius: 4 }} />
+        <Stack direction='row' justifyContent='space-between'>
+          <Skeleton variant='rectangular' width={100} height={18} sx={{ borderRadius: 1 }} />
+          <Skeleton variant='rectangular' width={60} height={18} sx={{ borderRadius: 4 }} />
         </Stack>
-        <Skeleton variant="text" width="80%" height={36} />
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-end">
-          <Skeleton variant="rectangular" width={120} height={28} sx={{ borderRadius: 1 }} />
-          <Skeleton variant="circular" width={36} height={36} />
+        <Skeleton variant='text' width='80%' height={36} />
+        <Stack direction='row' justifyContent='space-between' alignItems='flex-end'>
+          <Skeleton variant='rectangular' width={120} height={28} sx={{ borderRadius: 1 }} />
+          <Skeleton variant='circular' width={36} height={36} />
         </Stack>
       </Stack>
     </Container>

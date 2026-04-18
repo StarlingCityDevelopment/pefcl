@@ -1,10 +1,12 @@
+import { regexAlphaNumeric } from '@common/utils/regexes';
+import { transactionBaseAtom } from '@data/transactions';
+import { useMutation } from '@hooks/useMutation';
 import { Box, FormControlLabel, Stack } from '@mui/material';
 import { AccountEvents } from '@typings/Events';
 import { useAtom } from 'jotai';
-import React from 'react';
+import type React from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { transactionBaseAtom } from '@data/transactions';
 import { accountsAtom, defaultAccountAtom } from '../../data/accounts';
 import { useConfig } from '../../hooks/useConfig';
 import { fetchNui } from '../../utils/fetchNui';
@@ -14,8 +16,6 @@ import Button from '../ui/Button';
 import Checkbox from '../ui/Checkbox';
 import TextField from '../ui/Fields/TextField';
 import { Heading2, Heading6 } from '../ui/Typography/Headings';
-import { regexAlphaNumeric } from '@shared/utils/regexes';
-import { useMutation } from '@hooks/useMutation';
 
 interface CreateAccountForm {
   accountName: string;
@@ -59,15 +59,15 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
   };
 
   return (
-    <Box p={4} display="flex" flexDirection="column">
+    <Box p={4} display='flex' flexDirection='column'>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack direction="row" spacing={6}>
+        <Stack direction='row' spacing={6}>
           <Stack spacing={3} flex={1}>
             <Heading2>{t('Open account')}</Heading2>
 
             <Stack spacing={2}>
               <Controller
-                name="accountName"
+                name='accountName'
                 control={control}
                 rules={{
                   required: {
@@ -98,7 +98,7 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
 
               <div>
                 <Controller
-                  name="isShared"
+                  name='isShared'
                   control={control}
                   render={({ field }) => (
                     <FormControlLabel
@@ -117,7 +117,7 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
 
           <Stack flex={1} spacing={3}>
             <Controller
-              name="fromAccountId"
+              name='fromAccountId'
               control={control}
               render={({ field }) => (
                 <AccountSelect
@@ -131,11 +131,11 @@ const CreateAccountModal: React.FC<{ onClose(): void }> = ({ onClose }) => {
 
             <Summary balance={selectedAccount?.balance ?? 0} payment={config.prices.newAccount} />
 
-            <Stack direction="row" spacing={2} alignSelf="flex-end">
-              <Button color="error" onClick={onClose}>
+            <Stack direction='row' spacing={2} alignSelf='flex-end'>
+              <Button color='error' onClick={onClose}>
                 {t('Cancel')}
               </Button>
-              <Button disabled={isDisabled || isCreating} type="submit">
+              <Button disabled={isDisabled || isCreating} type='submit'>
                 {t('Create')}
               </Button>
             </Stack>

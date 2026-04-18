@@ -1,5 +1,5 @@
-import App from './src/views/Mobile/Mobile';
 import BankIcon from './src/BankIcon';
+import App from './src/views/Mobile/Mobile';
 
 // const defaultLanguage = 'en';
 // const localizedAppName = {
