@@ -12,19 +12,19 @@ const Devbar = () => {
 
   useEffect(() => {
     if (isBankOpen) {
-      window.postMessage({ app: 'PEFCL', method: 'setVisible', data: true });
-      window.postMessage({ app: 'PEFCL', method: 'setVisibleATM', data: false });
+      window.postMessage({ app: 'PEFCL', action: 'setVisible', data: true });
+      window.postMessage({ app: 'PEFCL', action: 'setVisibleATM', data: false });
     } else {
-      window.postMessage({ app: 'PEFCL', method: 'setVisible', data: false });
+      window.postMessage({ app: 'PEFCL', action: 'setVisible', data: false });
     }
   }, [isBankOpen]);
 
   useEffect(() => {
     if (isAtmOpen) {
-      window.postMessage({ app: 'PEFCL', method: 'setVisible', data: false });
-      window.postMessage({ app: 'PEFCL', method: 'setVisibleATM', data: true });
+      window.postMessage({ app: 'PEFCL', action: 'setVisible', data: false });
+      window.postMessage({ app: 'PEFCL', action: 'setVisibleATM', data: true });
     } else {
-      window.postMessage({ app: 'PEFCL', method: 'setVisibleATM', data: false });
+      window.postMessage({ app: 'PEFCL', action: 'setVisibleATM', data: false });
     }
   }, [isAtmOpen]);
 
