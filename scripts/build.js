@@ -17,7 +17,7 @@ const swcPlugin = {
   // @ts-ignore
   setup(build) {
     // @ts-ignore
-    build.onLoad({ filter: /src\/(server|common)\/.*\.ts$/ }, async (args) => {
+    build.onLoad({ filter: /src[\\/](server|common)[\\/].*\.ts$/ }, async (args) => {
       const input = await readFile(args.path, 'utf8');
       const { code } = await transform(input, {
         filename: args.path,
