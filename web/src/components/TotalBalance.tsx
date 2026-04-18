@@ -17,13 +17,13 @@ const TotalBalance = () => {
     <div className='flex flex-col gap-1 group cursor-default'>
       <Typography
         variant='label'
-        className='text-[10px] text-slate-500 font-medium group-hover:text-white/40 transition-colors uppercase tracking-widest'
+        className='text-[10px] text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.2em]'
       >
         {isMobile ? t('Current Balance') : t('Total Balance')}
       </Typography>
       <Typography
         variant='h1'
-        className='text-4xl font-light -ml-0.5 group-hover:scale-[1.01] transition-transform origin-left duration-300'
+        className='text-3xl font-bold text-[var(--gta-green)] leading-none tracking-wide'
       >
         {formatMoney(totalBalance, config.general)}
       </Typography>

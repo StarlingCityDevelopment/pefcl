@@ -12,29 +12,37 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className='flex flex-col gap-1.5 w-full'>
         {label && (
-          <label htmlFor={props.id} className='text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500 ml-1'>
+          <label
+            htmlFor={props.id}
+            className='text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--gta-text-dim)] ml-0.5'
+          >
             {label}
           </label>
         )}
         <div
           className={cn(
-            'relative flex items-center min-h-[52px] px-5 rounded-2xl transition-all duration-300',
-            'bg-white/[0.03] border border-white/5',
-            'hover:bg-white/[0.05] hover:border-white/10',
-            'focus-within:bg-white/[0.01] focus-within:border-white focus-within:ring-4 focus-within:ring-white/5',
-            error && 'border-rose-500/30 focus-within:border-rose-500 focus-within:ring-rose-500/10',
+            'relative flex items-center h-[48px] px-4 transition-all duration-150',
+            'bg-[var(--gta-surface)] border border-[var(--gta-border)]',
+            'hover:border-[var(--gta-border-light)]',
+            'focus-within:border-[var(--gta-green)] focus-within:shadow-[0_0_8px_var(--gta-green-glow)]',
+            error && 'border-[var(--gta-red)]/50 focus-within:border-[var(--gta-red)]',
             className,
           )}
         >
           <input
             type={type}
-            className='flex-1 bg-transparent border-none p-0 text-sm font-medium text-white placeholder:text-slate-600 focus:outline-none focus:ring-0 w-full'
+            className='flex-1 bg-transparent border-none p-0 text-sm font-medium text-[var(--gta-text)] placeholder:text-[var(--gta-text-dim)] focus:outline-none focus:ring-0 w-full'
             ref={ref}
             {...props}
           />
         </div>
         {helperText && (
-          <span className={cn('text-[11px] font-medium px-1', error ? 'text-rose-400' : 'text-slate-500')}>
+          <span
+            className={cn(
+              'text-[10px] font-bold uppercase tracking-[0.1em] px-0.5',
+              error ? 'text-[var(--gta-red)]' : 'text-[var(--gta-text-dim)]',
+            )}
+          >
             {helperText}
           </span>
         )}

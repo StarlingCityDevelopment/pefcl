@@ -24,7 +24,7 @@ root.render(
             <React.Suspense
               fallback={
                 <div className='flex items-center justify-center min-h-screen bg-black text-white font-bold uppercase tracking-widest text-[10px]'>
-                  Securely Initializing...
+                  {i18n.t('Securely Initializing...')}
                 </div>
               }
             >

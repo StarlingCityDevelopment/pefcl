@@ -53,53 +53,53 @@ const Transactions = () => {
   return (
     <Layout title={t('Ledger History')}>
       <div className='flex flex-col h-full overflow-hidden'>
-        <div className='flex items-center justify-between mb-8 px-1'>
-          <div className='flex items-center gap-4'>
-            <Typography variant='pre' className='text-slate-500 font-bold uppercase tracking-widest text-[11px]'>
+        <div className='flex items-center justify-between mb-5 px-0.5'>
+          <div className='flex items-center gap-3'>
+            <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
               {t('Total Records')}
             </Typography>
             <Count amount={total} />
           </div>
         </div>
 
-        <div className='flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-2 min-h-0'>
+        <div className='flex-1 overflow-y-auto pr-1 custom-scrollbar flex flex-col gap-1.5 min-h-0'>
           {isLoading ? (
             /* biome-ignore lint/suspicious/noArrayIndexKey: indices are stable for static skeleton list */
             Array.from({ length: 8 }).map((_, i) => <TransactionSkeleton key={i} />)
           ) : transactions.length > 0 ? (
             transactions.map((transaction) => <TransactionItem transaction={transaction} key={transaction.id} />)
           ) : (
-            <div className='flex flex-col items-center justify-center py-40 rounded-[3rem] bg-white/[0.01] border border-dashed border-white/5 opacity-40 gap-4'>
-              <History className='w-12 h-12 text-slate-500' />
-              <Typography variant='pre' className='text-slate-500 font-bold uppercase tracking-widest text-[10px]'>
+            <div className='flex flex-col items-center justify-center py-32 bg-[var(--gta-panel)] border border-dashed border-[var(--gta-border)] opacity-50 gap-3'>
+              <History className='w-10 h-10 text-[var(--gta-text-dim)]' />
+              <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
                 {t('Archive empty. No activity detected.')}
               </Typography>
             </div>
           )}
         </div>
 
-        <div className='mt-8 py-8 flex flex-row items-center justify-between border-t border-white/[0.05]'>
+        <div className='mt-6 py-5 flex flex-row items-center justify-between border-t border-[var(--gta-border)]'>
           <div className='flex flex-col'>
-            <Typography variant='pre' className='text-slate-500 font-bold uppercase tracking-widest text-[10px]'>
+            <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
               {t('Registry Pagination')}
             </Typography>
-            <Typography className='text-xs font-bold text-white tracking-tight'>
+            <Typography className='text-xs font-bold text-[var(--gta-text)] tracking-wide'>
               {t('Showing {{from}}-{{to}} of {{total}} results', { from: offset + 1, to, total })}
             </Typography>
           </div>
 
-          <div className='flex items-center gap-3'>
+          <div className='flex items-center gap-2'>
             <Button
               variant='secondary'
               size='icon'
               disabled={page === 1}
               onClick={() => handlePageChange(page - 1)}
-              className='h-10 w-10 rounded-xl'
+              className='h-8 w-8'
             >
-              <ChevronLeft className='w-5 h-5 opacity-50' />
+              <ChevronLeft className='w-4 h-4 opacity-60' />
             </Button>
 
-            <div className='flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/5'>
+            <div className='flex items-center gap-1 px-3 py-1.5 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
               {[...Array(pages)].map((_, i) => {
                 // Only show current, first, last, and neighbors if many pages
                 const isNear = Math.abs(page - (i + 1)) <= 1;
@@ -111,9 +111,9 @@ const Transactions = () => {
                       <span
                         // biome-ignore lint/suspicious/noArrayIndexKey: stable list
                         key={`tx-page-ellipsis-${i}`}
-                        className='text-slate-700 font-bold'
+                        className='text-(--gta-text-dim) font-bold text-xs'
                       >
-                        ...
+                        ..
                       </span>
                     );
                   return null;
@@ -126,10 +126,10 @@ const Transactions = () => {
                     key={`tx-page-${i}`}
                     onClick={() => handlePageChange(i + 1)}
                     className={cn(
-                      'w-8 h-8 rounded-lg text-[10px] font-bold tracking-widest transition-all uppercase',
+                      'w-7 h-7 text-[10px] font-bold tracking-wide transition-all uppercase',
                       page === i + 1
-                        ? 'bg-white text-black scale-105'
-                        : 'text-slate-500 hover:text-white hover:bg-white/10',
+                        ? 'bg-(--gta-green) text-black'
+                        : 'text-(--gta-text-dim) hover:text-(--gta-text) hover:bg-(--gta-surface)',
                     )}
                   >
                     {i + 1}
@@ -143,9 +143,9 @@ const Transactions = () => {
               size='icon'
               disabled={page === pages || pages === 0}
               onClick={() => handlePageChange(page + 1)}
-              className='h-10 w-10 rounded-xl'
+              className='h-8 w-8'
             >
-              <ChevronRight className='w-5 h-5 opacity-50' />
+              <ChevronRight className='w-4 h-4 opacity-60' />
             </Button>
           </div>
         </div>

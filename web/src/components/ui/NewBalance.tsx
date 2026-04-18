@@ -16,12 +16,15 @@ const NewBalance = ({ amount, isValid, newBalanceText }: NewBalanceProps) => {
   const { general } = useConfig();
 
   return (
-    <div className='flex items-center gap-1.5 px-1 py-1'>
-      <Typography className='text-[11px] font-medium text-slate-500 tracking-tight'>
+    <div className='flex items-center gap-2 px-0.5 py-1'>
+      <Typography className='text-[11px] font-medium text-[var(--gta-text-dim)] tracking-wide uppercase'>
         {newBalanceText ?? t('New balance')}:
       </Typography>
       <Typography
-        className={cn('text-[11px] font-black tracking-tight', isValid ? 'text-white opacity-80' : 'text-red-400')}
+        className={cn(
+          'text-[11px] font-bold tracking-wide',
+          isValid ? 'text-[var(--gta-green)]' : 'text-[var(--gta-red)]',
+        )}
       >
         {formatMoney(amount, general)}
       </Typography>

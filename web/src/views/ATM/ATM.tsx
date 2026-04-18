@@ -210,49 +210,52 @@ const ATM = () => {
   if (!isOpen) return null;
 
   return (
-    <div className='fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm'>
+    <div className='fixed inset-0 z-[100] flex items-center justify-center bg-black/80'>
       <AnimatePresence mode='wait'>
         <motion.div
           key={state}
-          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          initial={{ scale: 0.95, opacity: 0, y: 15 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 1.1, opacity: 0, y: -20 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ scale: 1.05, opacity: 0, y: -15 }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
-            'relative w-full max-w-lg p-10 rounded-[3rem] overflow-hidden',
-            'bg-[#0a0a0b] border border-white/10 -[0_60px_120px_-20px_rgba(0,0,0,1)]',
-            'flex flex-col gap-8',
+            'relative w-full max-w-md p-8 overflow-hidden',
+            'bg-[var(--gta-dark)] border border-[var(--gta-border)] shadow-[0_0_60px_rgba(0,0,0,0.8)]',
+            'flex flex-col gap-6',
           )}
         >
-          {/* Hardware Scan-line Overlay */}
-          <div className='absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] z-50 bg-[length:100%_2px,3px_100%]' />
+          {/* GTA green top accent */}
+          <div className='absolute top-0 left-0 right-0 h-[2px] bg-[var(--gta-green)]' />
+
+          {/* Scanline overlay */}
+          <div className='absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.15)_50%)] z-50 bg-[length:100%_3px]' />
 
           {state !== initialStatus && (
             <button
               type='button'
               onClick={handleBack}
-              className='absolute top-10 left-10 p-3 rounded-2xl text-slate-500 hover:text-white hover:bg-white/10 transition-all active:scale-95 z-[60]'
+              className='absolute top-8 left-8 p-2 text-[var(--gta-text-dim)] hover:text-[var(--gta-green)] hover:bg-[var(--gta-surface)] transition-all active:scale-95 z-[60]'
             >
-              <ChevronLeft className='w-5 h-5' />
+              <ChevronLeft className='w-4 h-4' />
             </button>
           )}
 
-          <div className='flex flex-col gap-2 text-center relative z-[60] pt-4'>
-            <div className='flex items-center justify-center gap-2 mb-2'>
-              <div className='h-[1px] w-8 bg-white/10' />
-              <Typography variant='pre' className='text-slate-500 font-bold uppercase tracking-widest text-[10px]'>
+          <div className='flex flex-col gap-2 text-center relative z-[60] pt-2'>
+            <div className='flex items-center justify-center gap-2 mb-1'>
+              <div className='h-[1px] w-6 bg-[var(--gta-green)]/30' />
+              <Typography variant='pre' className='text-[var(--gta-green)] font-bold uppercase tracking-[0.2em] text-[9px]'>
                 {state === 'select-card' ? t('ATM Hardware Terminal V4') : t('Encrypted Link Established')}
               </Typography>
-              <div className='h-[1px] w-8 bg-white/10' />
+              <div className='h-[1px] w-6 bg-[var(--gta-green)]/30' />
             </div>
-            <Typography variant='h1' className='text-4xl font-bold tracking-tight'>
+            <Typography variant='h1' className='text-2xl font-bold tracking-[0.15em]'>
               {state === 'select-card' ? t('Insert Card') : state === 'enter-pin' ? t('Authorization') : t('Main Menu')}
             </Typography>
           </div>
 
-          <div className='relative z-[60] flex flex-col gap-6'>
+          <div className='relative z-[60] flex flex-col gap-4'>
             {state === 'select-card' && (
-              <div className='flex flex-col gap-4 py-4 max-h-[400px] overflow-y-auto no-scrollbar custom-scrollbar'>
+              <div className='flex flex-col gap-2 py-2 max-h-[350px] overflow-y-auto no-scrollbar custom-scrollbar'>
                 {cards.map((card) => (
                   <button
                     key={card.id}
@@ -263,15 +266,15 @@ const ATM = () => {
                         handleSelectCard(card);
                       }
                     }}
-                    className='w-full transition-all duration-300 text-left focus:outline-none focus:ring-2 focus:ring-white/10 rounded-2xl'
+                    className='w-full transition-all duration-150 text-left focus:outline-none focus:ring-1 focus:ring-[var(--gta-green)]'
                   >
                     <BankCard card={card} />
                   </button>
                 ))}
                 {cards.length === 0 && (
-                  <div className='flex flex-col items-center gap-4 py-16 px-8 rounded-[2rem] bg-white/[0.01] border border-white/5 border-dashed'>
-                    <CreditCard className='w-8 h-8 text-slate-700' />
-                    <Typography className='text-slate-500 text-sm font-medium italic text-center opacity-60'>
+                  <div className='flex flex-col items-center gap-3 py-12 px-6 bg-[var(--gta-panel)] border border-dashed border-[var(--gta-border)]'>
+                    <CreditCard className='w-7 h-7 text-[var(--gta-text-dim)]' />
+                    <Typography className='text-[var(--gta-text-dim)] text-sm font-medium text-center'>
                       {t('No valid bank cards detected in proximity.')}
                     </Typography>
                   </div>
@@ -280,47 +283,48 @@ const ATM = () => {
             )}
 
             {state === 'enter-pin' && (
-              <form onSubmit={handleSubmit} className='flex flex-col gap-10 py-4'>
-                <div className='flex flex-col items-center gap-8'>
-                  <div className='p-6 rounded-[2rem] bg-white/[0.03] border border-white/10 w-full flex flex-col items-center gap-1 '>
-                    <Typography className='text-xs font-bold text-white/40 font-mono tracking-widest'>
+              <form onSubmit={handleSubmit} className='flex flex-col gap-8 py-2'>
+                <div className='flex flex-col items-center gap-6'>
+                  <div className='p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)] w-full flex flex-col items-center gap-1'>
+                    <Typography className='text-xs font-bold text-[var(--gta-text-dim)] font-mono tracking-[0.15em]'>
                       {selectedCard?.number}
                     </Typography>
-                    <Typography className='text-[10px] uppercase font-bold text-white tracking-widest'>
+                    <Typography className='text-[10px] uppercase font-bold text-[var(--gta-text)] tracking-[0.2em]'>
                       {selectedCard?.holder}
                     </Typography>
                   </div>
-                  <div className='flex flex-col items-center gap-4 w-full'>
-                    <div className='flex items-center gap-2 mb-2'>
-                      <ShieldCheck className='w-3 h-3 text-slate-600' />
-                      <Typography variant='label' className='text-slate-600'>
+                  <div className='flex flex-col items-center gap-3 w-full'>
+                    <div className='flex items-center gap-1.5 mb-1'>
+                      <ShieldCheck className='w-3 h-3 text-[var(--gta-green)]' />
+                      <Typography variant='label' className='text-[var(--gta-text-dim)]'>
                         {t('Secure Input Field')}
                       </Typography>
                     </div>
                     <PinField value={pin} onChange={(event) => setPin(event.target.value)} />
                   </div>
                 </div>
-                <Button type='submit' size='xl' variant='primary' className='w-full'>
+                <Button type='submit' size='lg' variant='primary' className='w-full'>
                   {t('Establish Session')}
                 </Button>
               </form>
             )}
 
             {state === 'withdraw' && (
-              <div className='flex flex-col gap-10'>
-                <div className='p-8 rounded-[2.5rem] bg-white/[0.03] border border-white/10 flex flex-col items-center gap-2 group cursor-default'>
+              <div className='flex flex-col gap-6'>
+                <div className='p-6 bg-[var(--gta-panel)] border border-[var(--gta-border)] flex flex-col items-center gap-2 cursor-default relative'>
+                  <div className='absolute top-0 left-0 right-0 h-[2px] bg-[var(--gta-green)]' />
                   <Typography
                     variant='label'
-                    className='text-slate-500 group-hover:text-white/40 transition-colors uppercase font-bold tracking-widest'
+                    className='text-[var(--gta-text-dim)] uppercase font-bold tracking-[0.2em]'
                   >
                     {t('Verified Balance')}
                   </Typography>
-                  <Typography className='text-5xl font-bold text-white tracking-tight leading-none group-hover:scale-105 transition-transform duration-500'>
+                  <Typography className='text-4xl font-bold text-[var(--gta-green)] leading-none'>
                     {formatMoney(accountBalance, config.general)}
                   </Typography>
                 </div>
 
-                <div className='grid grid-cols-2 gap-4'>
+                <div className='grid grid-cols-2 gap-2'>
                   {withdrawOptions.map((value) => (
                     <Button
                       key={value}
@@ -328,16 +332,14 @@ const ATM = () => {
                       onClick={() => handleWithdraw(value)}
                       disabled={value > accountBalance || isLoading}
                       className={cn(
-                        'h-16 rounded-[1.5rem] text-[15px] font-bold uppercase tracking-tight relative overflow-hidden',
-                        value > accountBalance ? 'opacity-20 translate-y-1 grayscale' : 'hover:border-white/40',
+                        'h-14 text-sm font-bold uppercase tracking-wide relative overflow-hidden',
+                        value > accountBalance ? 'opacity-20 grayscale' : 'hover:border-[var(--gta-green)]/50',
                       )}
                     >
                       {isLoading && value > 0 ? (
-                        <Loader2 className='w-5 h-5 animate-spin text-white' />
+                        <Loader2 className='w-4 h-4 animate-spin text-[var(--gta-green)]' />
                       ) : (
-                        <div className='flex flex-col items-center gap-0.5'>
-                          <span className='text-white'>{formatMoney(value, config.general)}</span>
-                        </div>
+                        <span className='text-[var(--gta-text)]'>{formatMoney(value, config.general)}</span>
                       )}
                     </Button>
                   ))}
@@ -348,18 +350,18 @@ const ATM = () => {
 
           {error && (
             <motion.div
-              initial={{ opacity: 0, y: 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              className='relative z-[60] p-5 rounded-[1.5rem] bg-red-500/10 border border-red-500/20 flex items-center gap-4'
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className='relative z-[60] p-4 bg-[var(--gta-red)]/10 border border-[var(--gta-red)]/30 flex items-center gap-3'
             >
-              <div className='w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 -500/20'>
-                <AlertCircle className='w-5 h-5 text-red-400' />
+              <div className='w-8 h-8 bg-[var(--gta-red)]/20 flex items-center justify-center shrink-0'>
+                <AlertCircle className='w-4 h-4 text-[var(--gta-red)]' />
               </div>
               <div className='flex flex-col'>
-                <Typography variant='pre' className='text-red-500 font-bold uppercase tracking-widest text-[10px]'>
+                <Typography variant='pre' className='text-[var(--gta-red)] font-bold uppercase tracking-[0.15em] text-[9px]'>
                   {t('Security Alert')}
                 </Typography>
-                <Typography className='text-xs font-bold text-red-500/80'>{error}</Typography>
+                <Typography className='text-xs font-bold text-[var(--gta-red)]/80'>{error}</Typography>
               </div>
             </motion.div>
           )}

@@ -8,15 +8,15 @@ interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
 export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
   ({ className, variant = 'p', ...props }, ref) => {
     const variants = {
-      h1: 'scroll-m-20 text-5xl font-black tracking-tighter italic text-white uppercase leading-none',
-      h2: 'scroll-m-20 text-3xl font-black tracking-tight text-white leading-tight',
-      h3: 'scroll-m-20 text-2xl font-bold tracking-tight text-white leading-snug',
-      h4: 'scroll-m-20 text-xl font-bold tracking-tight text-white',
-      p: 'text-base leading-relaxed text-white/80',
-      small: 'text-[13px] font-medium leading-none text-white/60',
-      muted: 'text-sm font-medium text-slate-500 tracking-tight',
-      pre: 'text-[9px] font-black uppercase tracking-[0.25em] text-slate-500',
-      label: 'text-[11px] font-bold uppercase tracking-widest text-white/40',
+      h1: 'text-3xl font-black tracking-wide uppercase text-[var(--gta-text)] leading-none',
+      h2: 'text-xl font-bold tracking-wide uppercase text-[var(--gta-text)] leading-tight',
+      h3: 'text-lg font-bold tracking-wide uppercase text-[var(--gta-text)] leading-snug',
+      h4: 'text-base font-bold tracking-wide uppercase text-[var(--gta-text)]',
+      p: 'text-sm leading-relaxed text-[var(--gta-text-muted)]',
+      small: 'text-xs font-medium leading-none text-[var(--gta-text-dim)]',
+      muted: 'text-xs font-medium text-[var(--gta-text-dim)] tracking-wide uppercase',
+      pre: 'text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gta-text-dim)]',
+      label: 'text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--gta-text-dim)]',
     };
 
     const ComponentMap: Record<string, keyof React.JSX.IntrinsicElements> = {
@@ -36,7 +36,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     return (
       <Component
         ref={ref as any}
-        className={cn('transition-colors duration-300', variants[variant], className)}
+        className={cn('transition-colors duration-200', variants[variant], className)}
         {...props}
       />
     );

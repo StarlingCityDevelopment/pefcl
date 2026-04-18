@@ -11,10 +11,10 @@ const Count: React.FC<CountProps> = ({ amount, focus = false, className, ...prop
     <div
       className={cn(
         'flex justify-center items-center text-center',
-        'h-12 min-w-[3rem] px-2 rounded-xl',
-        'font-black text-sm transition-all duration-300',
-        'bg-white/[0.03] border border-white/10 text-slate-400',
-        focus && 'bg-white/[0.08] border-white/30 text-white scale-105 -[0_0_20px_rgba(255,255,255,0.05)]',
+        'h-11 min-w-[2.75rem] px-2',
+        'font-bold text-sm transition-all duration-150',
+        'bg-[var(--gta-surface)] border border-[var(--gta-border)] text-[var(--gta-text-muted)]',
+        focus && 'border-[var(--gta-green)] text-[var(--gta-green)] shadow-[0_0_10px_var(--gta-green-glow)]',
         className,
       )}
       {...props}

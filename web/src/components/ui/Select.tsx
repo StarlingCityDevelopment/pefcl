@@ -35,7 +35,7 @@ const Select = ({ value, onChange, options, label, placeholder, className, rende
   return (
     <div className='flex flex-col gap-1.5 w-full relative' ref={containerRef}>
       {label && (
-        <Typography variant='pre' className='text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1'>
+        <Typography variant='pre' className='text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--gta-text-dim)] ml-0.5'>
           {label}
         </Typography>
       )}
@@ -44,10 +44,10 @@ const Select = ({ value, onChange, options, label, placeholder, className, rende
         type='button'
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'relative flex items-center justify-between min-h-[52px] px-5 rounded-2xl transition-all duration-300',
-          'bg-white/[0.03] border border-white/5 text-left',
-          'hover:bg-white/[0.05] hover:border-white/10',
-          isOpen ? 'bg-white/[0.01] border-white ring-4 ring-white/5' : '',
+          'relative flex items-center justify-between h-[48px] px-4 transition-all duration-150',
+          'bg-[var(--gta-surface)] border border-[var(--gta-border)] text-left',
+          'hover:border-[var(--gta-border-light)]',
+          isOpen ? 'border-[var(--gta-green)] shadow-[0_0_8px_var(--gta-green-glow)]' : '',
           className,
         )}
       >
@@ -55,21 +55,24 @@ const Select = ({ value, onChange, options, label, placeholder, className, rende
           {renderValue ? (
             renderValue(value)
           ) : selectedOption ? (
-            <span className='text-sm font-bold text-white tracking-tight'>{selectedOption.label}</span>
+            <span className='text-sm font-bold text-[var(--gta-text)]'>{selectedOption.label}</span>
           ) : (
-            <span className='text-sm font-medium text-slate-500 tracking-tight'>
+            <span className='text-sm font-medium text-[var(--gta-text-dim)]'>
               {placeholder || t('Select option')}
             </span>
           )}
         </div>
         <ChevronDown
-          className={cn('w-4 h-4 text-slate-500 transition-transform duration-300', isOpen && 'rotate-180 text-white')}
+          className={cn(
+            'w-4 h-4 text-[var(--gta-text-dim)] transition-transform duration-150',
+            isOpen && 'rotate-180 text-[var(--gta-green)]',
+          )}
         />
       </button>
 
       {isOpen && (
-        <div className='absolute top-[calc(100%+8px)] left-0 right-0 z-50 overflow-hidden rounded-2xl bg-black/95 border border-white/10 -[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md animate-in fade-in zoom-in-95 duration-200'>
-          <div className='max-h-[300px] overflow-y-auto no-scrollbar py-2'>
+        <div className='absolute top-[calc(100%+4px)] left-0 right-0 z-50 overflow-hidden bg-[var(--gta-dark)] border border-[var(--gta-green)] shadow-[0_8px_24px_rgba(0,0,0,0.6)]'>
+          <div className='max-h-[300px] overflow-y-auto no-scrollbar'>
             {options.map((option) => (
               <button
                 key={option.value}
@@ -79,11 +82,11 @@ const Select = ({ value, onChange, options, label, placeholder, className, rende
                   setIsOpen(false);
                 }}
                 className={cn(
-                  'flex items-center w-full px-5 py-3 text-left transition-all',
-                  'text-sm font-medium tracking-tight',
+                  'flex items-center w-full px-4 py-3 text-left transition-all duration-100 border-b border-[var(--gta-border)]/50 last:border-b-0',
+                  'text-sm font-medium',
                   option.value === value
-                    ? 'bg-white/10 text-white font-bold'
-                    : 'text-slate-400 hover:text-white hover:bg-white/[0.05]',
+                    ? 'bg-[var(--gta-green)]/15 text-[var(--gta-green)] font-bold'
+                    : 'text-[var(--gta-text-muted)] hover:text-[var(--gta-text)] hover:bg-[var(--gta-surface)]',
                 )}
               >
                 {option.label}

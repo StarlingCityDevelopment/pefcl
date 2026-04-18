@@ -17,11 +17,11 @@ const PinField = ({ onChange, value, label, isLoading }: PinFieldProps) => {
   return (
     <div className='flex flex-col gap-4 w-full'>
       {label && (
-        <Typography variant='pre' className='text-slate-500'>
+        <Typography variant='pre' className='text-[var(--gta-text-dim)]'>
           {label}
         </Typography>
       )}
-      <div className='flex items-center justify-center gap-3 relative'>
+      <div className='flex items-center justify-center gap-2 relative'>
         <input
           ref={inputRef}
           type='number'

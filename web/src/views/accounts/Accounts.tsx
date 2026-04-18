@@ -50,19 +50,19 @@ const RenameAccountAction = ({ accountId, currentName, isAdmin, onUpdate }: Rena
         onClick={() => setIsOpen(true)}
         disabled={!isAdmin}
         variant='secondary'
-        className='h-11 justify-start px-4 text-sm'
+        className='h-10 justify-start px-4 text-xs'
       >
-        <PenTool className='w-4 h-4 mr-2.5 opacity-50' />
+        <PenTool className='w-3.5 h-3.5 mr-2 opacity-50' />
         {t('Rename account')}
       </Button>
       {!isAdmin && (
-        <Typography variant='pre' className='text-[9px] text-slate-600 font-medium uppercase tracking-widest ml-1'>
+        <Typography variant='pre' className='text-[9px] text-[var(--gta-text-dim)] font-medium uppercase tracking-[0.15em] ml-0.5'>
           {t('Admin access required')}
         </Typography>
       )}
 
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title={t('Rename Account')} maxWidth='sm'>
-        <form onSubmit={handleRename} className='flex flex-col gap-6 h-full'>
+        <form onSubmit={handleRename} className='flex flex-col gap-5 h-full'>
           <Input
             autoFocus
             label={t('Account Name')}
@@ -70,7 +70,7 @@ const RenameAccountAction = ({ accountId, currentName, isAdmin, onUpdate }: Rena
             value={name}
             onChange={(event) => setName(event.target.value)}
           />
-          <div className='flex justify-end gap-3 mt-auto pt-6 border-t border-white/5'>
+          <div className='flex justify-end gap-2 mt-auto pt-4 border-t border-[var(--gta-border)]'>
             <Button variant='secondary' onClick={() => setIsOpen(false)} type='button'>
               {t('Cancel')}
             </Button>
@@ -117,11 +117,11 @@ const Accounts = () => {
 
   return (
     <Layout>
-      <div className='flex flex-col gap-1 mb-6'>
-        <Typography variant='label' className='text-[10px] text-slate-500 font-medium uppercase tracking-widest'>
+      <div className='flex flex-col gap-1 mb-5'>
+        <Typography variant='label' className='text-[10px] text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.2em]'>
           {t('Total Portfolio')}
         </Typography>
-        <Typography variant='h1' className='text-4xl font-light text-white leading-tight tracking-tight'>
+        <Typography variant='h1' className='text-3xl font-bold text-[var(--gta-green)] leading-tight'>
           {formatMoney(totalBalance, config.general)}
         </Typography>
       </div>
@@ -130,31 +130,31 @@ const Accounts = () => {
         <AccountCards onSelectAccount={setSelectedAccountId} selectedAccountId={selectedAccountId} />
       </div>
 
-      <div className='grid grid-cols-1 lg:grid-cols-[1fr,360px] gap-8 mt-8 items-start'>
-        <div className='flex flex-col gap-8'>
-          <div className='flex flex-col gap-4'>
-            <div className='flex items-center gap-2'>
-              <Shield className='w-4 h-4 text-slate-500' />
-              <Typography variant='h3' className='text-white font-medium tracking-tight leading-none text-sm'>
+      <div className='grid grid-cols-1 lg:grid-cols-[1fr,320px] gap-5 mt-6 items-start'>
+        <div className='flex flex-col gap-5'>
+          <div className='flex flex-col gap-3'>
+            <div className='flex items-center gap-2 pb-2 border-b border-[var(--gta-border)]'>
+              <Shield className='w-3.5 h-3.5 text-[var(--gta-green)]' />
+              <Typography variant='h4' className='text-[var(--gta-text)] font-bold tracking-[0.1em] text-xs'>
                 {t('Account Management')}
               </Typography>
             </div>
 
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
               <div className='flex flex-col gap-1.5'>
                 <Button
                   onClick={handleSetDefault}
                   disabled={isDefaultAccountSelected || !isAdmin || isShared}
                   variant='secondary'
-                  className='h-11 justify-start px-4 text-sm'
+                  className='h-10 justify-start px-4 text-xs'
                 >
-                  <PlusCircle className='w-4 h-4 mr-2.5 opacity-50' />
+                  <PlusCircle className='w-3.5 h-3.5 mr-2 opacity-50' />
                   {t('Set as default')}
                 </Button>
                 {(!isAdmin || isShared) && (
                   <Typography
                     variant='pre'
-                    className='text-[9px] text-slate-600 font-medium uppercase tracking-widest ml-1'
+                    className='text-[9px] text-[var(--gta-text-dim)] font-medium uppercase tracking-[0.15em] ml-0.5'
                   >
                     {!isAdmin ? t('Authorization required') : t('Shared accounts ineligible')}
                   </Typography>
@@ -171,30 +171,30 @@ const Accounts = () => {
               <Button
                 variant='secondary'
                 onClick={() => copy(selectedAccount?.number ?? '')}
-                className='h-11 justify-start px-4 text-sm'
+                className='h-10 justify-start px-4 text-xs'
               >
-                <Copy className='w-4 h-4 mr-2.5 opacity-50' />
+                <Copy className='w-3.5 h-3.5 mr-2 opacity-50' />
                 {t('Copy account number')}
               </Button>
             </div>
           </div>
 
           {isOwner && (
-            <div className='flex flex-col gap-4'>
-              <div className='flex items-center gap-2'>
-                <AlertTriangle className='w-4 h-4 text-slate-500' />
-                <Typography variant='h3' className='text-white font-medium tracking-tight leading-none text-sm'>
+            <div className='flex flex-col gap-3'>
+              <div className='flex items-center gap-2 pb-2 border-b border-[var(--gta-red)]/20'>
+                <AlertTriangle className='w-3.5 h-3.5 text-[var(--gta-red)]' />
+                <Typography variant='h4' className='text-[var(--gta-red)] font-bold tracking-[0.1em] text-xs'>
                   {t('Danger Zone')}
                 </Typography>
               </div>
-              <div className='p-5 rounded-2xl border border-red-500/10 bg-red-500/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4'>
+              <div className='p-4 border border-[var(--gta-red)]/20 bg-[var(--gta-red)]/5 flex flex-col sm:flex-row items-center justify-between gap-3'>
                 <div className='flex flex-col gap-1'>
-                  <Typography className='text-white font-medium leading-none text-sm'>{t('Delete Account')}</Typography>
+                  <Typography className='text-[var(--gta-text)] font-bold text-sm uppercase'>{t('Delete Account')}</Typography>
                   <Typography
                     variant='pre'
                     className={cn(
-                      'text-[9px] font-medium uppercase tracking-widest leading-loose max-w-sm',
-                      isDefaultAccountSelected ? 'text-slate-600' : 'text-slate-500',
+                      'text-[9px] font-medium uppercase tracking-[0.1em] leading-loose max-w-sm',
+                      isDefaultAccountSelected ? 'text-[var(--gta-text-dim)]' : 'text-[var(--gta-text-muted)]',
                     )}
                   >
                     {isDefaultAccountSelected
@@ -203,8 +203,8 @@ const Accounts = () => {
                   </Typography>
                 </div>
                 <Button
-                  variant='secondary'
-                  className='bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white hover:border-red-500 min-w-[120px] h-10 rounded-xl text-[10px] font-medium uppercase tracking-widest shrink-0'
+                  variant='danger'
+                  className='min-w-[100px] h-9 text-[10px] font-bold uppercase tracking-[0.15em] shrink-0'
                   onClick={handleDeleteAccount}
                   disabled={isDefaultAccountSelected}
                 >
@@ -217,16 +217,16 @@ const Accounts = () => {
 
         <aside className='sticky top-0'>
           {isShared && (
-            <div className='p-5 rounded-2xl bg-white/[0.02] border border-white/10'>
+            <div className='p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)]'>
               <SharedSettings accountId={selectedAccountId} isAdmin={isAdmin} />
             </div>
           )}
           {!isShared && (
-            <div className='p-5 rounded-2xl bg-white/[0.02] border border-white/5 border-dashed flex flex-col items-center justify-center text-center gap-3 py-12 opacity-30'>
-              <Shield className='w-8 h-8 text-slate-500' />
+            <div className='p-4 bg-[var(--gta-panel)] border border-dashed border-[var(--gta-border)] flex flex-col items-center justify-center text-center gap-2 py-10 opacity-40'>
+              <Shield className='w-6 h-6 text-[var(--gta-text-dim)]' />
               <Typography
                 variant='pre'
-                className='text-[9px] font-medium uppercase tracking-widest text-slate-500 leading-relaxed max-w-[180px]'
+                className='text-[9px] font-medium uppercase tracking-[0.15em] text-[var(--gta-text-dim)] leading-relaxed max-w-[180px]'
               >
                 {t('Personal account — no sharing settings.')}
               </Typography>

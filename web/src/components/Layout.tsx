@@ -14,10 +14,10 @@ const Layout: React.FC<LayoutProps> = ({ children, title, className }) => {
   const { t } = useTranslation();
 
   return (
-    <div className={cn('relative p-6 w-full h-full flex flex-col', className)}>
+    <div className={cn('relative p-5 w-full h-full flex flex-col', className)}>
       {title && (
-        <div className='mb-5'>
-          <Typography variant='h2' className='tracking-tight text-white font-bold text-xl'>
+        <div className='mb-4 pb-3 border-b border-[var(--gta-border)]'>
+          <Typography variant='h2' className='text-[var(--gta-text)] font-bold tracking-[0.15em] text-base'>
             {title}
           </Typography>
         </div>
@@ -25,9 +25,9 @@ const Layout: React.FC<LayoutProps> = ({ children, title, className }) => {
 
       <React.Suspense
         fallback={
-          <div className='flex flex-col items-center justify-center h-full gap-4 text-slate-500'>
-            <Loader2 className='w-6 h-6 animate-spin opacity-20' />
-            <Typography variant='pre' className='text-slate-500 font-medium'>
+          <div className='flex flex-col items-center justify-center h-full gap-3 text-[var(--gta-text-dim)]'>
+            <Loader2 className='w-5 h-5 animate-spin text-[var(--gta-green)] opacity-60' />
+            <Typography variant='pre' className='text-[var(--gta-text-dim)]'>
               {t('Securely loading {{name}}', { name: title || '' })}
             </Typography>
           </div>

@@ -33,9 +33,9 @@ const CreateAccountAction = ({ onSuccess, maxAccounts, currentCount }: CreateAcc
         type='button'
         onClick={() => setIsOpen(true)}
         className={cn(
-          'flex items-center justify-center h-[150px] rounded-2xl w-full',
-          'border border-dashed border-white/10 text-slate-600',
-          'transition-all duration-300 hover:text-slate-400 hover:border-white/20 hover:bg-white/[0.02] active:scale-95',
+          'flex items-center justify-center h-[130px] w-full',
+          'border border-dashed border-[var(--gta-border)] text-[var(--gta-text-dim)]',
+          'transition-all duration-150 hover:text-[var(--gta-green)] hover:border-[var(--gta-green)]/50 hover:bg-[var(--gta-green)]/5 active:scale-95',
         )}
         title='create-account'
       >
@@ -61,13 +61,13 @@ const AccountCards = ({ onSelectAccount, selectedAccountId, hideCreate }: Accoun
   const [, updateAccounts] = useAtom(orderedAccountsAtom);
 
   return (
-    <div className='grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3 w-full'>
+    <div className='grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2 w-full'>
       {orderedAccounts.map((account) => (
         <button
           type='button'
           key={account.id}
           onClick={() => onSelectAccount?.(account.id)}
-          className='flex flex-col min-w-0 text-left w-full focus:outline-none focus:ring-2 focus:ring-white/20 rounded-2xl cursor-pointer'
+          className='flex flex-col min-w-0 text-left w-full focus:outline-none focus:ring-1 focus:ring-[var(--gta-green)] cursor-pointer'
         >
           <AccountCard account={account} selected={account.id === selectedAccountId} withCopy />
         </button>
@@ -86,13 +86,13 @@ const AccountCards = ({ onSelectAccount, selectedAccountId, hideCreate }: Accoun
 
 export const LoadingCards = ({ hideCreate }: { hideCreate?: boolean }) => {
   return (
-    <div className='grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 w-full'>
+    <div className='grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-2 w-full'>
       <LoadingAccountCard />
       <LoadingAccountCard />
       <LoadingAccountCard />
       {!hideCreate && (
-        <div className='flex items-center justify-center min-h-[150px] rounded-2xl border-2 border-dashed border-white/5 opacity-5 animate-pulse'>
-          <Plus className='w-8 h-8' />
+        <div className='flex items-center justify-center min-h-[130px] border border-dashed border-[var(--gta-border)] opacity-20 animate-pulse'>
+          <Plus className='w-6 h-6' />
         </div>
       )}
     </div>

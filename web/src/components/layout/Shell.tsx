@@ -8,8 +8,7 @@ interface ShellProps {
 }
 
 /**
- * The core layout shell for the desktop bank application.
- * Migrated to Tailwind CSS for maximum flexibility.
+ * GTA V iFruit-style layout shell for the desktop bank application.
  */
 const Shell: React.FC<ShellProps> = ({ children, className }) => {
   return (
@@ -17,12 +16,15 @@ const Shell: React.FC<ShellProps> = ({ children, className }) => {
       <main
         className={cn(
           'flex flex-row w-[1400px] h-[800px] max-w-[95vw] max-h-[90vh]',
-          'overflow-hidden rounded-[2.5rem] bg-black/90 backdrop-blur-md',
-          'border border-white/[0.08]',
+          'overflow-hidden bg-[var(--gta-dark)] gta-scanlines',
+          'border border-[var(--gta-border)] shadow-[0_0_60px_rgba(0,0,0,0.8)]',
           'relative pointer-events-auto',
           className,
         )}
       >
+        {/* GTA green top accent line */}
+        <div className='absolute top-0 left-0 right-0 h-[2px] bg-[var(--gta-green)] z-50' />
+
         <Sidebar aria-label='Main Navigation' />
         <section
           id='main-content'

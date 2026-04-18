@@ -22,9 +22,9 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, width, children,
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.15 }}
             onClick={onClose}
-            className='fixed inset-0 bg-black/40 backdrop-blur-md'
+            className='fixed inset-0 bg-black/70'
             style={{ zIndex: zIndex - 1 }}
           />
           <motion.div
@@ -34,7 +34,7 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, width, children,
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 220 }}
             className={cn(
-              'fixed top-0 right-0 h-full bg-[#0A0A0A] border-l border-white/5 p-8 overflow-y-auto',
+              'fixed top-0 right-0 h-full bg-[var(--gta-dark)] border-l-2 border-[var(--gta-green)] p-6 overflow-y-auto',
               className,
             )}
             style={{
@@ -46,9 +46,9 @@ const SidePanel: React.FC<SidePanelProps> = ({ isOpen, onClose, width, children,
             <button
               type='button'
               onClick={onClose}
-              className='absolute top-6 right-6 w-10 h-10 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-center text-white/40 hover:text-white hover:bg-white/[0.08] transition-all duration-200'
+              className='absolute top-4 right-4 w-9 h-9 bg-[var(--gta-surface)] border border-[var(--gta-border)] flex items-center justify-center text-[var(--gta-text-dim)] hover:text-[var(--gta-text)] hover:border-[var(--gta-green)] transition-all duration-150'
             >
-              <X className='w-5 h-5' />
+              <X className='w-4 h-4' />
             </button>
             <div className='flex flex-col h-full'>{children}</div>
           </motion.div>

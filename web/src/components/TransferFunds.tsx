@@ -70,16 +70,16 @@ const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
   const isValidNewBalance = newBalance >= 0;
 
   return (
-    <div className='relative flex flex-col gap-8 pt-4'>
+    <div className='relative flex flex-col gap-6 pt-2'>
       {isTransfering && (
-        <div className='absolute top-0 left-0 right-0 h-1 overflow-hidden rounded-full'>
-          <div className='h-full bg-primary animate-[shimmer_2s_infinite] w-[40%]' />
+        <div className='absolute top-0 left-0 right-0 h-[2px] overflow-hidden'>
+          <div className='h-full bg-[var(--gta-green)] animate-[shimmer_2s_infinite] w-[40%]' />
         </div>
       )}
 
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
         <div className='flex flex-col gap-2'>
-          <Typography variant='pre' className='text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1'>
+          <Typography variant='pre' className='text-[10px] font-bold text-[var(--gta-text-dim)] uppercase tracking-[0.15em] ml-0.5'>
             {t('Source Account')}
           </Typography>
           <AccountSelect
@@ -91,7 +91,7 @@ const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
         </div>
 
         <div className='flex flex-col gap-2'>
-          <Typography variant='pre' className='text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1'>
+          <Typography variant='pre' className='text-[10px] font-bold text-[var(--gta-text-dim)] uppercase tracking-[0.15em] ml-0.5'>
             {t('Beneficiary Account')}
           </Typography>
           <AccountSelect
@@ -106,7 +106,7 @@ const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
       </div>
 
       <div className='flex flex-col gap-2'>
-        <Typography variant='pre' className='text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1'>
+        <Typography variant='pre' className='text-[10px] font-bold text-[var(--gta-text-dim)] uppercase tracking-[0.15em] ml-0.5'>
           {t('Amount')}
         </Typography>
         <PriceField placeholder={t('Amount')} value={amount} onChange={(event) => setAmount(event.target.value)} />
@@ -115,8 +115,8 @@ const TransferFunds: React.FC<{ onClose?(): void }> = ({ onClose }) => {
         </div>
       </div>
 
-      <div className='flex justify-end gap-3 pt-4'>
-        <Button disabled={isDisabled || isTransfering} onClick={handleTransfer} className='px-8 py-3'>
+      <div className='flex justify-end gap-2 pt-3 border-t border-[var(--gta-border)]'>
+        <Button disabled={isDisabled || isTransfering} onClick={handleTransfer} className='px-6 py-2'>
           {t('Confirm Transfer')}
         </Button>
       </div>

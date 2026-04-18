@@ -13,7 +13,7 @@ import type { ATMInput } from '@typings/Account';
 import { AccountEvents } from '@typings/Events';
 import { formatMoney } from '@utils/currency';
 import { useAtom, useAtomValue } from 'jotai';
-import { ArrowUpCircle, Loader2, Wallet } from 'lucide-react';
+import { Loader2, Wallet } from 'lucide-react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -58,25 +58,26 @@ const Deposit = () => {
 
   return (
     <Layout title={t('Deposit Funds')}>
-      <div className='flex flex-col gap-6 max-w-xl'>
-        <div className='flex items-center gap-3'>
-          <div className='w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-white/60 shrink-0'>
+      <div className='flex flex-col gap-5 max-w-xl'>
+        <div className='flex items-center gap-3 p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)] relative'>
+          <div className='absolute top-0 left-0 right-0 h-[2px] bg-[var(--gta-green)]' />
+          <div className='w-8 h-8 flex items-center justify-center bg-[var(--gta-green)]/10 border border-[var(--gta-green)]/30 text-[var(--gta-green)] shrink-0'>
             <Wallet className='w-4 h-4' />
           </div>
           <div className='flex flex-col gap-0.5'>
-            <Typography variant='pre' className='text-[10px] text-slate-500 font-medium uppercase tracking-widest'>
+            <Typography variant='pre' className='text-[10px] text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em]'>
               {t('Available Cash')}
             </Typography>
-            <Typography className='text-2xl font-light text-white tracking-tight leading-none'>
+            <Typography className='text-xl font-bold text-[var(--gta-green)] leading-none'>
               {formatMoney(currentCash, general)}
             </Typography>
           </div>
         </div>
 
-        <div className='flex flex-col gap-5'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-5'>
-            <div className='flex flex-col gap-4'>
-              <Typography variant='label' className='text-slate-500 font-black uppercase tracking-widest px-1'>
+        <div className='flex flex-col gap-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div className='flex flex-col gap-3'>
+              <Typography variant='label' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] px-0.5'>
                 {t('Destination')}
               </Typography>
               <AccountSelect
@@ -88,7 +89,7 @@ const Deposit = () => {
             </div>
 
             <div className='flex flex-col gap-1'>
-              <Typography variant='label' className='text-slate-500 font-black uppercase tracking-widest px-1 mb-3'>
+              <Typography variant='label' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] px-0.5 mb-2'>
                 {t('Amount')}
               </Typography>
               <PriceField
@@ -98,21 +99,21 @@ const Deposit = () => {
                 error={!isValidNewBalance && value > 0}
               />
               {!isValidNewBalance && value > 0 && (
-                <Typography variant='pre' className='text-red-500 text-[10px] uppercase tracking-widest mt-1 pl-2'>
+                <Typography variant='pre' className='text-[var(--gta-red)] text-[10px] uppercase tracking-[0.15em] mt-1 pl-1'>
                   {t('Insufficient physical cash')}
                 </Typography>
               )}
-              <div className='mt-2 pl-1'>
+              <div className='mt-1 pl-0.5'>
                 <NewBalance amount={newCash} isValid={isValidNewBalance} newBalanceText={t('Post-Deposit Wallet')} />
               </div>
             </div>
           </div>
 
-          <div className='flex flex-col gap-4 pt-2'>
-            <Button size='xl' disabled={isButtonDisabled} onClick={handleDeposit} className='w-full'>
+          <div className='flex flex-col gap-3 pt-2'>
+            <Button size='lg' disabled={isButtonDisabled} onClick={handleDeposit} className='w-full'>
               {isLoading ? (
-                <div className='flex items-center gap-3'>
-                  <Loader2 className='w-5 h-5 animate-spin' />
+                <div className='flex items-center gap-2'>
+                  <Loader2 className='w-4 h-4 animate-spin' />
                   <span>{t('Processing Entry...')}</span>
                 </div>
               ) : (
@@ -120,11 +121,11 @@ const Deposit = () => {
               )}
             </Button>
 
-            <div className='flex items-start gap-3 px-4 py-4 rounded-2xl bg-white/[0.01] border border-white/5'>
-              <div className='w-1.5 h-1.5 rounded-full bg-slate-700 mt-1.5 shrink-0' />
+            <div className='flex items-start gap-2 px-3 py-3 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
+              <div className='w-1.5 h-1.5 bg-[var(--gta-green)] mt-1 shrink-0' />
               <Typography
                 variant='pre'
-                className='text-[10px] font-black text-slate-500 leading-relaxed uppercase tracking-widest'
+                className='text-[9px] font-bold text-[var(--gta-text-dim)] leading-relaxed uppercase tracking-[0.1em]'
               >
                 {t(
                   'Funds will be electronically verified and instantly cleared. This action initiates a secure transfer of physical cash to the digital ledger.',

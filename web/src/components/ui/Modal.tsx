@@ -32,7 +32,7 @@ const Modal = React.memo(({ isOpen, onClose, title, children, maxWidth = 'md' }:
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className='absolute inset-0 bg-black/40 backdrop-blur-[1px]'
+            className='absolute inset-0 bg-black/70'
           />
 
           <motion.div
@@ -41,27 +41,28 @@ const Modal = React.memo(({ isOpen, onClose, title, children, maxWidth = 'md' }:
             exit={{ x: '100%', opacity: 0.5 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className={cn(
-              'relative h-full w-full bg-[#0A0A0A] border-l border-white/[0.04] shadow-2xl shadow-black flex flex-col',
+              'relative h-full w-full bg-[var(--gta-dark)] border-l-2 border-[var(--gta-green)] shadow-2xl shadow-black flex flex-col',
               maxWidthClasses[maxWidth],
             )}
           >
-            <div className='flex items-center justify-between p-6 border-b border-white/[0.04] shrink-0'>
+            {/* GTA header bar */}
+            <div className='flex items-center justify-between px-5 py-4 bg-[var(--gta-green)] shrink-0'>
               {title && (
-                <Typography variant='h3' className='text-white font-medium text-lg tracking-tight'>
+                <Typography variant='h3' className='text-black font-bold text-sm tracking-[0.15em]'>
                   {title}
                 </Typography>
               )}
               <button
                 type='button'
                 onClick={onClose}
-                className='p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors'
+                className='p-1 text-black/60 hover:text-black transition-colors'
                 aria-label='Close'
               >
-                <X className='w-4 h-4' />
+                <X className='w-4 h-4' strokeWidth={3} />
               </button>
             </div>
 
-            <div className='p-6 flex-1 overflow-y-auto flex flex-col custom-scrollbar'>{children}</div>
+            <div className='p-5 flex-1 overflow-y-auto flex flex-col custom-scrollbar'>{children}</div>
           </motion.div>
         </div>
       )}

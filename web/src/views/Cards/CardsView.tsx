@@ -32,19 +32,19 @@ const CardsView = () => {
 
   return (
     <Layout>
-      <div className='flex flex-col gap-10'>
+      <div className='flex flex-col gap-6'>
         <div className='flex flex-col gap-1'>
-          <Typography variant='label' className='text-slate-500 font-bold uppercase tracking-widest px-1'>
+          <Typography variant='label' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.2em] px-0.5'>
             {t('Credential Catalog')}
           </Typography>
-          <div className='flex items-center gap-4'>
-            <Typography variant='h1' className='text-white font-bold leading-tight tracking-tight text-4xl'>
+          <div className='flex items-center gap-3'>
+            <Typography variant='h1' className='text-[var(--gta-text)] font-bold leading-tight tracking-[0.15em] text-2xl'>
               {t('Card Access')}
             </Typography>
-            <div className='px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md'>
+            <div className='px-2 py-1 bg-[var(--gta-green)]/10 border border-[var(--gta-green)]/30'>
               <Typography
                 variant='pre'
-                className='text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none'
+                className='text-[10px] text-[var(--gta-green)] font-bold uppercase tracking-[0.15em] leading-none'
               >
                 {t('Encrypted')}
               </Typography>
@@ -53,11 +53,11 @@ const CardsView = () => {
         </div>
 
         {/* Account selector tabs */}
-        <div className='flex flex-col gap-4'>
-          <Typography variant='pre' className='text-[10px] text-slate-500 font-bold uppercase tracking-widest px-1'>
+        <div className='flex flex-col gap-3'>
+          <Typography variant='pre' className='text-[10px] text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] px-0.5'>
             {t('Select Source Entity')}
           </Typography>
-          <div className='flex flex-row gap-4 overflow-x-auto pb-6 no-scrollbar custom-scrollbar'>
+          <div className='flex flex-row gap-2 overflow-x-auto pb-4 no-scrollbar custom-scrollbar'>
             {accounts.map((account) => {
               const isActive = account.id === selectedAccountId;
               return (
@@ -66,45 +66,45 @@ const CardsView = () => {
                   key={account.id}
                   onClick={() => handleSelectAccount(account.id)}
                   className={cn(
-                    'flex flex-col items-start gap-4 p-6 rounded-[2rem] border transition-all duration-300 min-w-[240px] select-none text-left relative overflow-hidden group',
+                    'flex flex-col items-start gap-3 p-4 border transition-all duration-150 min-w-[200px] select-none text-left relative overflow-hidden group',
                     'active:scale-95',
                     isActive
-                      ? 'bg-white border-white -[0_20px_40px_-10px_rgba(255,255,255,0.2)]'
-                      : 'bg-white/[0.02] border-white/5 hover:bg-white/[0.05] hover:border-white/10',
+                      ? 'bg-[var(--gta-green)] border-[var(--gta-green)] text-black'
+                      : 'bg-[var(--gta-panel)] border-[var(--gta-border)] hover:border-[var(--gta-green)]/50 hover:bg-[var(--gta-surface)]',
                   )}
                 >
+                  {/* Top accent */}
+                  {!isActive && <div className='absolute top-0 left-0 right-0 h-[1px] bg-[var(--gta-border)] group-hover:bg-[var(--gta-green)]/30 transition-colors' />}
+
                   <div
                     className={cn(
-                      'flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300',
+                      'flex items-center justify-center w-9 h-9 border transition-all duration-150',
                       isActive
-                        ? 'bg-black text-white'
-                        : 'bg-white/5 text-slate-500 group-hover:text-white group-hover:bg-white/10',
+                        ? 'bg-black/20 border-black/20 text-black'
+                        : 'bg-[var(--gta-surface)] border-[var(--gta-border)] text-[var(--gta-text-dim)] group-hover:text-[var(--gta-green)] group-hover:border-[var(--gta-green)]/30',
                     )}
                   >
-                    <Wallet className='w-5 h-5' />
+                    <Wallet className='w-4 h-4' />
                   </div>
 
-                  <div className='flex flex-col gap-1 relative z-10'>
+                  <div className='flex flex-col gap-0.5 relative z-10'>
                     <Typography
                       className={cn(
-                        'text-sm font-bold tracking-tight transition-colors',
-                        isActive ? 'text-black' : 'text-slate-400 group-hover:text-white',
+                        'text-xs font-bold tracking-wide uppercase transition-colors',
+                        isActive ? 'text-black' : 'text-[var(--gta-text-muted)] group-hover:text-[var(--gta-text)]',
                       )}
                     >
                       {account.accountName}
                     </Typography>
                     <Typography
                       className={cn(
-                        'text-xs font-medium tracking-tight leading-none transition-colors',
-                        isActive ? 'text-black/60' : 'text-slate-600 group-hover:text-slate-500',
+                        'text-xs font-medium leading-none transition-colors',
+                        isActive ? 'text-black/70' : 'text-[var(--gta-text-dim)]',
                       )}
                     >
                       {formatMoney(account.balance, config.general)}
                     </Typography>
                   </div>
-
-                  {/* Decorative circle for active state */}
-                  {isActive && <div className='absolute -bottom-8 -right-8 w-24 h-24 bg-black/[0.03] rounded-full' />}
                 </button>
               );
             })}
@@ -113,10 +113,10 @@ const CardsView = () => {
 
         {/* Bank cards for selected account */}
         {selectedAccountId > 0 && (
-          <div className='mt-4 flex flex-col gap-6'>
-            <div className='flex items-center gap-3 px-1'>
-              <ShieldCheck className='w-5 h-5 text-slate-500' />
-              <Typography variant='pre' className='text-[10px] text-slate-500 font-bold uppercase tracking-widest'>
+          <div className='flex flex-col gap-4'>
+            <div className='flex items-center gap-2 px-0.5 pb-2 border-b border-[var(--gta-border)]'>
+              <ShieldCheck className='w-4 h-4 text-[var(--gta-green)]' />
+              <Typography variant='pre' className='text-[10px] text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em]'>
                 {t('Active Credentials Registry')}
               </Typography>
             </div>

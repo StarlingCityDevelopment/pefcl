@@ -13,15 +13,15 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, onChange
         <input type='checkbox' className='peer sr-only' checked={checked} onChange={onChange} {...props} />
         <div
           className={cn(
-            'w-6 h-6 rounded-lg border transition-all duration-200 flex items-center justify-center',
-            'bg-white/[0.04] border-white/10 peer-hover:border-white/20',
-            'peer-checked:bg-white peer-checked:border-white peer-checked:text-black',
-            'peer-focus-visible:ring-2 peer-focus-visible:ring-white/20',
+            'w-5 h-5 border transition-all duration-150 flex items-center justify-center',
+            'bg-[var(--gta-surface)] border-[var(--gta-border)] peer-hover:border-[var(--gta-green)]',
+            'peer-checked:bg-[var(--gta-green)] peer-checked:border-[var(--gta-green)] peer-checked:text-black',
+            'peer-focus-visible:ring-1 peer-focus-visible:ring-[var(--gta-green)]',
           )}
         >
           <Check
             className={cn(
-              'w-4 h-4 transition-transform duration-200 scale-0 peer-checked:scale-100',
+              'w-3.5 h-3.5 transition-transform duration-150 scale-0 peer-checked:scale-100',
               'text-black font-bold',
             )}
             strokeWidth={3}
@@ -29,7 +29,9 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, onChange
         </div>
       </div>
       {label && (
-        <span className='text-sm font-medium text-white/70 group-hover:text-white transition-colors'>{label}</span>
+        <span className='text-sm font-medium text-[var(--gta-text-muted)] group-hover:text-[var(--gta-text)] transition-colors'>
+          {label}
+        </span>
       )}
     </label>
   );

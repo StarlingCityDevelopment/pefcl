@@ -29,6 +29,7 @@ import Accounts from './views/accounts/Accounts';
 import Dashboard from './views/dashboard/Dashboard';
 import Transactions from './views/transactions/Transactions';
 import Transfer from './views/transfer/Transfer';
+import { t } from 'i18next';
 
 dayjs.extend(updateLocale);
 
@@ -94,7 +95,7 @@ const App: React.FC = () => {
     <>
       {process.env.NODE_ENV === 'development' && <Devbar />}
 
-      <React.Suspense fallback={'Loading bank'}>
+      <React.Suspense fallback={t('Loading bank')}>
         {!isAtmVisible && isVisible && !isMobile && (
           <Shell>
             <Routes>

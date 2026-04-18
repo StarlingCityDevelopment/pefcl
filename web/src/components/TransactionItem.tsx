@@ -7,7 +7,7 @@ import { formatMoney } from '@utils/currency';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ArrowDownLeft, ArrowLeftRight, ArrowUpRight } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import type React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,36 +30,45 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, isLimite
   return (
     <div
       className={cn(
-        'group flex items-center gap-4 p-5 rounded-[2rem] transition-all duration-300',
-        'bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-white/10 hover: hover:/60',
+        'group flex items-center gap-3 p-4 transition-all duration-150',
+        'bg-[var(--gta-panel)] border border-[var(--gta-border)]',
+        'hover:border-[var(--gta-border-light)] hover:bg-[var(--gta-surface)]',
         'relative overflow-hidden cursor-default',
       )}
     >
+      {/* Left accent */}
       <div
         className={cn(
-          'flex items-center justify-center w-12 h-12 rounded-2xl border transition-all duration-500',
+          'absolute left-0 top-0 bottom-0 w-[2px]',
+          isIncoming ? 'bg-[var(--gta-green)]' : 'bg-[var(--gta-red)]/50',
+        )}
+      />
+
+      <div
+        className={cn(
+          'flex items-center justify-center w-9 h-9 border transition-all duration-150',
           isIncoming
-            ? 'bg-white text-black border-white -[0_0_20px_rgba(255,255,255,0.1)] group-hover:scale-110'
-            : 'bg-white/[0.03] text-slate-500 border-white/10 group-hover:text-white group-hover:border-white/30',
+            ? 'bg-[var(--gta-green)]/10 text-[var(--gta-green)] border-[var(--gta-green)]/30'
+            : 'bg-[var(--gta-surface)] text-[var(--gta-text-dim)] border-[var(--gta-border)]',
         )}
       >
-        {isIncoming ? <ArrowUpRight className='w-5 h-5' /> : <ArrowDownLeft className='w-5 h-5' />}
+        {isIncoming ? <ArrowUpRight className='w-4 h-4' /> : <ArrowDownLeft className='w-4 h-4' />}
       </div>
 
       <div className='flex-1 flex flex-col min-w-0'>
-        <div className='flex justify-between items-start gap-4'>
+        <div className='flex justify-between items-start gap-3'>
           <div className='flex flex-col min-w-0'>
-            <Typography className='font-black text-sm text-white truncate tracking-tight uppercase italic leading-none mb-1'>
+            <Typography className='font-bold text-xs text-[var(--gta-text)] truncate uppercase leading-none mb-1'>
               {message}
             </Typography>
             <div className='flex items-center gap-2'>
-              <Typography variant='pre' className='text-[9px] text-slate-500 font-black'>
+              <Typography variant='pre' className='text-[9px] text-[var(--gta-text-dim)]'>
                 {createdAtDate.fromNow()}
               </Typography>
               {!isLimitedSpace && (
                 <>
-                  <div className='w-0.5 h-0.5 rounded-full bg-slate-800' />
-                  <Typography variant='pre' className='text-[9px] text-slate-600 font-black'>
+                  <div className='w-0.5 h-0.5 bg-[var(--gta-border)]' />
+                  <Typography variant='pre' className='text-[9px] text-[var(--gta-text-dim)]'>
                     {createdAtDate.format('HH:mm')}
                   </Typography>
                 </>
@@ -69,8 +78,8 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, isLimite
           <div className='flex flex-col items-end shrink-0'>
             <Typography
               className={cn(
-                'font-black text-base tracking-tighter leading-none mb-1 transition-all duration-300',
-                isIncoming ? 'text-white' : 'text-slate-400 group-hover:text-white',
+                'font-bold text-sm leading-none mb-1 transition-all duration-150',
+                isIncoming ? 'text-[var(--gta-green)]' : 'text-[var(--gta-text-muted)]',
               )}
             >
               {isIncoming ? '+' : '-'} {formatMoney(amount, config.general)}
@@ -78,7 +87,7 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, isLimite
             {!isLimitedSpace && (fromAccount || toAccount) && (
               <Typography
                 variant='label'
-                className='text-[8px] text-slate-600 group-hover:text-slate-500 transition-colors'
+                className='text-[8px] text-[var(--gta-text-dim)]'
               >
                 {isIncoming ? fromAccount?.accountName || t('External') : toAccount?.accountName || t('External')}
               </Typography>
@@ -91,16 +100,16 @@ const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, isLimite
 };
 
 export const TransactionSkeleton = () => (
-  <div className='flex items-center gap-4 p-5 rounded-[2rem] bg-white/[0.02] border border-white/5 animate-pulse'>
-    <Skeleton className='w-12 h-12 rounded-2xl shrink-0' />
-    <div className='flex-1 flex flex-col gap-3'>
+  <div className='flex items-center gap-3 p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)] animate-pulse'>
+    <Skeleton className='w-9 h-9 shrink-0' />
+    <div className='flex-1 flex flex-col gap-2'>
       <div className='flex justify-between'>
-        <Skeleton className='w-32 h-4 rounded-sm' />
-        <Skeleton className='w-20 h-4 rounded-sm' />
+        <Skeleton className='w-28 h-3' />
+        <Skeleton className='w-16 h-3' />
       </div>
       <div className='flex justify-between'>
-        <Skeleton className='w-24 h-3 rounded-sm' />
-        <Skeleton className='w-16 h-3 rounded-sm' />
+        <Skeleton className='w-20 h-2' />
+        <Skeleton className='w-12 h-2' />
       </div>
     </div>
   </div>

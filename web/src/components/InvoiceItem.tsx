@@ -41,64 +41,72 @@ const InvoiceItem: React.FC<{ invoice: Invoice }> = ({ invoice }) => {
           }
         }}
         className={cn(
-          'group flex flex-col gap-5 p-6 rounded-[2.5rem] transition-all duration-300 relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-white/10 w-full text-left',
-          'bg-white/[0.02] border border-white/5',
+          'group flex flex-col gap-4 p-5 transition-all duration-150 relative overflow-hidden focus:outline-none focus:ring-1 focus:ring-[var(--gta-green)] w-full text-left',
+          'bg-[var(--gta-panel)] border border-[var(--gta-border)]',
           isPending
-            ? 'cursor-pointer hover:bg-white/[0.04] hover:border-white/10 active:scale-[0.98]'
-            : 'cursor-default opacity-80',
+            ? 'cursor-pointer hover:border-[var(--gta-green)]/50 hover:bg-[var(--gta-surface)] active:scale-[0.99]'
+            : 'cursor-default opacity-70',
         )}
       >
+        {/* Left accent bar */}
+        <div
+          className={cn(
+            'absolute left-0 top-0 bottom-0 w-[2px]',
+            isPending ? 'bg-[var(--gta-yellow)]' : 'bg-[var(--gta-green)]',
+          )}
+        />
+
         <div className='flex justify-between items-start gap-4'>
           <div className='flex flex-col min-w-0 flex-1'>
-            <Typography variant='pre' className='text-slate-500 font-black mb-1'>
+            <Typography variant='pre' className='text-[var(--gta-text-dim)] mb-1'>
               {t('Bill from')}
             </Typography>
-            <Typography className='text-sm font-black text-white truncate uppercase italic leading-none'>
+            <Typography className='text-sm font-bold text-[var(--gta-text)] truncate uppercase leading-none'>
               {from}
             </Typography>
-            <Typography className='text-[11px] text-slate-500 font-medium line-clamp-2 mt-2 leading-tight'>
+            <Typography className='text-[11px] text-[var(--gta-text-dim)] font-medium line-clamp-2 mt-2 leading-tight'>
               {message}
             </Typography>
           </div>
           <div className='flex flex-col items-end shrink-0'>
-            <Typography className='text-xl font-black text-white tracking-tighter leading-none'>
+            <Typography className={cn('text-lg font-bold leading-none', isPending ? 'text-[var(--gta-yellow)]' : 'text-[var(--gta-text-muted)]')}>
               {formatMoney(amount, config.general)}
             </Typography>
-            <Typography variant='pre' className='text-[9px] text-slate-600 font-black mt-2'>
+            <Typography variant='pre' className='text-[9px] text-[var(--gta-text-dim)] mt-2'>
               {createdDate.fromNow()}
             </Typography>
           </div>
         </div>
 
         {(isPending || isPaid) && (
-          <div className='flex justify-between items-center pt-5 border-t border-white/[0.03] w-full'>
+          <div className='flex justify-between items-center pt-4 border-t border-[var(--gta-border)] w-full'>
             {isPending ? (
               <div className='flex flex-col'>
-                <Typography variant='label' className='text-slate-600 mb-1'>
+                <Typography variant='label' className='text-[var(--gta-text-dim)] mb-0.5'>
                   {t('Expires')}
                 </Typography>
-                <Typography variant='pre' className='text-slate-400 font-black tracking-tight text-[10px]'>
+                <Typography variant='pre' className='text-[var(--gta-text-muted)] text-[10px]'>
                   {expiresDate.format(t('DATE_FORMAT'))}
                 </Typography>
               </div>
             ) : (
               <div className='flex items-center gap-2'>
-                <div className='w-1.5 h-1.5 rounded-full bg-slate-500' />
-                <Typography variant='pre' className='text-slate-500 font-black tracking-widest text-[9px]'>
+                <div className='w-1.5 h-1.5 bg-[var(--gta-green)]' />
+                <Typography variant='pre' className='text-[var(--gta-green)] text-[9px]'>
                   {t('Archived')}
                 </Typography>
               </div>
             )}
 
             {isPending ? (
-              <div className='px-6 h-9 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-white/90 transition-colors'>
+              <div className='px-4 h-8 flex items-center justify-center bg-[var(--gta-green)] text-black text-[10px] font-bold uppercase tracking-[0.15em] hover:bg-[var(--gta-green)]/90 transition-colors'>
                 {t('Pay Now')}
               </div>
             ) : (
-              <div className='px-4 py-2 rounded-full bg-white/5 border border-white/10 flex items-center justify-center'>
+              <div className='px-3 py-1.5 bg-[var(--gta-surface)] border border-[var(--gta-border)] flex items-center justify-center'>
                 <Typography
                   variant='pre'
-                  className='text-[10px] font-black text-white uppercase tracking-widest leading-none'
+                  className='text-[10px] font-bold text-[var(--gta-green)] uppercase tracking-[0.15em] leading-none'
                 >
                   {t('Paid')}
                 </Typography>

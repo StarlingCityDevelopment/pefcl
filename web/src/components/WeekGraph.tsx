@@ -31,47 +31,47 @@ const Column = ({ date, income, expenses, maxHeight }: ColumnProps) => {
       <AnimatePresence>
         {isHovered && (
           <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className='absolute bottom-full mb-3 z-50 p-4 rounded-2xl bg-black/95 border border-white/10 backdrop-blur-md -[0_20px_40px_-10px_rgba(0,0,0,0.8)] min-w-[140px]'
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 8 }}
+            transition={{ duration: 0.15 }}
+            className='absolute bottom-full mb-2 z-50 p-3 bg-[var(--gta-dark)] border border-[var(--gta-green)]/30 shadow-[0_8px_24px_rgba(0,0,0,0.6)] min-w-[120px]'
           >
-            <div className='flex flex-col gap-3'>
+            <div className='flex flex-col gap-2'>
               <div className='flex flex-col gap-0.5'>
-                <Typography variant='pre' className='text-white/40'>
+                <Typography variant='pre' className='text-[var(--gta-text-dim)] text-[8px]'>
                   {t('Income')}
                 </Typography>
-                <Typography className='text-sm font-black text-white'>{formatMoney(income, config.general)}</Typography>
+                <Typography className='text-xs font-bold text-[var(--gta-green)]'>
+                  {formatMoney(income, config.general)}
+                </Typography>
               </div>
-              <div className='h-[1px] w-full bg-white/5' />
+              <div className='h-[1px] w-full bg-[var(--gta-border)]' />
               <div className='flex flex-col gap-0.5'>
-                <Typography variant='pre' className='text-white/40'>
+                <Typography variant='pre' className='text-[var(--gta-text-dim)] text-[8px]'>
                   {t('Expense')}
                 </Typography>
-                <Typography className='text-sm font-black text-slate-400'>
+                <Typography className='text-xs font-bold text-[var(--gta-red)]'>
                   {formatMoney(expenses, config.general)}
                 </Typography>
               </div>
             </div>
-            {/* Arrow */}
-            <div className='absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-black/95' />
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className='flex items-end gap-[3px] h-32 mb-3'>
+      <div className='flex items-end gap-[2px] h-28 mb-2'>
         <div
           className={cn(
-            'w-1.5 rounded-full transition-all duration-500 ease-out',
-            'bg-slate-500/30 group-hover:bg-slate-500/50',
+            'w-2 transition-all duration-300',
+            'bg-[var(--gta-red)]/30 group-hover:bg-[var(--gta-red)]/60',
           )}
           style={{ height: `${Math.max(4, expenseHeight)}%` }}
         />
         <div
           className={cn(
-            'w-1.5 rounded-full transition-all duration-500 ease-out',
-            'bg-white/20 group-hover:bg-white/40',
+            'w-2 transition-all duration-300',
+            'bg-[var(--gta-green)]/40 group-hover:bg-[var(--gta-green)]',
           )}
           style={{ height: `${Math.max(4, incomeHeight)}%` }}
         />
@@ -79,7 +79,7 @@ const Column = ({ date, income, expenses, maxHeight }: ColumnProps) => {
 
       <Typography
         variant='pre'
-        className='text-[9px] font-black text-slate-500 group-hover:text-white transition-colors'
+        className='text-[9px] font-bold text-[var(--gta-text-dim)] group-hover:text-[var(--gta-green)] transition-colors'
       >
         {date.getDate()}
       </Typography>
@@ -99,7 +99,7 @@ const WeekGraph = ({ data, className }: WeekGraphProps) => {
   const maxHeight = Math.max(incomeMax, expenseMax);
 
   return (
-    <div className={cn('flex flex-row items-end justify-between w-full h-full pt-10 px-2', className)}>
+    <div className={cn('flex flex-row items-end justify-between w-full h-full pt-8 px-2', className)}>
       {Object.entries(data).map(([key, value]) => (
         <Column key={key} {...value} maxHeight={maxHeight} date={new Date(key)} />
       ))}
