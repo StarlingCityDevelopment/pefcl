@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { writeFileSync, readdirSync } = require('fs');
+import { writeFileSync, readdirSync } from 'fs';
 
 const output = 'locales/index.ts';
 const input = 'locales';
