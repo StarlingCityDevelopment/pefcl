@@ -6,12 +6,7 @@ import { Controller } from '@server/decorators/Controller';
 import { Event, EventListener } from '@server/decorators/Event';
 import { BroadcastService } from './broadcast.service';
 
-import {
-  AccountEvents,
-  CardEvents,
-  CashEvents,
-  TransactionEvents,
-} from '@server/../../typings/Events';
+import { AccountEvents, CardEvents, CashEvents, TransactionEvents } from '@server/../../typings/Events';
 
 @Controller('Broadcast')
 @EventListener()

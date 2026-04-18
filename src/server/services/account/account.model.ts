@@ -1,11 +1,11 @@
-import { DATABASE_PREFIX } from '@utils/constants';
-import { DataTypes, Model, Optional } from 'sequelize';
-import { config } from '@utils/server-config';
-import { type Account, AccountRole, AccountType } from '@typings/Account';
-import { sequelize } from '@utils/pool';
-import { generateClearingNumber } from '@utils/misc';
-import { timestamps } from '../timestamps.model';
 import { AccountEvents } from '@server/../../typings/Events';
+import { type Account, AccountRole, AccountType } from '@typings/Account';
+import { DATABASE_PREFIX } from '@utils/constants';
+import { generateClearingNumber } from '@utils/misc';
+import { sequelize } from '@utils/pool';
+import { config } from '@utils/server-config';
+import { DataTypes, Model, type Optional } from 'sequelize';
+import { timestamps } from '../timestamps.model';
 
 export class AccountModel extends Model<
   Account,
@@ -54,7 +54,7 @@ AccountModel.init(
   },
   {
     sequelize: sequelize,
-    tableName: DATABASE_PREFIX + 'accounts',
+    tableName: `${DATABASE_PREFIX}accounts`,
     paranoid: true,
     hooks: {
       afterSave: (instance, options) => {

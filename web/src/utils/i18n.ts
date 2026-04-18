@@ -12,41 +12,41 @@ dayjs.extend(updateLocale);
 dayjs.extend(localizedFormat);
 
 const getLBPhoneSettings = async () => {
- return window.GetSettings != null ? await window.GetSettings() : null;
+  return window.GetSettings != null ? await window.GetSettings() : null;
 };
 
 const getLBTabletSettings = async () => {
- return window.GetSettings != null ? await window.GetSettings() : null;
+  return window.GetSettings != null ? await window.GetSettings() : null;
 };
 
 const load = async () => {
- const config = await getConfig();
- const LBPhoneSettings = await getLBPhoneSettings();
- const LBTabletSettings = await getLBTabletSettings();
- const language = LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config.general.language ?? 'en';
- const resources = getI18nResourcesNamespaced('translation');
+  const config = await getConfig();
+  const LBPhoneSettings = await getLBPhoneSettings();
+  const LBTabletSettings = await getLBTabletSettings();
+  const language = LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config.general.language ?? 'en';
+  const resources = getI18nResourcesNamespaced('translation');
 
- await i18n
- .use(initReactI18next)
- .init({
- resources,
- lng: language,
- fallbackLng: 'en',
- })
- .then(() => {})
- .catch((r) => console.error(r));
+  await i18n
+    .use(initReactI18next)
+    .init({
+      resources,
+      lng: language,
+      fallbackLng: 'en',
+    })
+    .then(() => {})
+    .catch((r) => console.error(r));
 
- dayjs.locale(language);
- dayjs.updateLocale(language, {
- calendar: {
- lastDay: i18n.t('calendar.lastDay'),
- sameDay: i18n.t('calendar.sameDay'),
- nextDay: i18n.t('calendar.nextDay'),
- lastWeek: i18n.t('calendar.lastWeek'),
- nextWeek: i18n.t('calendar.nextWeek'),
- sameElse: i18n.t('calendar.sameElse'),
- },
- });
+  dayjs.locale(language);
+  dayjs.updateLocale(language, {
+    calendar: {
+      lastDay: i18n.t('calendar.lastDay'),
+      sameDay: i18n.t('calendar.sameDay'),
+      nextDay: i18n.t('calendar.nextDay'),
+      lastWeek: i18n.t('calendar.lastWeek'),
+      nextWeek: i18n.t('calendar.nextWeek'),
+      sameElse: i18n.t('calendar.sameElse'),
+    },
+  });
 };
 
 load();

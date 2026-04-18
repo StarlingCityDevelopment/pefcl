@@ -1,15 +1,12 @@
 import { DATABASE_PREFIX, MS_TWO_WEEKS } from '@utils/constants';
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, type Optional } from 'sequelize';
 import { singleton } from 'tsyringe';
-import { Invoice, InvoiceStatus } from '../../../../typings/Invoice';
+import { type Invoice, InvoiceStatus } from '../../../../typings/Invoice';
 import { sequelize } from '../../utils/pool';
 import { timestamps } from '../timestamps.model';
 
 @singleton()
-export class InvoiceModel extends Model<
-  Invoice,
-  Optional<Invoice, 'id' | 'status' | 'receiverAccountIdentifier'>
-> {}
+export class InvoiceModel extends Model<Invoice, Optional<Invoice, 'id' | 'status' | 'receiverAccountIdentifier'>> {}
 
 InvoiceModel.init(
   {
@@ -77,6 +74,6 @@ InvoiceModel.init(
   },
   {
     sequelize: sequelize,
-    tableName: DATABASE_PREFIX + 'invoices',
+    tableName: `${DATABASE_PREFIX}invoices`,
   },
 );

@@ -1,11 +1,11 @@
 import type { LBSettings } from '@typings/LBAddons';
 
 declare global {
- interface Window {
- invokeNative(): void;
- GetParentResourceName?: () => string;
- GetSettings?: () => Promise<LBSettings>;
- }
+  interface Window {
+    invokeNative(): void;
+    GetParentResourceName?: () => string;
+    GetSettings?: () => Promise<LBSettings>;
+  }
 }
 
 // and not CEF

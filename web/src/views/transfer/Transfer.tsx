@@ -4,15 +4,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const Transfer = () => {
- const { t } = useTranslation();
+  const { t } = useTranslation();
 
- return (
- <Layout title={t('Transfer Funds')}>
- <div className="max-w-2xl">
- <TransferFunds />
- </div>
- </Layout>
- );
+  return (
+    <Layout title={t('Transfer Funds')}>
+      <div className='max-w-2xl'>
+        <TransferFunds />
+      </div>
+    </Layout>
+  );
 };
 
 export default Transfer;

@@ -1,5 +1,5 @@
 import './globals.server';
-import { ServerPromiseResp } from '@project-error/pe-utils';
+import type { ServerPromiseResp } from '@project-error/pe-utils';
 import {
   AccountEvents,
   CardEvents,
@@ -14,7 +14,7 @@ import {
 } from '@typings/Events';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import express, { RequestHandler } from 'express';
+import express, { type RequestHandler } from 'express';
 import 'reflect-metadata';
 
 /* Create associations after the models etc */
@@ -25,14 +25,14 @@ import './utils/i18n';
 import { load } from './utils/i18n';
 import './utils/pool';
 import './utils/server-config';
-import { mainLogger } from './sv_logger';
-import { mockedResourceName } from './globals.server';
-import { config } from './utils/server-config';
-import { UserService } from './services/user/user.service';
 import { container } from 'tsyringe';
+import { mockedResourceName } from './globals.server';
 import { CardService } from './services/card/card.service';
-import { sequelize } from './utils/pool';
+import { UserService } from './services/user/user.service';
+import { mainLogger } from './sv_logger';
 import { seedDatabase } from './utils/mockSeed';
+import { sequelize } from './utils/pool';
+import { config } from './utils/server-config';
 
 const hotReloadConfig = {
   resourceName: GetCurrentResourceName(),
@@ -40,7 +40,7 @@ const hotReloadConfig = {
 };
 
 if (GetResourceState('hotreload') === 'started') {
-  exports['hotreload']?.add?.(hotReloadConfig);
+  exports.hotreload?.add?.(hotReloadConfig);
 }
 
 new Bank().bootstrap();

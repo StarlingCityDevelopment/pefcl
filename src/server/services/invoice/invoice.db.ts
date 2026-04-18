@@ -1,8 +1,8 @@
-import { singleton } from 'tsyringe';
-import { CreateInvoiceInput, GetInvoicesInput, InvoiceStatus } from '@typings/Invoice';
-import { InvoiceModel } from './invoice.model';
+import { type CreateInvoiceInput, type GetInvoicesInput, InvoiceStatus } from '@typings/Invoice';
 import { MS_TWO_WEEKS } from '@utils/constants';
-import { type Transaction } from 'sequelize/types';
+import type { Transaction } from 'sequelize/types';
+import { singleton } from 'tsyringe';
+import { InvoiceModel } from './invoice.model';
 
 @singleton()
 export class InvoiceDB {
@@ -10,10 +10,7 @@ export class InvoiceDB {
     return await InvoiceModel.findAll();
   }
 
-  async getAllReceivingInvoices(
-    identifier: string,
-    pagination: GetInvoicesInput,
-  ): Promise<InvoiceModel[]> {
+  async getAllReceivingInvoices(identifier: string, pagination: GetInvoicesInput): Promise<InvoiceModel[]> {
     return await InvoiceModel.findAll({
       where: { toIdentifier: identifier },
       ...pagination,
@@ -36,9 +33,7 @@ export class InvoiceDB {
   }
 
   async createInvoice(input: CreateInvoiceInput): Promise<InvoiceModel> {
-    const expiresAt = input.expiresAt
-      ? input.expiresAt
-      : new Date(Date.now() + MS_TWO_WEEKS).toString();
+    const expiresAt = input.expiresAt ? input.expiresAt : new Date(Date.now() + MS_TWO_WEEKS).toString();
 
     return await InvoiceModel.create({ ...input, expiresAt });
   }

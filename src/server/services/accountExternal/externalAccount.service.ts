@@ -1,13 +1,13 @@
-import { singleton } from 'tsyringe';
-import { Request } from '@typings/http';
-import { ExternalAccount } from '@typings/Account';
-import { UserService } from '../user/user.service';
 import { mainLogger } from '@server/sv_logger';
-import { ExternalAccountDB } from './externalAccount.db';
-import { AccountErrors, ExternalAccountErrors, GenericErrors } from '@typings/Errors';
-import { ServerError } from '@utils/errors';
 import { AccountDB } from '@services/account/account.db';
-import { type Transaction } from 'sequelize/types';
+import { ExternalAccount } from '@typings/Account';
+import { AccountErrors, ExternalAccountErrors, GenericErrors } from '@typings/Errors';
+import type { Request } from '@typings/http';
+import { ServerError } from '@utils/errors';
+import type { Transaction } from 'sequelize/types';
+import { singleton } from 'tsyringe';
+import { UserService } from '../user/user.service';
+import { ExternalAccountDB } from './externalAccount.db';
 
 const logger = mainLogger.child({ module: 'externalAccounts' });
 
@@ -17,11 +17,7 @@ export class ExternalAccountService {
   _userService: UserService;
   _accountDB: AccountDB;
 
-  constructor(
-    externalAccountDB: ExternalAccountDB,
-    userService: UserService,
-    accountDB: AccountDB,
-  ) {
+  constructor(externalAccountDB: ExternalAccountDB, userService: UserService, accountDB: AccountDB) {
     this._externalAccountDB = externalAccountDB;
     this._userService = userService;
     this._accountDB = accountDB;
@@ -33,10 +29,7 @@ export class ExternalAccountService {
     const user = this._userService.getUser(req.source);
 
     const targetAccount = await this._accountDB.getAccountByNumber(req.data.number);
-    const alreadyExists = await this._externalAccountDB.getExistingAccount(
-      user.getIdentifier(),
-      req.data.number,
-    );
+    const alreadyExists = await this._externalAccountDB.getExistingAccount(user.getIdentifier(), req.data.number);
 
     if (!targetAccount) {
       logger.silly('No matching base account found.');
@@ -71,10 +64,7 @@ export class ExternalAccountService {
 
   async getAccountFromExternalAccount(accountId: number, t: Transaction) {
     const externalAccount = await this._externalAccountDB.getAccountById(accountId);
-    const account = await this._accountDB.getAccountByNumber(
-      externalAccount?.getDataValue('number') ?? '',
-      t,
-    );
+    const account = await this._accountDB.getAccountByNumber(externalAccount?.getDataValue('number') ?? '', t);
     return account;
   }
 }

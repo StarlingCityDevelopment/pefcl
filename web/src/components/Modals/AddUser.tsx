@@ -42,37 +42,37 @@ const AddUserModal = ({ isOpen, onSelect, onClose, users: existingUsers }: Selec
   });
 
   return (
-    <BaseDialog open={isOpen} onClose={onClose} maxWidth="500px">
-      <div className="p-6 flex flex-col gap-6 h-full">
-        <Typography variant="h3" className="text-lg font-medium leading-none tracking-tight">
+    <BaseDialog open={isOpen} onClose={onClose} maxWidth='500px'>
+      <div className='p-6 flex flex-col gap-6 h-full'>
+        <Typography variant='h3' className='text-lg font-medium leading-none tracking-tight'>
           {t('Delegate Access')}
         </Typography>
 
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Typography variant="label" className="text-white/60">
+        <div className='flex flex-col gap-4'>
+          <div className='flex flex-col gap-1.5'>
+            <Typography variant='label' className='text-white/60'>
               {t('Identify User')}
             </Typography>
             <UserSelect onSelect={handleUserSelect} users={filteredUsers} />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Typography variant="label" className="text-white/60">
+          <div className='flex flex-col gap-1.5'>
+            <Typography variant='label' className='text-white/60'>
               {t('Set Permissions')}
             </Typography>
-            <Select 
+            <Select
               value={selectedRole}
               onChange={(event) => setSelectedRole(event.target.value as AccountRole)}
               options={[
                 { value: AccountRole.Admin, label: t('Administrator') },
-                { value: AccountRole.Contributor, label: t('Contributor') }
+                { value: AccountRole.Contributor, label: t('Contributor') },
               ]}
             />
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-auto pt-6 border-t border-white/5">
-          <Button variant="secondary" onClick={onClose}>
+        <div className='flex justify-end gap-3 mt-auto pt-6 border-t border-white/5'>
+          <Button variant='secondary' onClick={onClose}>
             {t('Cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={!selectedUserId}>
@@ -85,4 +85,3 @@ const AddUserModal = ({ isOpen, onSelect, onClose, users: existingUsers }: Selec
 };
 
 export default AddUserModal;
-

@@ -1,7 +1,7 @@
 import { onNetPromise } from '../lib/onNetPromise';
 
 export const NetPromise = (eventName: string) => {
-  return function (target: object, key: string) {
+  return (target: object, key: string) => {
     if (!Reflect.hasMetadata('promiseEvents', target)) {
       Reflect.defineMetadata('promiseEvents', [], target);
     }
@@ -17,24 +17,15 @@ export const NetPromise = (eventName: string) => {
   };
 };
 
-export const PromiseEventListener = () => {
-  return function <T extends { new (...args: any[]): any }>(ctr: T) {
-    return class extends ctr {
-      constructor(...args: any[]) {
-        super(...args);
+export const PromiseEventListener = () => (ctr: any) => ctr;
 
-        if (!Reflect.hasMetadata('promiseEvents', this)) {
-          Reflect.defineMetadata('promiseEvents', [], this);
-        }
+export const registerPromiseEvents = (instance: any) => {
+  const promiseEvents: any[] = Reflect.getMetadata('promiseEvents', instance);
+  if (!promiseEvents) return;
 
-        const promiseEvents: any[] = Reflect.getMetadata('promiseEvents', this);
-
-        for (const { eventName, key } of promiseEvents) {
-          onNetPromise(eventName, async (...args: any[]) => {
-            this[key](...args);
-          });
-        }
-      }
-    };
-  };
+  for (const { eventName, key } of promiseEvents) {
+    onNetPromise(eventName, async (...args: any[]) => {
+      instance[key](...args);
+    });
+  }
 };

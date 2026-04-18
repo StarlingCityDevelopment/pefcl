@@ -11,12 +11,10 @@ import i18next from 'i18next';
 
 export const getI18nResourcesNamespaced = (namespace: Namespace) => {
   return Object.keys(languages).reduce((prev, key) => {
-    return {
-      ...prev,
-      [key]: {
-        [namespace]: languages[key as Language],
-      },
-    };
+    prev[key as Language] = {
+      [namespace]: languages[key as Language],
+    } as Record<Namespace, LanguageContent>;
+    return prev;
   }, {} as Resource);
 };
 

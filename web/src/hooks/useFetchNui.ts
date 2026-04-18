@@ -3,26 +3,28 @@ import { useEffect, useState } from 'react';
 import { usePrevious } from './usePrevious';
 
 export const useFetchNui = <T>(event: string, options?: object) => {
- const [error, setError] = useState('');
- const [isLoading, setIsLoading] = useState(false);
- const [data, setData] = useState<T>();
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<T>();
 
- const previous = usePrevious(JSON.stringify(options));
- const hasChanged = JSON.stringify(options) !== previous;
+  const optionsString = JSON.stringify(options);
+  const previous = usePrevious(optionsString);
+  const hasChanged = optionsString !== previous;
 
- useEffect(() => {
- setIsLoading(true);
- fetchNui<T>(event, options)
- .then(setData)
- .catch((error) => {
- setError(error);
- })
- .finally(() => {
- setIsLoading(false);
- });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: options object is stringified for stability
+  useEffect(() => {
+    if (!hasChanged && data) return;
 
- // eslint-disable-next-line react-hooks/exhaustive-deps
- }, [event, hasChanged]);
+    setIsLoading(true);
+    fetchNui<T>(event, options)
+      .then(setData)
+      .catch((error) => {
+        setError(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [event, optionsString, hasChanged, data]);
 
- return { isLoading, data, error };
+  return { isLoading, data, error };
 };

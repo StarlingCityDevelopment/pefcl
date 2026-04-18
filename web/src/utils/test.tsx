@@ -35,4 +35,3 @@ export const renderWithProviders = (ui: ReactElement, options?: RenderWithProvid
 
   return render(renderedElement);
 };
-

@@ -1,13 +1,13 @@
-import { singleton } from 'tsyringe';
-import { type Transaction } from '@typings/Transaction';
+import { type Account, AccountType } from '@server/../../typings/Account';
+import type { Card } from '@server/../../typings/BankCard';
+import type { Cash } from '@server/../../typings/Cash';
 import { mainLogger } from '@server/sv_logger';
-import { UserService } from '../user/user.service';
 import { Broadcasts } from '@typings/Events';
-import { TransactionDB } from '../transaction/transaction.db';
-import { Account, AccountType } from '@server/../../typings/Account';
-import { type Cash } from '@server/../../typings/Cash';
+import type { Transaction } from '@typings/Transaction';
+import { singleton } from 'tsyringe';
 import { AccountService } from '../account/account.service';
-import { type Card } from '@server/../../typings/BankCard';
+import { TransactionDB } from '../transaction/transaction.db';
+import { UserService } from '../user/user.service';
 
 const logger = mainLogger.child({ module: 'broadcastService' });
 
@@ -17,18 +17,14 @@ export class BroadcastService {
   _userService: UserService;
   _accountService: AccountService;
 
-  constructor(
-    transactionDB: TransactionDB,
-    userService: UserService,
-    accountService: AccountService,
-  ) {
+  constructor(transactionDB: TransactionDB, userService: UserService, accountService: AccountService) {
     this._transactionDB = transactionDB;
     this._userService = userService;
     this._accountService = accountService;
   }
 
   async broadcastUpdatedAccount(account: Account) {
-    logger.silly(`Broadcasted updated account:`);
+    logger.silly('Broadcasted updated account:');
     logger.silly(JSON.stringify(account));
 
     const user = this._userService.getUserByIdentifier(account.ownerIdentifier);
@@ -38,7 +34,7 @@ export class BroadcastService {
   }
 
   async broadcastNewCard(card: Card) {
-    logger.silly(`Broadcasted new card:`);
+    logger.silly('Broadcasted new card:');
     logger.silly(JSON.stringify(card));
 
     const user = this._userService.getUserByIdentifier(card.holderCitizenId);
@@ -48,7 +44,7 @@ export class BroadcastService {
   }
 
   async broadcastTransaction(transaction: Transaction) {
-    logger.silly(`Broadcasted transaction:`);
+    logger.silly('Broadcasted transaction:');
     logger.silly(JSON.stringify(transaction));
 
     const { ownerIdentifier: toIdentifier } = transaction.toAccount ?? {};

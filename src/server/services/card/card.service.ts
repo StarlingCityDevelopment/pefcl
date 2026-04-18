@@ -1,11 +1,13 @@
-import { singleton } from 'tsyringe';
-import { config } from '@utils/server-config';
-import { mainLogger } from '../../sv_logger';
-import { UserService } from '../user/user.service';
-import { Request } from '@typings/http';
-import { CardDB } from './card.db';
-import { sequelize } from '@server/utils/pool';
-import { AccountService } from '../account/account.service';
+import { PIN_CODE_LENGTH } from '@common/constants';
+import { AccountRole, type GetATMAccountInput, type GetATMAccountResponse } from '@server/../../typings/Account';
+import type {
+  BlockCardInput,
+  Card,
+  CreateCardInput,
+  DeleteCardInput,
+  InventoryCard,
+  UpdateCardPinInput,
+} from '@server/../../typings/BankCard';
 import {
   AuthorizationErrors,
   BalanceErrors,
@@ -13,24 +15,18 @@ import {
   GenericErrors,
   UserErrors,
 } from '@server/../../typings/Errors';
-import i18next from '@utils/i18n';
-import {
-  BlockCardInput,
-  Card,
-  CreateCardInput,
-  InventoryCard,
-  UpdateCardPinInput,
-  DeleteCardInput,
-} from '@server/../../typings/BankCard';
-import { AccountDB } from '../account/account.db';
-import { PIN_CODE_LENGTH } from '@common/constants';
-import {
-  GetATMAccountResponse,
-  GetATMAccountInput,
-  AccountRole,
-} from '@server/../../typings/Account';
 import { CardEvents } from '@server/../../typings/Events';
 import { getFrameworkExports } from '@server/utils/frameworkIntegration';
+import { sequelize } from '@server/utils/pool';
+import type { Request } from '@typings/http';
+import i18next from '@utils/i18n';
+import { config } from '@utils/server-config';
+import { singleton } from 'tsyringe';
+import { mainLogger } from '../../sv_logger';
+import { AccountDB } from '../account/account.db';
+import { AccountService } from '../account/account.service';
+import { UserService } from '../user/user.service';
+import { CardDB } from './card.db';
 
 const logger = mainLogger.child({ module: 'card' });
 const isFrameworkIntegrationEnabled = config?.frameworkIntegration?.enabled;
@@ -42,12 +38,7 @@ export class CardService {
   userService: UserService;
   accountService: AccountService;
 
-  constructor(
-    CardDB: CardDB,
-    userService: UserService,
-    accountService: AccountService,
-    accountDB: AccountDB,
-  ) {
+  constructor(CardDB: CardDB, userService: UserService, accountService: AccountService, accountDB: AccountDB) {
     this.cardDB = CardDB;
     this.accountDB = accountDB;
     this.userService = userService;
@@ -265,7 +256,7 @@ export class CardService {
     }
 
     if (pin.toString().length !== PIN_CODE_LENGTH) {
-      logger.error('Pin is wrong length, should be: ' + PIN_CODE_LENGTH);
+      logger.error(`Pin is wrong length, should be: ${PIN_CODE_LENGTH}`);
       throw new Error(GenericErrors.BadInput);
     }
 
@@ -279,10 +270,7 @@ export class CardService {
           (acc.role === AccountRole.Admin || acc.role === AccountRole.Owner),
       );
 
-      const paymentAccount = await this.accountService.getAuthorizedAccount(
-        req.source,
-        paymentAccountId,
-      );
+      const paymentAccount = await this.accountService.getAuthorizedAccount(req.source, paymentAccountId);
 
       if (!sharedAccount || !paymentAccount) {
         throw new Error(GenericErrors.NotFound);
@@ -345,7 +333,7 @@ export class CardService {
     }
 
     if (pin.toString().length !== PIN_CODE_LENGTH) {
-      logger.error('Pin is wrong length, should be: ' + PIN_CODE_LENGTH);
+      logger.error(`Pin is wrong length, should be: ${PIN_CODE_LENGTH}`);
       throw new Error(GenericErrors.BadInput);
     }
 
@@ -353,10 +341,7 @@ export class CardService {
 
     try {
       const account = await this.accountService.getAuthorizedAccount(req.source, accountId);
-      const paymentAccount = await this.accountService.getAuthorizedAccount(
-        req.source,
-        paymentAccountId,
-      );
+      const paymentAccount = await this.accountService.getAuthorizedAccount(req.source, paymentAccountId);
 
       if (!account || !paymentAccount) {
         throw new Error(GenericErrors.NotFound);

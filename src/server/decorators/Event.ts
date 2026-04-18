@@ -1,5 +1,5 @@
 export const Event = (eventName: string) => {
-  return function (target: object, key: string): void {
+  return (target: object, key: string): void => {
     if (!Reflect.hasMetadata('events', target)) {
       Reflect.defineMetadata('events', [], target);
     }
@@ -17,7 +17,7 @@ export const Event = (eventName: string) => {
 };
 
 export const NetEvent = (eventName: string) => {
-  return function (target: any, key: string): void {
+  return (target: any, key: string): void => {
     if (!Reflect.hasMetadata('events', target)) {
       Reflect.defineMetadata('events', [], target);
     }
@@ -34,29 +34,20 @@ export const NetEvent = (eventName: string) => {
   };
 };
 
-export const EventListener = function () {
-  return function <T extends { new (...args: any[]): any }>(constructor: T) {
-    return class extends constructor {
-      constructor(...args: any[]) {
-        super(...args);
+export const EventListener = () => (ctor: any) => ctor;
 
-        if (!Reflect.hasMetadata('events', this)) {
-          Reflect.defineMetadata('events', [], this);
-        }
+export const registerEvents = (instance: any) => {
+  const events = Reflect.getMetadata('events', instance) as Array<any>;
+  if (!events) return;
 
-        const events = Reflect.getMetadata('events', this) as Array<any>;
-
-        for (const { net, eventName, key } of events) {
-          if (net)
-            onNet(eventName, (...args: any[]) => {
-              this[key](...args);
-            });
-          else
-            on(eventName, (...args: any[]) => {
-              this[key](...args);
-            });
-        }
-      }
-    };
-  };
+  for (const { net, eventName, key } of events) {
+    if (net)
+      onNet(eventName, (...args: any[]) => {
+        instance[key](...args);
+      });
+    else
+      on(eventName, (...args: any[]) => {
+        instance[key](...args);
+      });
+  }
 };

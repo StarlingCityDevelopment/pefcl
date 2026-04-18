@@ -1,35 +1,30 @@
-import { Controller } from '../../decorators/Controller';
-import { NetPromise, PromiseEventListener } from '../../decorators/NetPromise';
-import {
-  Account,
-  AccountRole,
-  UpdateBankBalanceInput,
-  AddToSharedAccountInput,
-  ATMInput,
-  CreateBasicAccountInput,
-  ExternalAccount,
-  PreDBAccount,
-  RemoveFromSharedAccountInput,
-  RenameAccountInput,
-  SharedAccountUser,
-  AddToUniqueAccountInput,
-  RemoveFromUniqueAccountInput,
-  UpdateBankBalanceByNumberInput,
-} from '@typings/Account';
-import {
-  AccountEvents,
-  ExternalAccountEvents,
-  SharedAccountEvents,
-  UserEvents,
-} from '@typings/Events';
-import type { Request, Response } from '@typings/http';
-import { ServerExports } from '@typings/exports/server';
-import { AccountService } from './account.service';
 import { Event, EventListener } from '@decorators/Event';
+import { Export, ExportListener } from '@decorators/Export';
+import type { OnlineUser } from '@server/../../typings/user';
 import { ExternalAccountService } from '@services/accountExternal/externalAccount.service';
 import { AuthService } from '@services/auth/auth.service';
-import { Export, ExportListener } from '@decorators/Export';
-import { type OnlineUser } from '@server/../../typings/user';
+import {
+  type ATMInput,
+  type Account,
+  AccountRole,
+  type AddToSharedAccountInput,
+  type AddToUniqueAccountInput,
+  type CreateBasicAccountInput,
+  type ExternalAccount,
+  type PreDBAccount,
+  type RemoveFromSharedAccountInput,
+  type RemoveFromUniqueAccountInput,
+  type RenameAccountInput,
+  type SharedAccountUser,
+  type UpdateBankBalanceByNumberInput,
+  type UpdateBankBalanceInput,
+} from '@typings/Account';
+import { AccountEvents, ExternalAccountEvents, SharedAccountEvents, UserEvents } from '@typings/Events';
+import { ServerExports } from '@typings/exports/server';
+import type { Request, Response } from '@typings/http';
+import { Controller } from '../../decorators/Controller';
+import { NetPromise, PromiseEventListener } from '../../decorators/NetPromise';
+import { AccountService } from './account.service';
 
 @Controller('Account')
 @PromiseEventListener()
@@ -40,11 +35,7 @@ export class AccountController {
   _accountService: AccountService;
   _externalAccountService: ExternalAccountService;
 
-  constructor(
-    auth: AuthService,
-    accountService: AccountService,
-    externalAccountService: ExternalAccountService,
-  ) {
+  constructor(auth: AuthService, accountService: AccountService, externalAccountService: ExternalAccountService) {
     this._auth = auth;
     this._accountService = accountService;
     this._externalAccountService = externalAccountService;
@@ -179,10 +170,7 @@ export class AccountController {
   }
 
   @NetPromise(SharedAccountEvents.GetUsers)
-  async getUsersFromSharedAccount(
-    req: Request<{ accountId: number }>,
-    res: Response<SharedAccountUser[]>,
-  ) {
+  async getUsersFromSharedAccount(req: Request<{ accountId: number }>, res: Response<SharedAccountUser[]>) {
     try {
       await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [
         AccountRole.Admin,
@@ -239,10 +227,7 @@ export class AccountController {
   }
 
   @Export(ServerExports.SetBankBalanceByIdentifier)
-  async setBankBalanceByIdentifier(
-    req: Request<{ amount: number; identifier: string }>,
-    res: Response<unknown>,
-  ) {
+  async setBankBalanceByIdentifier(req: Request<{ amount: number; identifier: string }>, res: Response<unknown>) {
     try {
       await this._accountService.setMoneyByIdentifier(req);
       res({ status: 'ok', data: {} });
@@ -272,10 +257,7 @@ export class AccountController {
   }
 
   @Export(ServerExports.AddBankBalanceByNumber)
-  async addBankBalanceByNumber(
-    req: Request<UpdateBankBalanceByNumberInput>,
-    res: Response<unknown>,
-  ) {
+  async addBankBalanceByNumber(req: Request<UpdateBankBalanceByNumberInput>, res: Response<unknown>) {
     try {
       await this._accountService.addMoneyByNumber(req);
       res({ status: 'ok', data: {} });
@@ -285,10 +267,7 @@ export class AccountController {
   }
 
   @Export(ServerExports.RemoveBankBalanceByIdentifier)
-  async removeBankBalanceByIdentifier(
-    req: Request<UpdateBankBalanceInput>,
-    res: Response<unknown>,
-  ) {
+  async removeBankBalanceByIdentifier(req: Request<UpdateBankBalanceInput>, res: Response<unknown>) {
     try {
       await this._accountService.removeMoneyByIdentifier(req);
       res({ status: 'ok', data: {} });
@@ -354,10 +333,7 @@ export class AccountController {
   }
 
   @Export(ServerExports.RemoveUserFromUniqueAccount)
-  async removeUserFromUniqueAccount(
-    req: Request<RemoveFromUniqueAccountInput>,
-    res: Response<unknown>,
-  ) {
+  async removeUserFromUniqueAccount(req: Request<RemoveFromUniqueAccountInput>, res: Response<unknown>) {
     try {
       const data = await this._accountService.removeUserFromUniqueAccount(req);
       res({ status: 'ok', data });

@@ -1,10 +1,10 @@
-import { DATABASE_PREFIX } from '@utils/constants';
-import { DataTypes, Model, Optional } from 'sequelize';
-import { type Cash } from '@typings/Cash';
-import { sequelize } from '../../utils/pool';
-import { config } from '@utils/server-config';
-import { timestamps } from '../timestamps.model';
 import { CashEvents } from '@server/../../typings/Events';
+import type { Cash } from '@typings/Cash';
+import { DATABASE_PREFIX } from '@utils/constants';
+import { config } from '@utils/server-config';
+import { DataTypes, Model, type Optional } from 'sequelize';
+import { sequelize } from '../../utils/pool';
+import { timestamps } from '../timestamps.model';
 
 export class CashModel extends Model<Cash, Optional<Cash, 'id' | 'amount'>> {}
 
@@ -27,7 +27,7 @@ CashModel.init(
   },
   {
     sequelize: sequelize,
-    tableName: DATABASE_PREFIX + 'cash',
+    tableName: `${DATABASE_PREFIX}cash`,
     hooks: {
       afterSave: (instance, options) => {
         if (options.fields?.includes('amount')) {

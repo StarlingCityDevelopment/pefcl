@@ -1,9 +1,9 @@
+import { AccountRole, AccountType } from '@typings/Account';
+import { InvoiceStatus } from '@typings/Invoice';
 import { AccountModel } from '../services/account/account.model';
+import { ExternalAccountModel } from '../services/accountExternal/externalAccount.model';
 import { CashModel } from '../services/cash/cash.model';
 import { InvoiceModel } from '../services/invoice/invoice.model';
-import { ExternalAccountModel } from '../services/accountExternal/externalAccount.model';
-import { AccountType, AccountRole } from '@typings/Account';
-import { InvoiceStatus } from '@typings/Invoice';
 import { mainLogger } from '../sv_logger';
 
 const logger = mainLogger.child({ module: 'mockSeed' });

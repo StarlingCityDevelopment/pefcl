@@ -24,7 +24,7 @@ export const getPlayerIdentifier = (source: number): string => {
   const identifier = identifiers.find((identifier) => identifier.includes(`${identifierType}:`));
 
   if (!identifier) {
-    throw new Error('Failed to get identifier for player' + source);
+    throw new Error(`Failed to get identifier for player${source}`);
   }
 
   return identifier;
@@ -68,7 +68,7 @@ export const generateClearingNumber = (clearingNumber = getClearingNumber()): st
 };
 
 export const generateCardNumber = (): string => {
-  let uuid = `5160 `;
+  let uuid = '5160 ';
   for (let i = 0; i < 12; i++) {
     switch (i) {
       case 8:

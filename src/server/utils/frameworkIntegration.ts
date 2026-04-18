@@ -1,19 +1,11 @@
-import {
-  FrameworkIntegrationExports,
-  FrameworkIntegrationFunction,
-} from '@server/../../typings/exports';
+import type { FrameworkIntegrationExports, FrameworkIntegrationFunction } from '@server/../../typings/exports';
 import { mainLogger } from '@server/sv_logger';
 import { getExports } from './misc';
 import { config } from './server-config';
 
 const logger = mainLogger.child({ module: 'frameworkIntegration' });
 
-const frameworkIntegrationKeys: FrameworkIntegrationFunction[] = [
-  'addCash',
-  'removeCash',
-  'getCash',
-  'getBank',
-];
+const frameworkIntegrationKeys: FrameworkIntegrationFunction[] = ['addCash', 'removeCash', 'getCash', 'getBank'];
 
 if (config?.frameworkIntegration?.isCardsEnabled) {
   frameworkIntegrationKeys.push('giveCard');
@@ -47,7 +39,7 @@ export const getFrameworkExports = (): FrameworkIntegrationExports => {
   logger.debug(`Checking exports from resource: ${resourceName}`);
 
   if (!resourceName) {
-    logger.error(`Missing resourceName in the config for framework integration`);
+    logger.error('Missing resourceName in the config for framework integration');
     throw new Error('Framework integration failed');
   }
 

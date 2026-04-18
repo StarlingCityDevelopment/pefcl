@@ -1,6 +1,6 @@
-import { type Transaction } from 'sequelize/types';
+import type { Transaction } from 'sequelize/types';
 import { singleton } from 'tsyringe';
-import { CardModel, CardModelCreate } from './card.model';
+import { CardModel, type CardModelCreate } from './card.model';
 
 @singleton()
 export class CardDB {

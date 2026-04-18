@@ -1,6 +1,6 @@
-import { ExternalAccount } from '@typings/Account';
+import type { ExternalAccount } from '@typings/Account';
 import { DATABASE_PREFIX } from '@utils/constants';
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, type Optional } from 'sequelize';
 import { sequelize } from '../../utils/pool';
 import { timestamps } from '../timestamps.model';
 
@@ -26,7 +26,7 @@ ExternalAccountModel.init(
   },
   {
     sequelize: sequelize,
-    tableName: DATABASE_PREFIX + 'external_accounts',
+    tableName: `${DATABASE_PREFIX}external_accounts`,
     indexes: [
       {
         unique: true,

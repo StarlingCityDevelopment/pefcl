@@ -1,11 +1,11 @@
 import { TransactionEvents } from '@typings/Events';
-import type { Request, Response } from '@typings/http';
 import type {
+  CreateTransferInput,
   GetTransactionHistoryResponse,
   GetTransactionsInput,
   GetTransactionsResponse,
-  CreateTransferInput,
 } from '@typings/Transaction';
+import type { Request, Response } from '@typings/http';
 import { Controller } from '../../decorators/Controller';
 import { NetPromise, PromiseEventListener } from '../../decorators/NetPromise';
 import { TransactionService } from './transaction.service';
@@ -20,10 +20,7 @@ export class TransactionController {
   }
 
   @NetPromise(TransactionEvents.Get)
-  async getTransactions(
-    req: Request<GetTransactionsInput>,
-    res: Response<GetTransactionsResponse>,
-  ) {
+  async getTransactions(req: Request<GetTransactionsInput>, res: Response<GetTransactionsResponse>) {
     try {
       const transactions = await this._transactionService.handleGetMyTransactions(req);
       res({ status: 'ok', data: transactions });

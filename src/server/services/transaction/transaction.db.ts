@@ -1,9 +1,9 @@
+import { type GetTransactionsInput, type TransactionInput, TransactionType } from '@typings/Transaction';
 import { Op } from 'sequelize';
+import type { Transaction as SequelizeTransaction } from 'sequelize/types';
 import { singleton } from 'tsyringe';
-import { GetTransactionsInput, TransactionInput, TransactionType } from '@typings/Transaction';
 import { AccountModel } from '../account/account.model';
 import { TransactionModel } from './transaction.model';
-import { Transaction as SequelizeTransaction } from 'sequelize/types';
 
 interface GetTransactionFromAccounts extends GetTransactionsInput {
   accountIds: number[];
@@ -102,10 +102,7 @@ export class TransactionDB {
     });
   }
 
-  async getAllTransactionsFromAccounts(
-    accountIds: number[],
-    from?: Date,
-  ): Promise<TransactionModel[]> {
+  async getAllTransactionsFromAccounts(accountIds: number[], from?: Date): Promise<TransactionModel[]> {
     //TODO: clean this up
     const createdAt = from
       ? {
@@ -148,27 +145,16 @@ export class TransactionDB {
     return await TransactionModel.findOne({ where: { id } });
   }
 
-  async create(
-    transaction: TransactionInput,
-    sequelizeTransaction: SequelizeTransaction,
-  ): Promise<TransactionModel> {
+  async create(transaction: TransactionInput, sequelizeTransaction: SequelizeTransaction): Promise<TransactionModel> {
     const { toAccount, fromAccount, ...dbTransaction } = transaction;
     const newTransaction = await TransactionModel.create(
       {
         ...dbTransaction,
+        toAccountId: toAccount?.id,
+        fromAccountId: fromAccount?.id,
       },
       { transaction: sequelizeTransaction },
     );
-
-    const currentMessage = newTransaction.getDataValue('message');
-    const currentId = newTransaction.getDataValue('id');
-    await newTransaction.update(
-      { message: `${currentMessage} #${currentId}` },
-      { transaction: sequelizeTransaction },
-    );
-
-    newTransaction.setToAccount(toAccount?.id);
-    newTransaction.setFromAccount(fromAccount?.id);
 
     return newTransaction;
   }

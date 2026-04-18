@@ -1,4 +1,4 @@
-import { ServerPromiseResp } from '../../../typings/http';
+import type { ServerPromiseResp } from '../../../typings/http';
 
 export interface PromiseRequest<T = any> {
   data: T;

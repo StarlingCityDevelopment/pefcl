@@ -3,6 +3,6 @@ import type { LBSettings } from '@typings/LBAddons';
 import { useAtom } from 'jotai';
 
 export const useLBPhoneSettings = (): LBSettings | null => {
- const [settings] = useAtom(LBPhoneSettingsAtom);
- return settings;
+  const [settings] = useAtom(LBPhoneSettingsAtom);
+  return settings;
 };

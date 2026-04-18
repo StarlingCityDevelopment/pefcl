@@ -1,8 +1,8 @@
-import type { CreateAccountInput } from '@typings/Account';
 import { ExternalAccountDB } from '@services/accountExternal/externalAccount.db';
+import type { CreateAccountInput } from '@typings/Account';
+import type { Transaction } from 'sequelize/types';
 import { singleton } from 'tsyringe';
 import { AccountModel } from './account.model';
-import { type Transaction } from 'sequelize/types';
 
 export interface RemoveFromSharedAccountInput {
   accountId: number;
@@ -29,17 +29,15 @@ export class AccountDB {
     return await AccountModel.findAll({ where: { ownerIdentifier: identifier } });
   }
 
-  async getUniqueAccountByIdentifier(
-    identifier: string,
-    transaction?: Transaction,
-  ): Promise<AccountModel | null> {
-    return await AccountModel.findOne({ where: { ownerIdentifier: identifier }, transaction });
+  async getUniqueAccountByIdentifier(identifier: string, transaction?: Transaction): Promise<AccountModel | null> {
+    return await AccountModel.findOne({
+      where: { ownerIdentifier: identifier },
+      transaction,
+      lock: Boolean(transaction),
+    });
   }
 
-  async getDefaultAccountByIdentifier(
-    identifier: string,
-    transaction?: Transaction,
-  ): Promise<AccountModel | null> {
+  async getDefaultAccountByIdentifier(identifier: string, transaction?: Transaction): Promise<AccountModel | null> {
     return await AccountModel.findOne({
       where: { isDefault: true, ownerIdentifier: identifier },
       transaction,
@@ -59,10 +57,7 @@ export class AccountDB {
     });
   }
 
-  async getAccountByNumber(
-    number: string,
-    transaction?: Transaction,
-  ): Promise<AccountModel | null> {
+  async getAccountByNumber(number: string, transaction?: Transaction): Promise<AccountModel | null> {
     return await AccountModel.findOne({
       where: { number },
       transaction,
@@ -70,10 +65,7 @@ export class AccountDB {
     });
   }
 
-  async createAccount(
-    account: CreateAccountInput,
-    transaction?: Transaction,
-  ): Promise<AccountModel> {
+  async createAccount(account: CreateAccountInput, transaction?: Transaction): Promise<AccountModel> {
     return await AccountModel.create(account, { transaction });
   }
 

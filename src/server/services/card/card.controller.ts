@@ -1,6 +1,6 @@
 import { NetPromise, PromiseEventListener } from '@decorators/NetPromise';
 import type { GetATMAccountInput, GetATMAccountResponse } from '@server/../../typings/Account';
-import {
+import type {
   BlockCardInput,
   Card,
   CreateCardInput,

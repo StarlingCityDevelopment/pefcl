@@ -5,9 +5,7 @@ import { CONNECTION_STRING, parseUri } from './dbUtils';
 const mysqlConnectionString = GetConvar(CONNECTION_STRING, 'none');
 
 if (mysqlConnectionString === 'none') {
-  throw new Error(
-    `No connection string provided. make sure "${CONNECTION_STRING}" is set in server.cfg`,
-  );
+  throw new Error(`No connection string provided. make sure "${CONNECTION_STRING}" is set in server.cfg`);
 }
 
 const config = parseUri(mysqlConnectionString);

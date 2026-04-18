@@ -1,15 +1,12 @@
-import { type Card } from '@server/../../typings/BankCard';
+import type { Card } from '@server/../../typings/BankCard';
 import { generateCardNumber } from '@server/utils/misc';
 import { DATABASE_PREFIX } from '@utils/constants';
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, type Optional } from 'sequelize';
 import { singleton } from 'tsyringe';
 import { sequelize } from '../../utils/pool';
 import { timestamps } from '../timestamps.model';
 
-export type CardModelCreate = Optional<
-  Card,
-  'id' | 'number' | 'pin' | 'isBlocked' | 'createdAt' | 'updatedAt'
->;
+export type CardModelCreate = Optional<Card, 'id' | 'number' | 'pin' | 'isBlocked' | 'createdAt' | 'updatedAt'>;
 
 @singleton()
 export class CardModel extends Model<Card, CardModelCreate> {}
@@ -40,5 +37,5 @@ CardModel.init(
     },
     ...timestamps,
   },
-  { sequelize: sequelize, tableName: DATABASE_PREFIX + 'cards' },
+  { sequelize: sequelize, tableName: `${DATABASE_PREFIX}cards` },
 );

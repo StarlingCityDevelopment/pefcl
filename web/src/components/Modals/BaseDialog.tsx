@@ -1,8 +1,8 @@
 import { useGlobalSettings } from '@hooks/useGlobalSettings';
+import { cn } from '@utils/cn';
+import { AnimatePresence, motion } from 'motion/react';
 import React, { type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'motion/react';
-import { cn } from '@utils/cn';
 
 interface BaseDialogProps {
   open: boolean;
@@ -16,33 +16,33 @@ const BaseDialog = React.memo(({ open, onClose, children, className, maxWidth }:
   const { isMobile } = useGlobalSettings();
 
   const dialogContent = (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode='wait'>
       {open && (
-        <div className="absolute inset-0 z-60 flex items-center justify-center pointer-events-auto" key="base-dialog-overlay">
+        <div
+          className='absolute inset-0 z-60 flex items-center justify-center pointer-events-auto'
+          key='base-dialog-overlay'
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-[1px]"
+            className='absolute inset-0 bg-black/40 backdrop-blur-[1px]'
           />
-          
+
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className={cn(
-              "relative w-full bg-[#0F0F0F] rounded-4xl border border-white/10 shadow-2xl shadow-black flex flex-col p-8 overflow-hidden",
-              className
+              'relative w-full bg-[#0F0F0F] rounded-4xl border border-white/10 shadow-2xl shadow-black flex flex-col p-8 overflow-hidden',
+              className,
             )}
             style={{ maxWidth: maxWidth || '500px' }}
           >
-            <div className="flex-1 overflow-y-auto flex flex-col custom-scrollbar">
-              {children}
-            </div>
+            <div className='flex-1 overflow-y-auto flex flex-col custom-scrollbar'>{children}</div>
           </motion.div>
-
         </div>
       )}
     </AnimatePresence>

@@ -8,16 +8,16 @@ import MobileApp from './views/Mobile/Mobile';
 const Root = () => (
   <HashRouter>
     <NuiProvider>
-      <div className="relative w-[500px] h-[1000px]">
-        <div 
-          className="absolute inset-0 z-10 pointer-events-none" 
-          style={{ 
+      <div className='relative w-[500px] h-[1000px]'>
+        <div
+          className='absolute inset-0 z-10 pointer-events-none'
+          style={{
             backgroundImage: `url(${image})`,
-            backgroundSize: '100% 100%'
-          }} 
+            backgroundSize: '100% 100%',
+          }}
         />
         <React.Suspense fallback='Loading phone'>
-          <div className="absolute top-[100px] left-[50px] right-[50px] bottom-[100px] z-[2] flex flex-col bg-center bg-cover bg-no-repeat rounded-[20px] overflow-hidden">
+          <div className='absolute top-[100px] left-[50px] right-[50px] bottom-[100px] z-[2] flex flex-col bg-center bg-cover bg-no-repeat rounded-[20px] overflow-hidden'>
             <MobileApp />
           </div>
         </React.Suspense>

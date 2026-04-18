@@ -1,7 +1,7 @@
-import { getSource } from '../utils/misc';
+import type { ServerPromiseResp } from '../../../typings/http';
 import { mainLogger } from '../sv_logger';
-import { CBSignature, PromiseEventResp, PromiseRequest } from './promise.types';
-import { ServerPromiseResp } from '../../../typings/http';
+import { getSource } from '../utils/misc';
+import type { CBSignature, PromiseEventResp, PromiseRequest } from './promise.types';
 
 const netEventLogger = mainLogger.child({ module: 'events' });
 
@@ -34,9 +34,7 @@ export function onNetPromise<T = any, P = any>(eventName: string, cb: CBSignatur
 
     // In case the cb is a promise, we use Promise.resolve
     Promise.resolve(cb(promiseRequest, promiseResp)).catch((e) => {
-      netEventLogger.error(
-        `An error occured for a onNetPromise (${eventName}), Error: ${e.message}`,
-      );
+      netEventLogger.error(`An error occured for a onNetPromise (${eventName}), Error: ${e.message}`);
 
       promiseResp({ status: 'error', errorMsg: 'UNKNOWN_ERROR' });
     });

@@ -1,6 +1,6 @@
-import EventEmitter from 'events';
-import { readFileSync } from 'fs';
-import path from 'path';
+import EventEmitter from 'node:events';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 
 const isMocking = process.env.NODE_ENV === 'mocking' || process.env.NODE_ENV === 'test';
 export const mockedResourceName = 'pefcl';
@@ -127,7 +127,7 @@ if (isMocking) {
   };
 
   global.StopResource = (resource: string) => {
-    console.log('global.server.ts: Stopping resource ..' + resource);
+    console.log(`global.server.ts: Stopping resource ..${resource}`);
     process.exit(0);
   };
 }

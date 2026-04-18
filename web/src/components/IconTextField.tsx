@@ -13,4 +13,3 @@ const IconTextField: React.FC<IconTextFieldProps> = ({ icon, ...props }) => (
 );
 
 export default IconTextField;
-

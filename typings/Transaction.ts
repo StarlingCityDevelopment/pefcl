@@ -15,6 +15,9 @@ export interface Transaction {
   toAccount?: Account;
   fromAccount?: Account;
 
+  toAccountId?: number;
+  fromAccountId?: number;
+
   amount: number;
   message: string;
   type: TransactionType;

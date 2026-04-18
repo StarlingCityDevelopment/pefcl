@@ -1,10 +1,10 @@
-import { singleton } from 'tsyringe';
-import { constructor } from 'tsyringe/dist/typings/types';
-import { Bank } from '../services/Bank';
 import { DIToken } from '@typings/common';
+import { singleton } from 'tsyringe';
+import type { constructor as Ctor } from 'tsyringe/dist/typings/types';
+import { Bank } from '../services/Bank';
 
 export function Controller<T>(name: string) {
-  return function (target: constructor<T>) {
+  return (target: Ctor<T>) => {
     target.prototype.name = name;
 
     singleton()(target);

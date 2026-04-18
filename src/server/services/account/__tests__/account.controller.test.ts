@@ -1,15 +1,11 @@
 import {
+  type ATMInput,
   AccountRole,
   AccountType,
-  ATMInput,
-  CreateAccountInput,
-  ExternalAccount,
+  type CreateAccountInput,
+  type ExternalAccount,
 } from '@server/../../typings/Account';
-import {
-  AccountEvents,
-  ExternalAccountEvents,
-  SharedAccountEvents,
-} from '@server/../../typings/Events';
+import { AccountEvents, ExternalAccountEvents, SharedAccountEvents } from '@server/../../typings/Events';
 import { container } from 'tsyringe';
 import { AccountController } from '../account.controller';
 import type { RemoveFromSharedAccountInput } from '../account.db';

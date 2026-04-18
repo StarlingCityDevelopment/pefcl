@@ -1,12 +1,12 @@
 import { Controller } from '@decorators/Controller';
-import { EventListener, Event, NetEvent } from '@decorators/Event';
+import { Event, EventListener, NetEvent } from '@decorators/Event';
 import { NetPromise, PromiseEventListener } from '@decorators/NetPromise';
 import { ServerExports } from '@server/../../typings/exports/server';
 import { Export, ExportListener } from '@server/decorators/Export';
 import { config } from '@server/utils/server-config';
 import { GeneralEvents, UserEvents } from '@typings/Events';
 import type { Request, Response } from '@typings/http';
-import { type OnlineUser } from '@typings/user';
+import type { OnlineUser } from '@typings/user';
 import { UserService } from './user.service';
 
 @Controller('User')
@@ -50,11 +50,7 @@ export class UserController {
     for (const user of users.values()) {
       const ped = GetPlayerPed(user.getSource().toString());
       const coords = GetEntityCoords(ped);
-      const distance = Math.hypot(
-        coords[0] - srcCoords[0],
-        coords[1] - srcCoords[1],
-        coords[2] - srcCoords[2],
-      );
+      const distance = Math.hypot(coords[0] - srcCoords[0], coords[1] - srcCoords[1], coords[2] - srcCoords[2]);
 
       if (distance > maxDistance) continue;
 
@@ -94,7 +90,7 @@ export class UserController {
 
     const players = getPlayers();
     players.forEach((player) => {
-      this._userService.loadStandalonePlayer({ source: parseInt(player, 10) });
+      this._userService.loadStandalonePlayer({ source: Number.parseInt(player, 10) });
     });
   }
 }

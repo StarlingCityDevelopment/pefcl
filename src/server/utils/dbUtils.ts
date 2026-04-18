@@ -1,7 +1,6 @@
 export const CONNECTION_STRING = 'mysql_connection_string';
-const regex = new RegExp(
-  '^(?:([^:/?#.]+):)?(?://(?:([^/?#]*)@)?([\\w\\d\\-\\u0100-\\uffff.%]*)(?::([0-9]+))?)?([^?#]+)?(?:\\?([^#]*))?$',
-);
+const regex =
+  /^(?:([^:\/?#.]+):)?(?:\/\/(?:([^\/?#]*)@)?([\w\d\-\u0100-\uffff.%]*)(?::([0-9]+))?)?([^?#]+)?(?:\?([^#]*))?$/;
 
 export const parseUri = (connectionUri: string) => {
   const splitMatchGroups = connectionUri.match(regex);
@@ -21,7 +20,7 @@ export const parseUri = (connectionUri: string) => {
       user: authTgt[0] || undefined,
       password: authTgt[1] || undefined,
       host: splitMatchGroups[3],
-      port: parseInt(splitMatchGroups[4], 10),
+      port: Number.parseInt(splitMatchGroups[4], 10),
       database: removeForwardSlash(splitMatchGroups[5]),
       params: splitMatchGroups[6],
     };
@@ -33,7 +32,5 @@ export const parseUri = (connectionUri: string) => {
     .replace(/(?:db)=/gi, 'database=')
     .split(';');
 
-  return Object.fromEntries(
-    parameters.map((parameter) => parameter.split('='))
-  );
+  return Object.fromEntries(parameters.map((parameter) => parameter.split('=')));
 };

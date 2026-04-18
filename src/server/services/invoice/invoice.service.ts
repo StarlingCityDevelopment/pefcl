@@ -1,23 +1,23 @@
-import { singleton } from 'tsyringe';
-import { Request } from '../../../../typings/http';
-import {
-  CreateInvoiceInput,
-  GetInvoicesInput,
-  InvoiceStatus,
-  PayInvoiceInput,
-} from '../../../../typings/Invoice';
-import { sequelize } from '../../utils/pool';
-import { mainLogger } from '../../sv_logger';
-import { UserService } from '../user/user.service';
-import { AccountDB } from '../account/account.db';
-import { TransactionDB } from '../transaction/transaction.db';
-import { InvoiceDB } from './invoice.db';
-import i18n from '@utils/i18n';
+import { Broadcasts } from '@server/../../typings/Events';
+import { AccountErrors, BalanceErrors, GenericErrors } from '@typings/Errors';
 import { TransactionType } from '@typings/Transaction';
 import { ServerError } from '@utils/errors';
-import { AccountErrors, BalanceErrors, GenericErrors } from '@typings/Errors';
+import i18n from '@utils/i18n';
+import { singleton } from 'tsyringe';
+import {
+  type CreateInvoiceInput,
+  type GetInvoicesInput,
+  InvoiceStatus,
+  type PayInvoiceInput,
+} from '../../../../typings/Invoice';
+import type { Request } from '../../../../typings/http';
+import { mainLogger } from '../../sv_logger';
+import { sequelize } from '../../utils/pool';
+import { AccountDB } from '../account/account.db';
+import { TransactionDB } from '../transaction/transaction.db';
 import { TransactionService } from '../transaction/transaction.service';
-import { Broadcasts } from '@server/../../typings/Events';
+import { UserService } from '../user/user.service';
+import { InvoiceDB } from './invoice.db';
 
 const logger = mainLogger.child({ module: 'invoice-service' });
 
@@ -107,12 +107,8 @@ export class InvoiceService {
       }
 
       if (!invoice || !fromAccount || !toAccount) {
-        logger.error(
-          `Payment failed: invoice=${!!invoice}, fromAccount=${!!fromAccount}, toAccount=${!!toAccount}`,
-        );
-        logger.error(
-          `fromAccountId=${req.data.fromAccountId}, toAccountIdentifier=${toAccountIdentifier}`,
-        );
+        logger.error(`Payment failed: invoice=${!!invoice}, fromAccount=${!!fromAccount}, toAccount=${!!toAccount}`);
+        logger.error(`fromAccountId=${req.data.fromAccountId}, toAccountIdentifier=${toAccountIdentifier}`);
         throw new ServerError(GenericErrors.NotFound);
       }
 

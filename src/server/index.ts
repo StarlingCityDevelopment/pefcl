@@ -27,7 +27,7 @@ import './utils/pool';
 import './utils/server-config';
 import { container } from 'tsyringe';
 import { mockedResourceName } from './globals.server';
-import { type CardService } from './services/card/card.service';
+import { CardService } from './services/card/card.service';
 import { UserService } from './services/user/user.service';
 import { mainLogger } from './sv_logger';
 import { seedDatabase } from './utils/mockSeed';
@@ -80,26 +80,50 @@ if (isMocking) {
 
   const eventsToMock = [
     // NUI
-    NUIEvents.Loaded, NUIEvents.Unloaded, NUIEvents.SetCardId, NUIEvents.SetCards,
+    NUIEvents.Loaded,
+    NUIEvents.Unloaded,
+    NUIEvents.SetCardId,
+    NUIEvents.SetCards,
     // User
-    UserEvents.Loaded, UserEvents.Unloaded, UserEvents.LoadClient, UserEvents.GetUsers,
+    UserEvents.Loaded,
+    UserEvents.Unloaded,
+    UserEvents.LoadClient,
+    UserEvents.GetUsers,
     // Accounts
-    AccountEvents.GetAccounts, AccountEvents.GetAtmAccount, AccountEvents.DeleteAccount,
-    AccountEvents.SetDefaultAccount, AccountEvents.CreateAccount, AccountEvents.RenameAccount,
-    AccountEvents.WithdrawMoney, AccountEvents.DepositMoney,
+    AccountEvents.GetAccounts,
+    AccountEvents.GetAtmAccount,
+    AccountEvents.DeleteAccount,
+    AccountEvents.SetDefaultAccount,
+    AccountEvents.CreateAccount,
+    AccountEvents.RenameAccount,
+    AccountEvents.WithdrawMoney,
+    AccountEvents.DepositMoney,
     // Transactions
-    TransactionEvents.Get, TransactionEvents.CreateTransfer, TransactionEvents.GetHistory,
+    TransactionEvents.Get,
+    TransactionEvents.CreateTransfer,
+    TransactionEvents.GetHistory,
     // Invoices
-    InvoiceEvents.Get, InvoiceEvents.CountUnpaid, InvoiceEvents.CreateInvoice, InvoiceEvents.PayInvoice,
+    InvoiceEvents.Get,
+    InvoiceEvents.CountUnpaid,
+    InvoiceEvents.CreateInvoice,
+    InvoiceEvents.PayInvoice,
     // Shared Accounts
-    SharedAccountEvents.AddUser, SharedAccountEvents.RemoveUser, SharedAccountEvents.GetUsers,
+    SharedAccountEvents.AddUser,
+    SharedAccountEvents.RemoveUser,
+    SharedAccountEvents.GetUsers,
     // External Accounts
-    ExternalAccountEvents.Add, ExternalAccountEvents.Get,
+    ExternalAccountEvents.Add,
+    ExternalAccountEvents.Get,
     // Cash
     CashEvents.GetMyCash,
     // Cards
-    CardEvents.Get, CardEvents.OrderPersonal, CardEvents.OrderShared,
-    CardEvents.UpdatePin, CardEvents.Block, CardEvents.Delete, CardEvents.GetInventoryCards
+    CardEvents.Get,
+    CardEvents.OrderPersonal,
+    CardEvents.OrderShared,
+    CardEvents.UpdatePin,
+    CardEvents.Block,
+    CardEvents.Delete,
+    CardEvents.GetInventoryCards,
   ];
 
   for (const event of eventsToMock) {
@@ -119,7 +143,7 @@ if (isMocking) {
     if (config.frameworkIntegration?.enabled) {
       global.source = 3;
       const userService = container.resolve(UserService);
-      
+
       const players = [
         {
           source: 3,
@@ -130,7 +154,7 @@ if (isMocking) {
           source: 4,
           name: 'Second Player',
           identifier: 'custom-character-identifier:john-other',
-        }
+        },
       ];
 
       for (const player of players) {

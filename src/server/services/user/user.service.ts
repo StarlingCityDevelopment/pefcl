@@ -1,12 +1,12 @@
+import { CHECK_PLAYER_LOADED_INTERVAL } from '@common/constants';
+import { UserEvents } from '@server/../../typings/Events';
+import { mainLogger } from '@server/sv_logger';
 import { GenericErrors } from '@typings/Errors';
 import { ServerError } from '@utils/errors';
-import { mainLogger } from '@server/sv_logger';
 import { singleton } from 'tsyringe';
-import { OnlineUser, UserDTO } from '../../../../typings/user';
+import type { OnlineUser, UserDTO } from '../../../../typings/user';
 import { getPlayerIdentifier, getPlayerName } from '../../utils/misc';
 import { UserModule } from './user.module';
-import { UserEvents } from '@server/../../typings/Events';
-import { CHECK_PLAYER_LOADED_INTERVAL } from '@common/constants';
 
 const logger = mainLogger.child({ module: 'user' });
 

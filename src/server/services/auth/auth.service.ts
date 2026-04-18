@@ -1,11 +1,11 @@
-import { singleton } from 'tsyringe';
-import { UserService } from '../user/user.service';
-import { mainLogger } from '../../sv_logger';
 import { AccountDB } from '@services/account/account.db';
-import { AccountRole } from '@typings/Account';
-import { ServerError } from '@utils/errors';
-import { GenericErrors } from '@typings/Errors';
 import { SharedAccountDB } from '@services/accountShared/sharedAccount.db';
+import type { AccountRole } from '@typings/Account';
+import { GenericErrors } from '@typings/Errors';
+import { ServerError } from '@utils/errors';
+import { singleton } from 'tsyringe';
+import { mainLogger } from '../../sv_logger';
+import { UserService } from '../user/user.service';
 
 const logger = mainLogger.child({ module: 'auth' });
 
@@ -21,11 +21,7 @@ export class AuthService {
     this._sharedAccountDB = sharedAccountDB;
   }
 
-  async isAuthorizedAccount(
-    accountId: number,
-    source: number,
-    roles: AccountRole[],
-  ): Promise<void> {
+  async isAuthorizedAccount(accountId: number, source: number, roles: AccountRole[]): Promise<void> {
     const user = this._userService.getUser(source);
     const identifier = user.getIdentifier();
 

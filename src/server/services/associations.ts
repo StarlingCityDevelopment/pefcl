@@ -1,5 +1,5 @@
-import { sequelize } from '../utils/pool';
 import { config } from '@utils/server-config';
+import { sequelize } from '../utils/pool';
 import { AccountModel } from './account/account.model';
 import { TransactionModel } from './transaction/transaction.model';
 import './invoice/invoice.model';

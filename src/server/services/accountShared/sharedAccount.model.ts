@@ -1,13 +1,10 @@
-import { AccountRole, SharedAccount } from '@typings/Account';
+import { AccountRole, type SharedAccount } from '@typings/Account';
 import { DATABASE_PREFIX } from '@utils/constants';
-import { DataTypes, Model, Optional } from 'sequelize';
+import { DataTypes, Model, type Optional } from 'sequelize';
 import { sequelize } from '../../utils/pool';
 import { timestamps } from '../timestamps.model';
 
-export class SharedAccountModel extends Model<
-  SharedAccount,
-  Optional<SharedAccount, 'id' | 'role'>
-> {}
+export class SharedAccountModel extends Model<SharedAccount, Optional<SharedAccount, 'id' | 'role'>> {}
 
 SharedAccountModel.init(
   {
@@ -28,5 +25,5 @@ SharedAccountModel.init(
     },
     ...timestamps,
   },
-  { sequelize: sequelize, tableName: DATABASE_PREFIX + 'shared_accounts', paranoid: true },
+  { sequelize: sequelize, tableName: `${DATABASE_PREFIX}shared_accounts`, paranoid: true },
 );
