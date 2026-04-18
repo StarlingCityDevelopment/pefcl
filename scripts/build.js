@@ -11,10 +11,12 @@ const dropLabels = ['$BROWSER'];
 
 if (!watch) dropLabels.push('$DEV');
 
-/** @type {import('esbuild').Plugin} */
+/** @type {any} */
 const swcPlugin = {
   name: 'swc-decorator-metadata',
+  // @ts-ignore
   setup(build) {
+    // @ts-ignore
     build.onLoad({ filter: /src\/(server|common)\/.*\.ts$/ }, async (args) => {
       const input = await readFile(args.path, 'utf8');
       const { code } = await transform(input, {
@@ -80,6 +82,6 @@ createBuilder(
       },
     });
 
-    if (web && !watch) await exec("cd ./web && ../node_modules/.bin/vite build");
+    if (web && !watch) await exec("cd web && bunx vite build");
   }
 );
