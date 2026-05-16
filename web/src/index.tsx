@@ -1,38 +1,55 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { render } from 'solid-js/web';
+import { HashRouter, Route } from "@solidjs/router";
 import './index.css';
-import { GlobalSettingsProvider } from '@hooks/useGlobalSettings';
-import { NuiProvider } from 'react-fivem-hooks';
-import { I18nextProvider } from 'react-i18next';
-import { HashRouter } from 'react-router';
+import { GlobalSettingsProvider, useGlobalSettings } from "@hooks/useGlobalSettings";
 import App from './App';
-import i18n from './utils/i18n';
+import './utils/i18n';
+import { lazy, Suspense, Show } from 'solid-js';
+
+const Dashboard = lazy(() => import('./views/dashboard/Dashboard'));
+const Accounts = lazy(() => import('./views/accounts/Accounts'));
+const Transactions = lazy(() => import('./views/transactions/Transactions'));
+const Invoices = lazy(() => import('./views/Invoices/Invoices'));
+const Transfer = lazy(() => import('./views/transfer/Transfer'));
+const Deposit = lazy(() => import('./views/Deposit/Deposit'));
+const Withdraw = lazy(() => import('./views/Withdraw/Withdraw'));
+const CardsView = lazy(() => import('./views/Cards/CardsView'));
+
+const MobileDashboardView = lazy(() => import('./views/Mobile/views/Dashboard/MobileDashboardView'));
+const MobileAccountsView = lazy(() => import('./views/Mobile/views/Accounts/MobileAccountsView'));
+const MobileInvoicesView = lazy(() => import('./views/Mobile/views/Invoices/MobileInvoicesView'));
+const MobileTransferView = lazy(() => import('./views/Mobile/views/Transfer/MobileTransferView'));
+
+const ResponsiveView = (props: { desktop: any, mobile?: any }) => {
+  const { isMobile } = useGlobalSettings();
+  const Desktop = props.desktop;
+  const Mobile = props.mobile || props.desktop;
+  return (
+    <Show when={isMobile()} fallback={<Desktop />}>
+      <Mobile />
+    </Show>
+  );
+};
 
 const container = document.getElementById('root');
 if (!container) {
   throw new Error('Failed to find the root element');
 }
 
-const root = createRoot(container);
-
-root.render(
-  <React.StrictMode>
-    <NuiProvider>
-      <GlobalSettingsProvider>
-        <I18nextProvider i18n={i18n}>
-          <HashRouter>
-            <React.Suspense
-              fallback={
-                <div className='flex items-center justify-center min-h-screen bg-black text-white font-bold uppercase tracking-widest text-[10px]'>
-                  {i18n.t('Securely Initializing...')}
-                </div>
-              }
-            >
-              <App />
-            </React.Suspense>
-          </HashRouter>
-        </I18nextProvider>
-      </GlobalSettingsProvider>
-    </NuiProvider>
-  </React.StrictMode>,
+render(
+  () => (
+    <GlobalSettingsProvider>
+      <HashRouter root={App}>
+        <Route path='/' component={() => <ResponsiveView desktop={Dashboard} mobile={MobileDashboardView} />} />
+        <Route path='/accounts' component={() => <ResponsiveView desktop={Accounts} mobile={MobileAccountsView} />} />
+        <Route path='/transactions' component={() => <ResponsiveView desktop={Transactions} />} />
+        <Route path='/invoices' component={() => <ResponsiveView desktop={Invoices} mobile={MobileInvoicesView} />} />
+        <Route path='/transfer' component={() => <ResponsiveView desktop={Transfer} mobile={MobileTransferView} />} />
+        <Route path='/deposit' component={() => <ResponsiveView desktop={Deposit} />} />
+        <Route path='/withdraw' component={() => <ResponsiveView desktop={Withdraw} />} />
+        <Route path='/cards' component={() => <ResponsiveView desktop={CardsView} />} />
+      </HashRouter>
+    </GlobalSettingsProvider>
+  ),
+  container,
 );

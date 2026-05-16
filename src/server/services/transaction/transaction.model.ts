@@ -1,11 +1,9 @@
 import { DATABASE_PREFIX } from '@utils/constants';
 import { DataTypes, Model, type Optional } from 'sequelize';
-import { singleton } from 'tsyringe';
 import { type Transaction, TransactionType } from '../../../../typings/Transaction';
 import { sequelize } from '../../utils/pool';
 import { timestamps } from '../timestamps.model';
 
-@singleton()
 export class TransactionModel extends Model<Transaction, Optional<Transaction, 'id' | 'createdAt' | 'updatedAt'>> {}
 
 TransactionModel.init(

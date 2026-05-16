@@ -42,6 +42,6 @@ CardModel.belongsTo(AccountModel, {
   as: 'account',
 });
 
-if (config?.database?.shouldSync) {
+if (config?.database?.shouldSync && process.env.NODE_ENV !== 'mocking') {
   sequelize.sync();
 }

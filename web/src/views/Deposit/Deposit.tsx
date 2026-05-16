@@ -1,133 +1,129 @@
-import AccountSelect from '@components/AccountSelect';
-import Layout from '@components/Layout';
-import Button from '@components/ui/Button';
-import PriceField from '@components/ui/Fields/PriceField';
-import NewBalance from '@components/ui/NewBalance';
-import { Typography } from '@components/ui/Typography';
-import { accountsAtom } from '@data/accounts';
-import { cashAtom } from '@data/cash';
-import { transactionBaseAtom } from '@data/transactions';
-import { useConfig } from '@hooks/useConfig';
-import { useMutation } from '@hooks/useMutation';
-import type { ATMInput } from '@typings/Account';
-import { AccountEvents } from '@typings/Events';
-import { formatMoney } from '@utils/currency';
-import { useAtom, useAtomValue } from 'jotai';
-import { Loader2, Wallet } from 'lucide-react';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+// web/src/views/Deposit/Deposit.tsx
+import AccountSelect from "@components/AccountSelect";
+import Layout from "@components/Layout";
+import Button from "@components/ui/Button";
+import PriceField from "@components/ui/Fields/PriceField";
+import NewBalance from "@components/ui/NewBalance";
+import { Typography } from "@components/ui/Typography";
+import { accounts, refetchAccounts } from "@data/accounts";
+import { cash, updateCash } from "@data/cash";
+import { refetchTransactions } from "@data/transactions";
+import { useConfig } from "@hooks/useConfig";
+import { useMutation } from "@hooks/useMutation";
+import type { ATMInput } from "@typings/Account";
+import { AccountEvents } from "@typings/Events";
+import { formatMoney } from "@utils/currency";
+import { Loader2, Wallet } from 'lucide-solid';
+import { createSignal, createMemo, Show } from 'solid-js';
+import i18n from "@utils/i18n";
 
 const Deposit = () => {
-  const { t } = useTranslation();
-  const [currentCash, updateCash] = useAtom(cashAtom);
-  const [amount, setAmount] = useState('');
-  const [selectedAccountId, setSelectedAccountId] = useState<number>(0);
-  const [, updateAccounts] = useAtom(accountsAtom);
-  const [, updateTransactions] = useAtom(transactionBaseAtom);
-  const accounts = useAtomValue(accountsAtom);
-  const { general } = useConfig();
+  const [amount, setAmount] = createSignal('');
+  const [selectedAccountId, setSelectedAccountId] = createSignal<number>(0);
+  const config = useConfig();
 
-  const rawValue = Number.parseInt(amount.replace(/\D/g, ''));
-  const value = isNaN(rawValue) ? 0 : rawValue;
-  const newCash = currentCash - value;
-  const isValidNewBalance = newCash >= 0;
-  const isValidTransaction = Boolean(amount) && value > 0 && selectedAccountId > 0;
+  const value = () => {
+      const rawValue = Number.parseInt(amount().replace(/\D/g, ''));
+      return isNaN(rawValue) ? 0 : rawValue;
+  };
+  
+  const newCash = () => cash() - value();
+  const isValidNewBalance = () => newCash() >= 0;
+  const isValidTransaction = () => Boolean(amount()) && value() > 0 && selectedAccountId() > 0;
 
   const { mutate: mutateDeposit, isLoading } = useMutation(AccountEvents.DepositMoney, {
     onSuccess: async () => {
       setAmount('');
-      updateCash();
-      await Promise.all([updateAccounts(), updateTransactions()]);
+      await updateCash();
+      await Promise.all([refetchAccounts(), refetchTransactions()]);
     },
   });
 
-  const isButtonDisabled = !isValidNewBalance || !isValidTransaction || isLoading;
+  const isButtonDisabled = () => !isValidNewBalance() || !isValidTransaction() || isLoading();
 
   const handleDeposit = () => {
-    if (!selectedAccountId) return;
+    if (!selectedAccountId()) return;
 
     const payload: ATMInput = {
-      amount: value,
-      message: t('Deposited {{amount}} into account.', {
-        amount: formatMoney(value, general),
+      amount: value(),
+      message: i18n.t('Deposited {{amount}} into account.', {
+        amount: formatMoney(value(), config()?.general),
       }),
-      accountId: selectedAccountId,
+      accountId: selectedAccountId(),
     };
     mutateDeposit(payload);
   };
 
   return (
-    <Layout title={t('Deposit Funds')}>
-      <div className='flex flex-col gap-5 max-w-xl'>
-        <div className='flex items-center gap-3 p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)] relative'>
-          <div className='absolute top-0 left-0 right-0 h-[2px] bg-[var(--gta-green)]' />
-          <div className='w-8 h-8 flex items-center justify-center bg-[var(--gta-green)]/10 border border-[var(--gta-green)]/30 text-[var(--gta-green)] shrink-0'>
-            <Wallet className='w-4 h-4' />
+    <Layout title={i18n.t('Deposit Funds')}>
+      <div class='flex flex-col gap-5 max-w-xl'>
+        <div class='flex items-center gap-3 p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)] relative'>
+          <div class='absolute top-0 left-0 right-0 h-[2px] bg-[var(--gta-green)]' />
+          <div class='w-8 h-8 flex items-center justify-center bg-[var(--gta-green)]/10 border border-[var(--gta-green)]/30 text-[var(--gta-green)] shrink-0'>
+            <Wallet size={16} />
           </div>
-          <div className='flex flex-col gap-0.5'>
-            <Typography variant='pre' className='text-[10px] text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em]'>
-              {t('Available Cash')}
+          <div class='flex flex-col gap-0.5'>
+            <Typography variant='pre' class='text-[10px] text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em]'>
+              {i18n.t('Available Cash')}
             </Typography>
-            <Typography className='text-xl font-bold text-[var(--gta-green)] leading-none'>
-              {formatMoney(currentCash, general)}
+            <Typography class='text-xl font-bold text-[var(--gta-green)] leading-none'>
+              {formatMoney(cash(), config()?.general)}
             </Typography>
           </div>
         </div>
 
-        <div className='flex flex-col gap-4'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            <div className='flex flex-col gap-3'>
-              <Typography variant='label' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] px-0.5'>
-                {t('Destination')}
+        <div class='flex flex-col gap-4'>
+          <div class='grid grid-cols-1 md:grid-cols-2 gap-4'>
+            <div class='flex flex-col gap-3'>
+              <Typography variant='label' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] px-0.5'>
+                {i18n.t('Destination')}
               </Typography>
               <AccountSelect
-                accounts={accounts}
+                accounts={accounts()}
                 isFromAccount={false}
-                onSelect={setSelectedAccountId}
-                selectedId={selectedAccountId}
+                onSelect={(id) => setSelectedAccountId(id)}
+                selectedId={selectedAccountId()}
               />
             </div>
 
-            <div className='flex flex-col gap-1'>
-              <Typography variant='label' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] px-0.5 mb-2'>
-                {t('Amount')}
+            <div class='flex flex-col gap-1'>
+              <Typography variant='label' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] px-0.5 mb-2'>
+                {i18n.t('Amount')}
               </Typography>
               <PriceField
-                placeholder={t('0.00')}
-                value={amount}
+                placeholder={i18n.t('0.00')}
+                value={amount()}
                 onChange={(event) => setAmount(event.target.value)}
-                error={!isValidNewBalance && value > 0}
+                error={!isValidNewBalance() && value() > 0}
               />
-              {!isValidNewBalance && value > 0 && (
-                <Typography variant='pre' className='text-[var(--gta-red)] text-[10px] uppercase tracking-[0.15em] mt-1 pl-1'>
-                  {t('Insufficient physical cash')}
+              <Show when={!isValidNewBalance() && value() > 0}>
+                <Typography variant='pre' class='text-[var(--gta-red)] text-[10px] uppercase tracking-[0.15em] mt-1 pl-1'>
+                  {i18n.t('Insufficient physical cash')}
                 </Typography>
-              )}
-              <div className='mt-1 pl-0.5'>
-                <NewBalance amount={newCash} isValid={isValidNewBalance} newBalanceText={t('Post-Deposit Wallet')} />
+              </Show>
+              <div class='mt-1 pl-0.5'>
+                <NewBalance amount={newCash()} isValid={isValidNewBalance()} newBalanceText={i18n.t('Post-Deposit Wallet')} />
               </div>
             </div>
           </div>
 
-          <div className='flex flex-col gap-3 pt-2'>
-            <Button size='lg' disabled={isButtonDisabled} onClick={handleDeposit} className='w-full'>
-              {isLoading ? (
-                <div className='flex items-center gap-2'>
-                  <Loader2 className='w-4 h-4 animate-spin' />
-                  <span>{t('Processing Entry...')}</span>
+          <div class='flex flex-col gap-3 pt-2'>
+            <Button size='lg' disabled={isButtonDisabled()} onClick={handleDeposit} class='w-full'>
+              <Show when={isLoading()} fallback={i18n.t('Authorize Deposit')}>
+                <div class='flex items-center gap-2'>
+                  <Loader2 size={16} class='animate-spin' />
+                  <span>{i18n.t('Processing Entry...')}</span>
                 </div>
-              ) : (
-                t('Authorize Deposit')
-              )}
+              </Show>
             </Button>
 
-            <div className='flex items-start gap-2 px-3 py-3 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
-              <div className='w-1.5 h-1.5 bg-[var(--gta-green)] mt-1 shrink-0' />
+            <div class='flex items-start gap-2 px-3 py-3 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
+              <div class='w-1.5 h-1.5 bg-[var(--gta-green)] mt-1 shrink-0' />
               <Typography
                 variant='pre'
-                className='text-[9px] font-bold text-[var(--gta-text-dim)] leading-relaxed uppercase tracking-[0.1em]'
+                class='text-[9px] font-bold text-[var(--gta-text-dim)] leading-relaxed uppercase tracking-[0.1em]'
               >
-                {t(
+                {i18n.t(
                   'Funds will be electronically verified and instantly cleared. This action initiates a secure transfer of physical cash to the digital ledger.',
                 )}
               </Typography>

@@ -1,115 +1,120 @@
-import InvoiceItem from '@components/InvoiceItem';
-import Layout from '@components/Layout';
-import Button from '@components/ui/Button';
-import { Typography } from '@components/ui/Typography';
-import { invoicesAtom } from '@data/invoices';
-import { cn } from '@utils/cn';
-import { useAtom } from 'jotai';
-import { ChevronLeft, ChevronRight, ReceiptText } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+// web/src/views/invoices/Invoices.tsx
+import InvoiceItem from "@components/InvoiceItem";
+import Layout from "@components/Layout";
+import Button from "@components/ui/Button";
+import { Typography } from "@components/ui/Typography";
+import { invoicesResource, setInvoicesQuery } from "@data/invoices";
+import { cn } from "@utils/cn";
+import { ChevronLeft, ChevronRight, ReceiptText } from 'lucide-solid';
+import { createSignal, createMemo, Show, For, onMount, createEffect } from 'solid-js';
+import i18n from "@utils/i18n";
 
 const Invoices = () => {
-  const { t } = useTranslation();
-  const [invoicesData, updateInvoices] = useAtom(invoicesAtom);
-  const { invoices, total, limit } = invoicesData;
-  const pages = Math.ceil(total / limit);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = createSignal(1);
+  const limit = 7; // Fixed limit as per atom default in previous state
 
-  const offset = limit * (page - 1);
-  const to = offset + limit > total ? total : offset + limit;
+  const invoicesData = () => invoicesResource() || { invoices: [], total: 0, limit: 7 };
+  const invoices = () => invoicesData().invoices;
+  const total = () => invoicesData().total;
+  const pages = () => Math.ceil(total() / limit);
+
+  const offset = () => limit * (page() - 1);
+  const to = () => {
+      const currentTo = offset() + limit;
+      return currentTo > total() ? total() : currentTo;
+  };
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= pages) {
+    if (newPage >= 1 && newPage <= pages()) {
       setPage(newPage);
     }
   };
 
-  useEffect(() => {
-    updateInvoices({
+  createEffect(() => {
+    setInvoicesQuery({
       limit,
-      offset,
+      offset: offset(),
     });
-  }, [limit, offset, updateInvoices]);
+  });
 
   return (
-    <Layout title={t('Outstanding Commitments')}>
-      <div className='mb-4'>
-        <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
-          {t('Financial Obligations Index')}
+    <Layout title={i18n.t('Outstanding Commitments')}>
+      <div class='mb-4'>
+        <Typography variant='pre' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
+          {i18n.t('Financial Obligations Index')}
         </Typography>
       </div>
 
-      <div className='flex-1 flex flex-col gap-4 overflow-y-auto pr-1 min-h-0 custom-scrollbar'>
-        <div className='flex flex-col gap-2'>
-          {invoices.map((invoice) => (
-            <InvoiceItem key={invoice.id} invoice={invoice} />
-          ))}
+      <div class='flex-1 flex flex-col gap-4 overflow-y-auto pr-1 min-h-0 custom-scrollbar'>
+        <div class='flex flex-col gap-2'>
+          <For each={invoices()}>
+            {(invoice) => <InvoiceItem invoice={invoice} />}
+          </For>
         </div>
 
-        {invoices.length === 0 && (
-          <div className='flex flex-col items-center justify-center py-24 bg-[var(--gta-panel)] border border-dashed border-[var(--gta-border)] opacity-50 gap-3'>
-            <ReceiptText className='w-10 h-10 text-[var(--gta-text-dim)]' />
-            <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
-              {t('Zero active obligations detected')}
+        <Show when={invoices().length === 0}>
+          <div class='flex flex-col items-center justify-center py-24 bg-[var(--gta-panel)] border border-dashed border-[var(--gta-border)] opacity-50 gap-3'>
+            <ReceiptText size={40} class='text-[var(--gta-text-dim)]' />
+            <Typography variant='pre' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
+              {i18n.t('Zero active obligations detected')}
             </Typography>
           </div>
-        )}
+        </Show>
 
-        <div className='mt-auto py-5 flex flex-row items-center justify-between border-t border-[var(--gta-border)]'>
-          <div className='flex flex-col'>
-            <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
-              {t('Registry Pagination')}
+        <div class='mt-auto py-5 flex flex-row items-center justify-between border-t border-[var(--gta-border)]'>
+          <div class='flex flex-col'>
+            <Typography variant='pre' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
+              {i18n.t('Registry Pagination')}
             </Typography>
-            <Typography className='text-xs font-bold text-[var(--gta-text)] tracking-wide'>
-              {t('Displaying {{from}}-{{to}} of {{total}}', { from: offset + 1, to, total: Math.max(0, total) })}
+            <Typography class='text-xs font-bold text-[var(--gta-text)] tracking-wide'>
+              {i18n.t('Displaying {{from}}-{{to}} of {{total}}', { from: offset() + 1, to: to(), total: Math.max(0, total()) })}
             </Typography>
           </div>
 
-          <div className='flex items-center gap-2'>
+          <div class='flex items-center gap-2'>
             <Button
               variant='secondary'
               size='icon'
-              disabled={page === 1}
-              onClick={() => handlePageChange(page - 1)}
-              className='h-8 w-8'
+              disabled={page() === 1}
+              onClick={() => handlePageChange(page() - 1)}
+              class='h-8 w-8'
             >
-              <ChevronLeft className='w-4 h-4 opacity-60' />
+              <ChevronLeft size={16} class='opacity-60' />
             </Button>
 
-            <div className='flex items-center gap-1 px-3 py-1.5 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
-              {pages > 0 ? (
-                [...Array(pages)].map((_, i) => (
-                  <button
-                    type='button'
-                    // biome-ignore lint/suspicious/noArrayIndexKey: stable list
-                    key={`inv-page-${i}`}
-                    onClick={() => handlePageChange(i + 1)}
-                    className={cn(
-                      'w-7 h-7 text-[10px] font-bold tracking-wide transition-all uppercase',
-                      page === i + 1
-                        ? 'bg-[var(--gta-green)] text-black'
-                        : 'text-[var(--gta-text-dim)] hover:text-[var(--gta-text)] hover:bg-[var(--gta-surface)]',
-                    )}
-                  >
-                    {i + 1}
-                  </button>
-                ))
-              ) : (
-                <div className='w-7 h-7 flex items-center justify-center'>
-                  <Typography className='text-[10px] font-bold text-[var(--gta-text-dim)]'>0</Typography>
+            <div class='flex items-center gap-1 px-3 py-1.5 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
+              <Show when={pages() > 0} fallback={
+                <div class='w-7 h-7 flex items-center justify-center'>
+                  <Typography class='text-[10px] font-bold text-[var(--gta-text-dim)]'>0</Typography>
                 </div>
-              )}
+              }>
+                <For each={Array.from({ length: pages() })}>
+                  {(_, i) => (
+                    <button
+                      type='button'
+                      onClick={() => handlePageChange(i() + 1)}
+                      class={cn(
+                        'w-7 h-7 text-[10px] font-bold tracking-wide transition-all uppercase',
+                        page() === i() + 1
+                          ? 'bg-[var(--gta-green)] text-black'
+                          : 'text-[var(--gta-text-dim)] hover:text-[var(--gta-text)] hover:bg-[var(--gta-surface)]',
+                      )}
+                    >
+                      {i() + 1}
+                    </button>
+                  )}
+                </For>
+              </Show>
             </div>
 
             <Button
               variant='secondary'
               size='icon'
-              disabled={page === pages || pages === 0}
-              onClick={() => handlePageChange(page + 1)}
-              className='h-8 w-8'
+              disabled={page() === pages() || pages() === 0}
+              onClick={() => handlePageChange(page() + 1)}
+              class='h-8 w-8'
             >
-              <ChevronRight className='w-4 h-4 opacity-60' />
+              <ChevronRight size={16} class='opacity-60' />
             </Button>
           </div>
         </div>

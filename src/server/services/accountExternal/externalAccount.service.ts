@@ -5,13 +5,11 @@ import { AccountErrors, ExternalAccountErrors, GenericErrors } from '@typings/Er
 import type { Request } from '@typings/http';
 import { ServerError } from '@utils/errors';
 import type { Transaction } from 'sequelize/types';
-import { singleton } from 'tsyringe';
 import { UserService } from '../user/user.service';
 import { ExternalAccountDB } from './externalAccount.db';
 
 const logger = mainLogger.child({ module: 'externalAccounts' });
 
-@singleton()
 export class ExternalAccountService {
   _externalAccountDB: ExternalAccountDB;
   _userService: UserService;

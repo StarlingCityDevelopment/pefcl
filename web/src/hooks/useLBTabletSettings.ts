@@ -1,8 +1,7 @@
-import { LBTabletSettingsAtom } from '@data/LBTabletSettings';
-import type { LBSettings } from '@typings/LBAddons';
-import { useAtom } from 'jotai';
+import type { Resource } from 'solid-js';
+import type { LBSettings } from "@typings/LBAddons";
+import { LBTabletSettingsResource } from "@data/LBTabletSettings";
 
-export const useLBTabletSettings = (): LBSettings | null => {
-  const [settings] = useAtom(LBTabletSettingsAtom);
-  return settings;
+export const useLBTabletSettings = (): Resource<LBSettings | null> => {
+  return LBTabletSettingsResource;
 };

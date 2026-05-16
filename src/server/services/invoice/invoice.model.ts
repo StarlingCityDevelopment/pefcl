@@ -1,11 +1,9 @@
 import { DATABASE_PREFIX, MS_TWO_WEEKS } from '@utils/constants';
 import { DataTypes, Model, type Optional } from 'sequelize';
-import { singleton } from 'tsyringe';
 import { type Invoice, InvoiceStatus } from '../../../../typings/Invoice';
 import { sequelize } from '../../utils/pool';
 import { timestamps } from '../timestamps.model';
 
-@singleton()
 export class InvoiceModel extends Model<Invoice, Optional<Invoice, 'id' | 'status' | 'receiverAccountIdentifier'>> {}
 
 InvoiceModel.init(

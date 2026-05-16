@@ -1,6 +1,7 @@
-import type { LBSettings } from '@typings/LBAddons';
-import { atom } from 'jotai';
+// web/src/data/LBTabletSettings.ts
+import type { LBSettings } from "@typings/LBAddons";
+import { createResource, createRoot } from 'solid-js';
 
-export const LBTabletSettingsAtom = atom<Promise<LBSettings | null>>(async () => {
+export const [LBTabletSettingsResource] = createRoot(() => createResource<LBSettings | null>(async () => {
   return window.GetSettings != null ? await window.GetSettings() : null;
-});
+}));

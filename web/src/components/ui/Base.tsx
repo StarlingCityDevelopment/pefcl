@@ -1,17 +1,20 @@
-import { cn } from '@utils/cn';
-import * as React from 'react';
+// web/src/components/ui/Base.tsx
+import { cn } from "@utils/cn";
+import { type JSX, splitProps } from 'solid-js';
 
-const Skeleton = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
-  return <div className={cn('animate-pulse bg-[var(--gta-surface)]', className)} {...props} />;
+const Skeleton = (props: JSX.HTMLAttributes<HTMLDivElement>) => {
+  const [local, others] = splitProps(props, ['class']);
+  return <div class={cn('animate-pulse bg-[var(--gta-surface)]', local.class)} {...others} />;
 };
 
-const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('border border-[var(--gta-border)] bg-[var(--gta-panel)] text-[var(--gta-text)]', className)}
-    {...props}
-  />
-));
-Card.displayName = 'Card';
+const Card = (props: JSX.HTMLAttributes<HTMLDivElement>) => {
+  const [local, others] = splitProps(props, ['class']);
+  return (
+    <div
+      class={cn('border border-[var(--gta-border)] bg-[var(--gta-panel)] text-[var(--gta-text)]', local.class)}
+      {...others}
+    />
+  );
+};
 
 export { Skeleton, Card };

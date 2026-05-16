@@ -3,13 +3,11 @@ import { SharedAccountDB } from '@services/accountShared/sharedAccount.db';
 import type { AccountRole } from '@typings/Account';
 import { GenericErrors } from '@typings/Errors';
 import { ServerError } from '@utils/errors';
-import { singleton } from 'tsyringe';
 import { mainLogger } from '../../sv_logger';
 import { UserService } from '../user/user.service';
 
 const logger = mainLogger.child({ module: 'auth' });
 
-@singleton()
 export class AuthService {
   _accountDB: AccountDB;
   _userService: UserService;

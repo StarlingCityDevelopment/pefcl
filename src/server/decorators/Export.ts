@@ -1,18 +1,16 @@
+// src/server/decorators/Export.ts
 import type { Request } from '@typings/http';
+
 export const Export = (name: string) => {
-  return (target: object, key: string) => {
-    if (!Reflect.hasMetadata('exports', target)) {
-      Reflect.defineMetadata('exports', [], target);
+  return (target: any, key: string) => {
+    if (!target.__exports__) {
+      target.__exports__ = [];
     }
 
-    const _exports = Reflect.getMetadata('exports', target);
-
-    _exports.push({
+    target.__exports__.push({
       name,
       key,
     });
-
-    Reflect.defineMetadata('exports', _exports, target);
   };
 };
 
@@ -21,7 +19,7 @@ const exp = global.exports;
 export const ExportListener = () => (ctor: any) => ctor;
 
 export const registerExports = (instance: any) => {
-  const _exports: any[] = Reflect.getMetadata('exports', instance);
+  const _exports: any[] = instance.__exports__ || instance.constructor.prototype.__exports__;
   if (!_exports) return;
 
   _exports.forEach(({ name, key }) => {

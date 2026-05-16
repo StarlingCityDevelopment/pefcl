@@ -1,8 +1,9 @@
-import type { ExternalAccount } from '@typings/Account';
-import { ExternalAccountEvents } from '@typings/Events';
-import { fetchNui } from '@utils/fetchNui';
-import { isEnvBrowser } from '@utils/misc';
-import { atom } from 'jotai';
+// web/src/data/externalAccounts.ts
+import type { ExternalAccount } from "@typings/Account";
+import { ExternalAccountEvents } from "@typings/Events";
+import { fetchNui } from "@utils/fetchNui";
+import { isEnvBrowser } from "@utils/misc";
+import { createSignal, createResource, createMemo, createRoot } from 'solid-js';
 
 const getExternalAccounts = async (): Promise<ExternalAccount[]> => {
   try {
@@ -23,14 +24,33 @@ const getExternalAccounts = async (): Promise<ExternalAccount[]> => {
   }
 };
 
-const rawExternalAccountsAtom = atom<ExternalAccount[]>([]);
-export const externalAccountsAtom = atom(
-  async (get) => {
-    const accounts =
-      get(rawExternalAccountsAtom).length === 0 ? await getExternalAccounts() : get(rawExternalAccountsAtom);
-    return accounts;
-  },
-  async (_get, set) => {
-    return set(rawExternalAccountsAtom, await getExternalAccounts());
-  },
-);
+export const {
+  rawExternalAccounts,
+  setRawExternalAccounts,
+  externalAccountsResource,
+  mutateExternalAccounts,
+  refetchExternalAccounts,
+  externalAccounts,
+} = createRoot(() => {
+  const [rawExternalAccounts, setRawExternalAccounts] = createSignal<ExternalAccount[]>([]);
+
+  const [resource, { mutate, refetch }] = createResource(async () => {
+    if (rawExternalAccounts().length === 0) {
+      const data = await getExternalAccounts();
+      setRawExternalAccounts(data);
+      return data;
+    }
+    return rawExternalAccounts();
+  });
+
+  const externalAccountsMemo = createMemo(() => resource() ?? []);
+
+  return {
+    rawExternalAccounts,
+    setRawExternalAccounts,
+    externalAccountsResource: resource,
+    mutateExternalAccounts: mutate,
+    refetchExternalAccounts: refetch,
+    externalAccounts: externalAccountsMemo,
+  };
+});

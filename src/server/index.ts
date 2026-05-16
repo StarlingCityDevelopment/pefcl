@@ -1,3 +1,4 @@
+// src/server/index.ts
 import './globals.server';
 import type { ServerPromiseResp } from '@project-error/pe-utils';
 import {
@@ -15,7 +16,6 @@ import {
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { type RequestHandler } from 'express';
-import 'reflect-metadata';
 
 /* Create associations after the models etc */
 import './services/associations';
@@ -25,10 +25,8 @@ import './utils/i18n';
 import { load } from './utils/i18n';
 import './utils/pool';
 import './utils/server-config';
-import { container } from 'tsyringe';
+import { Registry } from './services/registry';
 import { mockedResourceName } from './globals.server';
-import { CardService } from './services/card/card.service';
-import { UserService } from './services/user/user.service';
 import { mainLogger } from './sv_logger';
 import { seedDatabase } from './utils/mockSeed';
 import { sequelize } from './utils/pool';
@@ -130,19 +128,17 @@ if (isMocking) {
     app.post(...createEndpoint(event));
   }
 
-  app.listen(port, async () => {
+  const startMockServer = async () => {
     const srvLogger = mainLogger.child({ module: 'server' });
-    srvLogger.info(`[MOCKSERVER]: listening on port: ${port}`);
+    srvLogger.info('Initializing Mock Server...');
 
     srvLogger.info('Syncing database...');
     await sequelize.sync({ force: true });
     await seedDatabase();
 
-    emit('onServerResourceStart', mockedResourceName);
-
     if (config.frameworkIntegration?.enabled) {
       global.source = 3;
-      const userService = container.resolve(UserService);
+      const userService = Registry.getInstance().userService;
 
       const players = [
         {
@@ -161,73 +157,19 @@ if (isMocking) {
         userService.loadPlayer(player);
       }
     }
+
+    app.listen(port, () => {
+      srvLogger.info(`[MOCKSERVER]: listening on port: ${port}`);
+      emit('onServerResourceStart', mockedResourceName);
+    });
+  };
+
+  startMockServer().catch((err) => {
+    mainLogger.error('Failed to start mock server', err);
   });
 }
 
 const debug = async () => {
-  // RegisterCommand(
-  //   'giveBankBalance',
-  //   (src: number) => {
-  //     const accountService = container.resolve(AccountService);
-  //     const amount = Math.ceil(Math.random() * 1000);
-  //     console.log('---------------');
-  //     console.log('---------------');
-  //     console.log({ amount });
-  //     console.log('---------------');
-  //     console.log('---------------');
-  //     accountService.setMoney({ data: { amount }, source: src });
-  //   },
-  //   false,
-  // );
-  //
-  //
-  //
-  //
-  // const accountService = container.resolve(AccountService);
-  // accountService.handleWithdrawMoney({
-  //   source: 2,
-  //   data: {
-  //     amount: 200,
-  //     message: 'Withdraw',
-  //   },
-  // });
-  //
-  //
-  //
-  //
-  //
-  // const invoiceController = container.resolve(InvoiceController);
-  // invoiceController.createInvoice(
-  //   {
-  //     data: {
-  //       amount: 200,
-  //       to: 'John Doe',
-  //       from: 'Repair Company',
-  //       fromIdentifier: 'license:2',
-  //       toIdentifier: 'license:1',
-  //       message: 'Another one',
-  //     },
-  //     source: 0,
-  //   },
-  //   () => {},
-  // );
-  // const invoiceService = container.resolve(InvoiceService);
-  // const invoice = await invoiceService.createInvoice({
-  //   amount: 200,
-  //   to: 'John doe',
-  //   from: 'Repair shop AB',
-  //   message: 'meme',
-  //   toIdentifier: 'license:1',
-  //   fromIdentifier: 'license:2',
-  // });
-  // await invoiceService.payInvoice({
-  //   data: {
-  //     invoiceId: invoice.getDataValue('id'),
-  //     fromAccountId: 2,
-  //   },
-  //   source: 0,
-  // });
-
   RegisterCommand(
     'card',
     async (src: number) => {
@@ -246,7 +188,7 @@ const debug = async () => {
 
       await exps['qb-core'].AddItem('bank_card', item);
 
-      const cardService = container.resolve(CardService);
+      const cardService = Registry.getInstance().cardService;
 
       const res = await cardService.giveCard(src, QBCore);
 

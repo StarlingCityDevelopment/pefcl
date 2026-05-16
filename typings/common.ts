@@ -1,7 +1,4 @@
-export enum DIToken {
-  Controller = 'server-controller',
-}
-
+// typings/common.ts
 export interface IController {
   name: string;
 }

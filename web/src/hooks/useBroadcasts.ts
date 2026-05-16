@@ -1,46 +1,40 @@
-import { accountsAtom, rawAccountAtom } from '@data/accounts';
-import { rawCashAtom } from '@data/cash';
-import { invoicesAtom } from '@data/invoices';
-import { transactionBaseAtom } from '@data/transactions';
-import { useNuiEvent } from '@hooks/useNuiEvent';
-import type { Account } from '@typings/Account';
-import { Broadcasts } from '@typings/Events';
-import { updateAccount } from '@utils/account';
-import { useAtom, useSetAtom } from 'jotai';
+// web/src/hooks/useBroadcasts.ts
+import { setRawAccounts, refetchAccounts, accounts } from "@data/accounts";
+import { setRawCash } from "@data/cash";
+import { refetchInvoices } from "@data/invoices";
+import { refetchTransactions } from "@data/transactions";
+import { useNuiEvent } from "@hooks/useNuiEvent";
+import type { Account } from "@typings/Account";
+import { Broadcasts } from "@typings/Events";
+import { updateAccount } from "@utils/account";
 
 export const useBroadcasts = () => {
-  const updateInvoices = useSetAtom(invoicesAtom);
-  const updateTransactions = useSetAtom(transactionBaseAtom);
-  const setRawAccounts = useSetAtom(rawAccountAtom);
-  const setRawCash = useSetAtom(rawCashAtom);
-  const [accounts, updateAccounts] = useAtom(accountsAtom);
-
   useNuiEvent(Broadcasts.NewTransaction, () => {
-    updateTransactions();
+    refetchTransactions();
   });
 
   useNuiEvent(Broadcasts.NewAccount, (account: Account) => {
-    setRawAccounts([...accounts, account]);
+    setRawAccounts([...accounts(), account]);
   });
 
   useNuiEvent(Broadcasts.UpdatedAccount, () => {
-    updateAccounts();
+    refetchAccounts();
   });
 
   useNuiEvent(Broadcasts.NewAccountBalance, (account: Account) => {
-    setRawAccounts(updateAccount(accounts, account));
+    setRawAccounts(updateAccount(accounts(), account));
   });
 
   useNuiEvent(Broadcasts.NewInvoice, () => {
-    updateInvoices();
+    refetchInvoices();
   });
 
   useNuiEvent(Broadcasts.NewSharedUser, () => {
-    updateAccounts();
+    refetchAccounts();
   });
 
   useNuiEvent(Broadcasts.RemovedSharedUser, () => {
-    updateAccounts();
+    refetchAccounts();
   });
 
   // Real-time cash updates from server broadcasts

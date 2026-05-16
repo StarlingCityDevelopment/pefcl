@@ -1,6 +1,6 @@
 # Server-side Logic
 
-This directory contains the core backend logic for PEFCL. It is built using TypeScript and utilizes **Sequelize** for database ORM and **tsyringe** for dependency injection.
+This directory contains the core backend logic for PEFCL. It is built using TypeScript and utilizes **Sequelize** for database ORM and a manual **Registry** pattern for dependency management.
 
 ## Directory Structure
 

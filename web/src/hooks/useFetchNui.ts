@@ -1,4 +1,4 @@
-import { fetchNui } from '@utils/fetchNui';
+import { fetchNui } from "@utils/fetchNui";
 import { useEffect, useState } from 'react';
 import { usePrevious } from './usePrevious';
 

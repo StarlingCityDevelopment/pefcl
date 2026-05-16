@@ -29,16 +29,6 @@ export class TransactionController {
     }
   }
 
-  @NetPromise(TransactionEvents.CreateTransfer)
-  async createTransfer(req: Request<CreateTransferInput>, res: Response<object>) {
-    try {
-      await this._transactionService.handleTransfer(req);
-      res({ status: 'ok', data: {} });
-    } catch (err) {
-      res({ status: 'error', errorMsg: err.message });
-    }
-  }
-
   @NetPromise(TransactionEvents.GetHistory)
   async getHistory(req: Request<void>, res: Response<GetTransactionHistoryResponse>) {
     try {

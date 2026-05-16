@@ -1,14 +1,12 @@
-import Layout from '@components/Layout';
-import TransferFunds from '@components/TransferFunds';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+// web/src/views/transfer/Transfer.tsx
+import Layout from "@components/Layout";
+import TransferFunds from "@components/TransferFunds";
+import i18n from "@utils/i18n";
 
 const Transfer = () => {
-  const { t } = useTranslation();
-
   return (
-    <Layout title={t('Transfer Funds')}>
-      <div className='max-w-2xl'>
+    <Layout title={i18n.t('Transfer Funds')}>
+      <div class='max-w-2xl'>
         <TransferFunds />
       </div>
     </Layout>

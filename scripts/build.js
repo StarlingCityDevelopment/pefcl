@@ -29,7 +29,7 @@ const swcPlugin = {
           },
           transform: {
             legacyDecorator: true,
-            decoratorMetadata: true,
+            decoratorMetadata: false,
           },
           target: 'es2022',
         },
@@ -47,6 +47,7 @@ createBuilder(
     bundle: true,
     treeShaking: true,
     plugins: [swcPlugin],
+    external: ['pg', 'pg-hstore', 'sqlite3', 'tedious', 'mariadb'],
   },
   [
     {
@@ -57,6 +58,7 @@ createBuilder(
         format: 'cjs',
         dropLabels: [...dropLabels, '$CLIENT'],
         plugins: [swcPlugin],
+        external: ['pg', 'pg-hstore', 'sqlite3', 'tedious', 'mariadb'],
       },
     },
     {
@@ -70,11 +72,11 @@ createBuilder(
     },
   ],
   async (outfiles) => {
-    const files = await getFiles('dist/web', 'web/media', 'static');
+    const files = await getFiles('dist/web', 'web/media');
     await createFxmanifest({
       client_scripts: [outfiles.client, 'interaction.lua'],
       server_scripts: [outfiles.server],
-      files: [...files],
+      files: [...files, 'config.json'],
       dependencies: ['/server:13068', '/onesync', 'qbx_pefcl'],
       metadata: {
         ui_page: 'dist/web/index.html',

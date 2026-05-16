@@ -1,4 +1,4 @@
-import { cn } from '@utils/cn';
+import { cn } from "@utils/cn";
 import type React from 'react';
 
 interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement> {

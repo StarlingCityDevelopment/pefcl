@@ -1,59 +1,56 @@
-import InvoiceItem from '@components/InvoiceItem';
-import TotalBalance from '@components/TotalBalance';
-import { invoicesAtom } from '@data/invoices';
-import { Typography } from '@ui/Typography';
-import { cn } from '@utils/cn';
-import { useAtom } from 'jotai';
-import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+// web/src/views/Mobile/views/Invoices/MobileInvoicesView.tsx
+import InvoiceItem from "@components/InvoiceItem";
+import TotalBalance from "@components/TotalBalance";
+import { invoicesResource, refetchInvoices } from "@data/invoices";
+import { Typography } from "@ui/Typography";
+import { cn } from "@utils/cn";
+import { onMount, For, Show } from 'solid-js';
+import i18n from "@utils/i18n";
 
 const MobileInvoicesView = () => {
-  const { t } = useTranslation();
-  const [invoicesResponse, setInvoices] = useAtom(invoicesAtom);
+  onMount(() => {
+    refetchInvoices();
+  });
 
-  useEffect(() => {
-    setInvoices();
-  }, [setInvoices]);
-
-  const invoices = invoicesResponse?.invoices ?? [];
-  const hasInvoices = invoices.length > 0;
+  const invoices = () => invoicesResource()?.invoices ?? [];
+  const hasInvoices = () => invoices().length > 0;
 
   return (
-    <div className='flex flex-col gap-10 p-6 pb-20'>
-      <div className='flex flex-col gap-1'>
-        <Typography variant='h1' className='text-4xl'>
-          {t('Bills')}
+    <div class='flex flex-col gap-10 p-6 pb-20'>
+      <div class='flex flex-col gap-1'>
+        <Typography variant='h1' class='text-4xl'>
+          {i18n.t('Bills')}
         </Typography>
         <TotalBalance />
       </div>
 
-      <div className='flex flex-col gap-4'>
-        <header className='flex items-center justify-between mb-2 px-1'>
-          <Typography variant='pre' className='text-slate-500 font-black'>
-            {t('Unpaid statement')}
+      <div class='flex flex-col gap-4'>
+        <header class='flex items-center justify-between mb-2 px-1'>
+          <Typography variant='pre' class='text-slate-500 font-black'>
+            {i18n.t('Unpaid statement')}
           </Typography>
-          {hasInvoices && (
-            <div className='h-5 px-2 rounded-full bg-white/5 border border-white/10 text-[9px] font-black text-slate-500 flex items-center'>
-              {invoices.length}
+          <Show when={hasInvoices()}>
+            <div class='h-5 px-2 rounded-full bg-white/5 border border-white/10 text-[9px] font-black text-slate-500 flex items-center'>
+              {invoices().length}
             </div>
-          )}
+          </Show>
         </header>
 
-        <div className='flex flex-col gap-3'>
-          {invoices.map((invoice) => (
-            <InvoiceItem key={invoice.id} invoice={invoice} />
-          ))}
+        <div class='flex flex-col gap-3'>
+          <For each={invoices()}>
+            {(invoice) => <InvoiceItem invoice={invoice} />}
+          </For>
 
-          {!hasInvoices && (
-            <div className='p-16 rounded-[3rem] bg-white/[0.01] border border-white/5 flex flex-col items-center gap-4 text-center'>
-              <div className='w-12 h-12 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center'>
-                <div className='w-2 h-2 rounded-full bg-slate-700 animate-pulse' />
+          <Show when={!invoicesResource.loading && !hasInvoices()}>
+            <div class='p-16 rounded-[3rem] bg-white/[0.01] border border-white/5 flex flex-col items-center gap-4 text-center'>
+              <div class='w-12 h-12 rounded-full bg-white/[0.02] border border-white/5 flex items-center justify-center'>
+                <div class='w-2 h-2 rounded-full bg-slate-700 animate-pulse' />
               </div>
-              <Typography variant='muted' className='italic max-w-[180px]'>
-                {t('Your statement is clear. No pending invoices found.')}
+              <Typography variant='muted' class='italic max-w-[180px]'>
+                {i18n.t('Your statement is clear. No pending invoices found.')}
               </Typography>
             </div>
-          )}
+          </Show>
         </div>
       </div>
     </div>

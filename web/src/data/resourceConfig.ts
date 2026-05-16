@@ -1,7 +1,8 @@
-import type { ResourceConfig } from '@typings/config';
-import { atom } from 'jotai';
-import { getConfig } from '../utils/api';
+// web/src/data/resourceConfig.ts
+import type { ResourceConfig } from "@typings/config";
+import { createResource, createRoot } from 'solid-js';
+import { getConfig } from "@utils/api";
 
-export const configAtom = atom<Promise<ResourceConfig>>(async () => {
+export const [configResource] = createRoot(() => createResource<ResourceConfig>(async () => {
   return await getConfig();
-});
+}));

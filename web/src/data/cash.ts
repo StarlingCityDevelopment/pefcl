@@ -1,6 +1,7 @@
-import { CashEvents } from '@typings/Events';
-import { fetchNui } from '@utils/fetchNui';
-import { atom } from 'jotai';
+// web/src/data/cash.ts
+import { CashEvents } from "@typings/Events";
+import { fetchNui } from "@utils/fetchNui";
+import { createSignal, createResource, createMemo, createRoot } from 'solid-js';
 
 const getCash = async (): Promise<number> => {
   try {
@@ -11,25 +12,45 @@ const getCash = async (): Promise<number> => {
   }
 };
 
-const isLoadedAtom = atom(false);
-export const rawCashAtom = atom<number>(0);
+export const {
+  rawCash,
+  setRawCash,
+  cashResource,
+  mutateCash,
+  refetchCash,
+  cash,
+  updateCash,
+} = createRoot(() => {
+  const [rawCash, setRawCash] = createSignal<number>(0);
+  const [isLoaded, setIsLoaded] = createSignal(false);
 
-export const cashAtom = atom<Promise<number>, number | undefined, Promise<void>>(
-  async (get) => {
-    const isLoaded = get(isLoadedAtom);
-    const raw = get(rawCashAtom);
-
-    if (!isLoaded) {
-      // First load — fetch from server
-      return await getCash();
+  const [resource, { mutate, refetch }] = createResource(async () => {
+    if (!isLoaded()) {
+      const data = await getCash();
+      setRawCash(data);
+      setIsLoaded(true);
+      return data;
     }
+    return rawCash();
+  });
 
-    // After first load, trust the local state (updated via broadcasts or mutations)
-    return raw;
-  },
-  async (get, set, by) => {
-    const cash = by ?? (await getCash());
-    set(rawCashAtom, cash);
-    set(isLoadedAtom, true);
-  },
-);
+  const cashMemo = createMemo(() => resource() ?? 0);
+
+  const updateCashAction = async (by?: number) => {
+    const amount = by ?? (await getCash());
+    setRawCash(amount);
+    setIsLoaded(true);
+    mutate(amount);
+  };
+
+  return {
+    rawCash,
+    setRawCash,
+    cashResource: resource,
+    mutateCash: mutate,
+    refetchCash: refetch,
+    cash: cashMemo,
+    updateCash: updateCashAction,
+  };
+});
+

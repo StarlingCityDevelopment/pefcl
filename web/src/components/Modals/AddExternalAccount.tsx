@@ -1,165 +1,138 @@
-import { regexExternalNumber } from '@common/utils/regexes';
-import Button from '@components/ui/Button';
-import TextField from '@components/ui/Fields/TextField';
-import { Typography } from '@components/ui/Typography';
-import { externalAccountsAtom } from '@data/externalAccounts';
-import { AccountErrors, ExternalAccountErrors, GenericErrors } from '@typings/Errors';
-import { ExternalAccountEvents } from '@typings/Events';
-import { fetchNui } from '@utils/fetchNui';
-import { useAtom } from 'jotai';
-import { Loader2, Plus } from 'lucide-react';
-import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { Modal } from '../ui/Modal';
-
-interface FormValues {
-  name: string;
-  number: string;
-}
+// web/src/components/Modals/AddExternalAccount.tsx
+import { regexExternalNumber } from "@common/utils/regexes";
+import Button from "@components/ui/Button";
+import TextField from "@components/ui/Fields/TextField";
+import { Typography } from "@components/ui/Typography";
+import { refetchExternalAccounts } from "@data/externalAccounts";
+import { AccountErrors, ExternalAccountErrors, GenericErrors } from "@typings/Errors";
+import { ExternalAccountEvents } from "@typings/Events";
+import { fetchNui } from "@utils/fetchNui";
+import { Loader2, Plus } from 'lucide-solid';
+import { createSignal, Show } from 'solid-js';
+import i18n from "@utils/i18n";
+import { Modal } from "@ui/Modal";
 
 interface AddExternalAccountModalProps {
   isOpen: boolean;
   onClose(): void;
 }
 
-const AddExternalAccountModal = ({ isOpen, onClose }: AddExternalAccountModalProps) => {
-  const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [, updateExternalAccounts] = useAtom(externalAccountsAtom);
-
-  const { control, handleSubmit, formState } = useForm<FormValues>({
-    defaultValues: {
-      number: '',
-      name: '',
-    },
-  });
+const AddExternalAccountModal = (props: AddExternalAccountModalProps) => {
+  const [isLoading, setIsLoading] = createSignal(false);
+  const [error, setError] = createSignal('');
+  const [number, setNumber] = createSignal('');
+  const [name, setName] = createSignal('');
+  const [fieldErrors, setFieldErrors] = createSignal<Record<string, string>>({});
 
   const handleClose = () => {
-    onClose();
+    props.onClose();
     setError('');
+    setNumber('');
+    setName('');
+    setFieldErrors({});
   };
 
-  const onSubmit = async (values: FormValues) => {
+  const validate = () => {
+    const errors: Record<string, string> = {};
+    if (!number()) {
+      errors.number = i18n.t('Clearing- & account number is required');
+    } else if (!regexExternalNumber.test(number())) {
+      errors.number = i18n.t('Invalid number, format is: xxx, xxxx-xxxx-xxxx');
+    }
+    if (!name()) {
+      errors.name = i18n.t('Account name is required');
+    }
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const onSubmit = async (e: Event) => {
+    e.preventDefault();
+    if (!validate()) return;
+
     setIsLoading(true);
     setError('');
 
     try {
-      await fetchNui(ExternalAccountEvents.Add, values);
-      updateExternalAccounts();
+      await fetchNui(ExternalAccountEvents.Add, { number: number(), name: name() });
+      await refetchExternalAccounts();
       setIsLoading(false);
-      onClose();
-    } catch (error) {
+      props.onClose();
+    } catch (err: any) {
       setIsLoading(false);
-      if (!(error instanceof Error)) {
-        return;
-      }
+      const message = err.message;
 
-      if (error.message === AccountErrors.AlreadyExists) {
-        setError(t('An account for the specified number already exists'));
-        return;
+      if (message === AccountErrors.AlreadyExists) {
+        setError(i18n.t('An account for the specified number already exists'));
+      } else if (message === GenericErrors.NotFound) {
+        setError(i18n.t('The specified number does not match an existing account'));
+      } else if (message === ExternalAccountErrors.AccountIsYours) {
+        setError(i18n.t('You already have access to this account. Use internal transfer instead'));
+      } else {
+        setError(i18n.t('Something went wrong, please try again later.'));
       }
-
-      if (error.message === GenericErrors.NotFound) {
-        setError(t('The specified number does not match an existing account'));
-        return;
-      }
-
-      if (error.message === ExternalAccountErrors.AccountIsYours) {
-        setError(t('You already have access to this account. Use internal transfer instead'));
-        return;
-      }
-
-      setError(t('Something went wrong, please try again later.'));
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={t('Register Entity')} maxWidth='md'>
-      <div className='flex flex-col h-full'>
-        <Typography variant='label' className='mb-6 text-white/60'>
-          {t('Secure External Registration')}
+    <Modal isOpen={props.isOpen} onClose={handleClose} title={i18n.t('Register Entity')} maxWidth='md'>
+      <div class='flex flex-col h-full'>
+        <Typography variant='label' class='mb-6 text-white/60'>
+          {i18n.t('Secure External Registration')}
         </Typography>
 
-        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-5 h-full'>
-          <div className='flex flex-col gap-1.5'>
-            <Controller
-              name='number'
-              control={control}
-              rules={{
-                required: {
-                  value: true,
-                  message: t('Clearing- & account number is required'),
-                },
-                pattern: {
-                  value: regexExternalNumber,
-                  message: t('Invalid number, format is: xxx, xxxx-xxxx-xxxx'),
-                },
-              }}
-              render={({ field }) => (
-                <TextField
-                  label={t('Clearing- & account number')}
-                  placeholder={'xxx, xxxx-xxxx-xxxx'}
-                  {...field}
-                  error={!!formState.errors.number}
-                />
-              )}
+        <form onSubmit={onSubmit} class='flex flex-col gap-5 h-full'>
+          <div class='flex flex-col gap-1.5'>
+            <TextField
+              label={i18n.t('Clearing- & account number')}
+              placeholder={'xxx, xxxx-xxxx-xxxx'}
+              value={number()}
+              onChange={(e: any) => setNumber(e.target.value)}
+              error={!!fieldErrors().number}
             />
-            {formState.errors.number && (
-              <Typography variant='pre' className='text-red-500/80 px-2 mt-1 lowercase text-[11px]'>
-                {formState.errors.number.message}
+            <Show when={fieldErrors().number}>
+              <Typography variant='pre' class='text-red-500/80 px-2 mt-1 lowercase text-[11px]'>
+                {fieldErrors().number}
               </Typography>
-            )}
+            </Show>
           </div>
 
-          <div className='flex flex-col gap-1.5'>
-            <Controller
-              name='name'
-              control={control}
-              rules={{
-                required: {
-                  value: true,
-                  message: t('Account name is required'),
-                },
-              }}
-              render={({ field }) => (
-                <TextField
-                  placeholder={t('Example: Main Business')}
-                  label={t('Entity Name')}
-                  {...field}
-                  error={!!formState.errors.name}
-                />
-              )}
+          <div class='flex flex-col gap-1.5'>
+            <TextField
+              placeholder={i18n.t('Example: Main Business')}
+              label={i18n.t('Entity Name')}
+              value={name()}
+              onChange={(e: any) => setName(e.target.value)}
+              error={!!fieldErrors().name}
             />
-            {formState.errors.name && (
-              <Typography variant='pre' className='text-red-500/80 px-2 mt-1 lowercase text-[11px]'>
-                {formState.errors.name.message}
+            <Show when={fieldErrors().name}>
+              <Typography variant='pre' class='text-red-500/80 px-2 mt-1 lowercase text-[11px]'>
+                {fieldErrors().name}
               </Typography>
-            )}
+            </Show>
           </div>
 
-          {error && (
-            <div className='p-3 rounded-xl bg-red-500/10 border border-red-500/20'>
-              <Typography variant='pre' className='text-red-500 text-xs'>
-                {error}
+          <Show when={error()}>
+            <div class='p-3 rounded-xl bg-red-500/10 border border-red-500/20'>
+              <Typography variant='pre' class='text-red-500 text-xs'>
+                {error()}
               </Typography>
             </div>
-          )}
+          </Show>
 
-          <div className='flex justify-end gap-3 mt-auto pt-6 border-t border-white/5'>
-            <Button variant='secondary' onClick={handleClose} disabled={isLoading}>
-              {t('Cancel')}
+          <div class='flex justify-end gap-3 mt-auto pt-6 border-t border-white/5'>
+            <Button variant='secondary' onClick={handleClose} disabled={isLoading()}>
+              {i18n.t('Cancel')}
             </Button>
-            <Button type='submit' disabled={isLoading}>
-              {isLoading ? (
-                <Loader2 className='w-4 h-4 animate-spin text-black' />
-              ) : (
-                <div className='flex items-center justify-center gap-2'>
-                  <Plus className='w-4 h-4' />
-                  <span>{t('Register')}</span>
+            <Button type='submit' disabled={isLoading()}>
+              <Show when={isLoading()} fallback={
+                <div class='flex items-center justify-center gap-2'>
+                  <Plus size={16} />
+                  <span>{i18n.t('Register')}</span>
                 </div>
-              )}
+              }>
+                <Loader2 size={16} class='animate-spin text-black' />
+              </Show>
             </Button>
           </div>
         </form>

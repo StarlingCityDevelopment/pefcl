@@ -1,9 +1,10 @@
-import { TransactionEvents } from '@typings/Events';
-import type { GetTransactionsInput, GetTransactionsResponse } from '@typings/Transaction';
-import { atom } from 'jotai';
-import { mockedTransactions } from '../utils/constants';
-import { fetchNui } from '../utils/fetchNui';
-import { isEnvBrowser } from '../utils/misc';
+// web/src/data/transactions.ts
+import { TransactionEvents } from "@typings/Events";
+import type { GetTransactionsInput, GetTransactionsResponse } from "@typings/Transaction";
+import { createSignal, createMemo, createResource, createRoot } from 'solid-js';
+import { mockedTransactions } from "@utils/constants";
+import { fetchNui } from "@utils/fetchNui";
+import { isEnvBrowser } from "@utils/misc";
 
 export const transactionInitialState: GetTransactionsResponse = {
   total: 0,
@@ -25,37 +26,50 @@ const getTransactions = async (input: GetTransactionsInput): Promise<GetTransact
   }
 };
 
-const isLoadedAtom = atom(false);
-export const rawTransactionsAtom = atom<GetTransactionsResponse>(transactionInitialState);
+export const {
+  rawTransactions,
+  setRawTransactions,
+  transactionsResource,
+  mutateTransactions,
+  refetchTransactions,
+  transactionBase,
+  transactions,
+  transactionsTotal,
+  transactionsLimit,
+  transactionsOffset,
+} = createRoot(() => {
+  const [rawTransactions, setRawTransactions] = createSignal<GetTransactionsResponse>(
+    transactionInitialState,
+  );
+  const [isLoaded, setIsLoaded] = createSignal(false);
 
-export const transactionBaseAtom = atom<
-  Promise<GetTransactionsResponse>,
-  GetTransactionsResponse | undefined,
-  Promise<void>
->(
-  async (get) => {
-    const isLoaded = get(isLoadedAtom);
-    const raw = get(rawTransactionsAtom);
-
-    if (!isLoaded && raw.transactions.length === 0) {
-      return await getTransactions({ ...transactionInitialState });
+  const [resource, { mutate, refetch }] = createResource(async () => {
+    if (!isLoaded() && rawTransactions().transactions.length === 0) {
+      const data = await getTransactions({ ...transactionInitialState });
+      setIsLoaded(true);
+      setRawTransactions(data);
+      return data;
     }
+    return rawTransactions();
+  });
 
-    return raw;
-  },
-  async (get, set, by?) => {
-    const currentSettings = get(rawTransactionsAtom);
-    const data = by ?? (await getTransactions({ ...currentSettings }));
-    set(rawTransactionsAtom, data);
-    set(isLoadedAtom, true);
-  },
-);
+  const base = createMemo(() => resource() ?? transactionInitialState);
 
-export const transactionsAtom = atom(async (get) => {
-  const transactions = get(transactionBaseAtom).transactions;
-  return transactions;
+  const txs = createMemo(() => base().transactions);
+  const total = createMemo(() => base().total);
+  const limit = createMemo(() => base().limit);
+  const offset = createMemo(() => base().offset);
+
+  return {
+    rawTransactions,
+    setRawTransactions,
+    transactionsResource: resource,
+    mutateTransactions: mutate,
+    refetchTransactions: refetch,
+    transactionBase: base,
+    transactions: txs,
+    transactionsTotal: total,
+    transactionsLimit: limit,
+    transactionsOffset: offset,
+  };
 });
-
-export const transactionsTotalAtom = atom((get) => get(transactionBaseAtom).total);
-export const transactionsLimitAtom = atom((get) => get(transactionBaseAtom).limit);
-export const transactionsOffsetAtom = atom((get) => get(transactionBaseAtom).offset);

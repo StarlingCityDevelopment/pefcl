@@ -1,10 +1,9 @@
-import type { Card, GetCardInput } from '@typings/BankCard';
-import { CardEvents } from '@typings/Events';
-import { mockedAccounts } from '@utils/constants';
-import { fetchNui } from '@utils/fetchNui';
-import { isEnvBrowser } from '@utils/misc';
-import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
+// web/src/data/cards.ts
+import type { Card, GetCardInput } from "@typings/BankCard";
+import { CardEvents } from "@typings/Events";
+import { fetchNui } from "@utils/fetchNui";
+import { isEnvBrowser } from "@utils/misc";
+import { createSignal, createResource, createMemo, createRoot } from 'solid-js';
 
 const mockedCards: Card[] = [];
 
@@ -16,47 +15,58 @@ const getCards = async (accountId: number): Promise<Card[]> => {
     if (isEnvBrowser()) {
       return mockedCards;
     }
-
     console.error(e);
     return [];
   }
 };
 
-export const selectedAccountIdAtom = atom<number>(0);
-const isLoadedAtom = atom<Record<number, boolean>>({});
-export const rawCardAtom = atom<Record<number, Card[]>>({});
+export const {
+  selectedAccountId,
+  setSelectedAccountId,
+  rawCards,
+  setRawCards,
+  loadedAccounts,
+  setLoadedAccounts,
+  cardsResource,
+  mutateCards,
+  refetchCards,
+  cards,
+  updateCards,
+} = createRoot(() => {
+  const [selectedAccountId, setSelectedAccountId] = createSignal<number>(0);
+  const [rawCards, setRawCards] = createSignal<Record<number, Card[]>>({});
+  const [loadedAccounts, setLoadedAccounts] = createSignal<Record<number, boolean>>({});
 
-export const cardsAtom = atom<Promise<Card[]>, Card | number | undefined, Promise<void>>(
-  async (get) => {
-    const accountId = get(selectedAccountIdAtom);
-    const state = get(rawCardAtom);
-    const isLoaded = get(isLoadedAtom)[accountId];
+  const [resource, { mutate, refetch }] = createResource(selectedAccountId, async (accountId) => {
+    if (!accountId) return [];
+    const data = await getCards(accountId);
+    setRawCards((prev) => ({ ...prev, [accountId]: data }));
+    setLoadedAccounts((prev) => ({ ...prev, [accountId]: true }));
+    return data;
+  });
 
-    if (!isLoaded && (!state[accountId] || state[accountId].length === 0)) {
-      return await getCards(accountId);
-    }
+  const cardsMemo = createMemo(() => resource() ?? []);
 
-    return state[accountId] ?? [];
-  },
-  async (get, set, by) => {
-    const accountId = get(selectedAccountIdAtom);
-    const state = get(rawCardAtom);
+  const updateCardsAction = async (accountId?: number) => {
+    const id = accountId ?? selectedAccountId();
+    if (!id) return;
+    const data = await getCards(id);
+    setRawCards((prev) => ({ ...prev, [id]: data }));
+    setLoadedAccounts((prev) => ({ ...prev, [id]: true }));
+    mutate(data);
+  };
 
-    if (typeof by === 'number') {
-      const cards = await getCards(by);
-      set(rawCardAtom, { ...state, [by]: cards });
-      set(isLoadedAtom, { ...get(isLoadedAtom), [by]: true });
-      return;
-    }
-
-    if (!by) {
-      const cards = await getCards(accountId);
-      set(rawCardAtom, { ...state, [accountId]: cards });
-      set(isLoadedAtom, { ...get(isLoadedAtom), [accountId]: true });
-      return;
-    }
-
-    const currentCards = state[accountId] ?? [];
-    set(rawCardAtom, { ...state, [accountId]: [...currentCards, by] });
-  },
-);
+  return {
+    selectedAccountId,
+    setSelectedAccountId,
+    rawCards,
+    setRawCards,
+    loadedAccounts,
+    setLoadedAccounts,
+    cardsResource: resource,
+    mutateCards: mutate,
+    refetchCards: refetch,
+    cards: cardsMemo,
+    updateCards: updateCardsAction,
+  };
+});

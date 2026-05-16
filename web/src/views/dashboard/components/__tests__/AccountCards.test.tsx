@@ -1,9 +1,9 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import AccountCards from '@components/AccountCards';
-import { screen, waitFor } from '@testing-library/react';
-import { mockedAccounts } from '@utils/constants';
-import { renderWithProviders } from '@utils/test';
+import AccountCards from "@components/AccountCards";
+import { screen, waitFor } from "@testing-library/react";
+import { mockedAccounts } from "@utils/constants";
+import { renderWithProviders } from "@utils/test";
 
 jest.mock('@utils/fetchNui', () => ({
   fetchNui: () => [mockedAccounts[0], mockedAccounts[1]],

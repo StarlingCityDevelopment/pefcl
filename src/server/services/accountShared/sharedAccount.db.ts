@@ -3,12 +3,10 @@ import type { AccountRole, SharedAccountInput } from '@typings/Account';
 import { AuthorizationErrors } from '@typings/Errors';
 import { ServerError } from '@utils/errors';
 import type { Transaction } from 'sequelize/types';
-import { singleton } from 'tsyringe';
 import { SharedAccountModel } from './sharedAccount.model';
 
 const include = [{ model: AccountModel, as: 'account' }];
 
-@singleton()
 export class SharedAccountDB {
   async getSharedAccountsById(id: number): Promise<SharedAccountModel[]> {
     return await SharedAccountModel.findAll({

@@ -1,7 +1,6 @@
 import { ExternalAccountDB } from '@services/accountExternal/externalAccount.db';
 import type { CreateAccountInput } from '@typings/Account';
 import type { Transaction } from 'sequelize/types';
-import { singleton } from 'tsyringe';
 import { AccountModel } from './account.model';
 
 export interface RemoveFromSharedAccountInput {
@@ -9,7 +8,6 @@ export interface RemoveFromSharedAccountInput {
   identifier: string;
 }
 
-@singleton()
 export class AccountDB {
   _externalAccountDB: ExternalAccountDB;
 

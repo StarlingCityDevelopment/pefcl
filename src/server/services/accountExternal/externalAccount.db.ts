@@ -1,5 +1,4 @@
 import type { ExternalAccountInput } from '@typings/Account';
-import { singleton } from 'tsyringe';
 import { ExternalAccountModel } from './externalAccount.model';
 
 export interface RemoveFromSharedAccountInput {
@@ -7,7 +6,6 @@ export interface RemoveFromSharedAccountInput {
   identifier: string;
 }
 
-@singleton()
 export class ExternalAccountDB {
   async getAccounts(): Promise<ExternalAccountModel[]> {
     return await ExternalAccountModel.findAll();

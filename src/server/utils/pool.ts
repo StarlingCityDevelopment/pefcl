@@ -26,7 +26,6 @@ export const sequelize = new Sequelize({
     idle: 60_000,
   },
   sync: {
-    alter: true,
     force: true,
   },
 });

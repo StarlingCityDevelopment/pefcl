@@ -1,8 +1,7 @@
-import { LBPhoneSettingsAtom } from '@data/LBPhoneSettings';
-import type { LBSettings } from '@typings/LBAddons';
-import { useAtom } from 'jotai';
+import type { Resource } from 'solid-js';
+import type { LBSettings } from "@typings/LBAddons";
+import { LBPhoneSettingsResource } from "@data/LBPhoneSettings";
 
-export const useLBPhoneSettings = (): LBSettings | null => {
-  const [settings] = useAtom(LBPhoneSettingsAtom);
-  return settings;
+export const useLBPhoneSettings = (): Resource<LBSettings | null> => {
+  return LBPhoneSettingsResource;
 };

@@ -1,4 +1,4 @@
-import type { ServerPromiseResp } from '@typings/http';
+import type { ServerPromiseResp } from "@typings/http";
 import { getResourceName } from './misc';
 
 const isDevelopment = process.env.NODE_ENV === 'development';

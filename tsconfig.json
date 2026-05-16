@@ -12,8 +12,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "experimentalDecorators": true
   },
   "include": ["./src", "./web"]
 }

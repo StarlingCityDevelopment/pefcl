@@ -2,7 +2,7 @@ import { EventListener, OnEvent } from '@decorators/Event';
 import { Export, ExportListener } from '@decorators/Export';
 import type { OnlineUser } from '@server/../../typings/user';
 import { ExternalAccountService } from '@services/accountExternal/externalAccount.service';
-import { AuthService } from '@services/auth/auth.service';
+
 import {
   type ATMInput,
   type Account,
@@ -19,7 +19,8 @@ import {
   type UpdateBankBalanceByNumberInput,
   type UpdateBankBalanceInput,
 } from '@typings/Account';
-import { AccountEvents, ExternalAccountEvents, SharedAccountEvents, UserEvents } from '@typings/Events';
+import { AccountEvents, ExternalAccountEvents, SharedAccountEvents, UserEvents, TransactionEvents } from '@typings/Events';
+import type { CreateTransferInput } from '@typings/Transaction';
 import { ServerExports } from '@typings/exports/server';
 import type { Request, Response } from '@typings/http';
 import { Controller } from '../../decorators/Controller';
@@ -31,12 +32,10 @@ import { AccountService } from './account.service';
 @EventListener()
 @ExportListener()
 export class AccountController {
-  _auth: AuthService;
   _accountService: AccountService;
   _externalAccountService: ExternalAccountService;
 
-  constructor(auth: AuthService, accountService: AccountService, externalAccountService: ExternalAccountService) {
-    this._auth = auth;
+  constructor(accountService: AccountService, externalAccountService: ExternalAccountService) {
     this._accountService = accountService;
     this._externalAccountService = externalAccountService;
   }
@@ -71,10 +70,21 @@ export class AccountController {
     }
   }
 
+  @NetPromise(TransactionEvents.CreateTransfer)
+  async createTransfer(req: Request<CreateTransferInput>, res: Response<object>) {
+    try {
+      await this._accountService.handleTransfer(req);
+      res({ status: 'ok', data: {} });
+    } catch (err) {
+      res({ status: 'error', errorMsg: err.message });
+    }
+  }
+
+
   @NetPromise(AccountEvents.DeleteAccount)
   async deleteAccount(req: Request<{ accountId: number }>, res: Response<any>) {
     try {
-      await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [AccountRole.Owner]);
+      await this._accountService.getAuthorizedAccount(req.source, req.data.accountId, [AccountRole.Owner]);
       await this._accountService.handleDeleteAccount(req);
       res({ status: 'ok', data: {} });
     } catch (err) {
@@ -128,7 +138,7 @@ export class AccountController {
   @NetPromise(AccountEvents.SetDefaultAccount)
   async setDefaultAccount(req: Request<{ accountId: number }>, res: Response<any>) {
     try {
-      await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [AccountRole.Admin]);
+      await this._accountService.getAuthorizedAccount(req.source, req.data.accountId, [AccountRole.Admin]);
       await this._accountService.handleSetDefaultAccount(req);
       res({ status: 'ok', data: {} });
     } catch (err) {
@@ -139,7 +149,7 @@ export class AccountController {
   @NetPromise(AccountEvents.RenameAccount)
   async renameAccount(req: Request<RenameAccountInput>, res: Response<any>) {
     try {
-      await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [AccountRole.Admin]);
+      await this._accountService.getAuthorizedAccount(req.source, req.data.accountId, [AccountRole.Admin]);
       await this._accountService.handleRenameAccount(req);
       res({ status: 'ok', data: {} });
     } catch (err) {
@@ -150,7 +160,7 @@ export class AccountController {
   @NetPromise(SharedAccountEvents.AddUser)
   async addSharedAccountUser(req: Request<AddToSharedAccountInput>, res: Response<any>) {
     try {
-      await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [AccountRole.Admin]);
+      await this._accountService.getAuthorizedAccount(req.source, req.data.accountId, [AccountRole.Admin]);
       await this._accountService.addUserToShared(req);
       res({ status: 'ok', data: {} });
     } catch (err) {
@@ -161,7 +171,7 @@ export class AccountController {
   @NetPromise(SharedAccountEvents.RemoveUser)
   async removeSharedAccountUser(req: Request<RemoveFromSharedAccountInput>, res: Response<any>) {
     try {
-      await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [AccountRole.Admin]);
+      await this._accountService.getAuthorizedAccount(req.source, req.data.accountId, [AccountRole.Admin]);
       await this._accountService.removeUserFromShared(req);
       res({ status: 'ok', data: {} });
     } catch (err) {
@@ -172,7 +182,7 @@ export class AccountController {
   @NetPromise(SharedAccountEvents.GetUsers)
   async getUsersFromSharedAccount(req: Request<{ accountId: number }>, res: Response<SharedAccountUser[]>) {
     try {
-      await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [
+      await this._accountService.getAuthorizedAccount(req.source, req.data.accountId, [
         AccountRole.Admin,
         AccountRole.Contributor,
       ]);

@@ -1,4 +1,4 @@
-import defaultConfig from '../../../static/config.json';
+import defaultConfig from '../../../config.json';
 import type { ResourceConfig } from '../../../typings/config';
 import { getResourceName, isEnvBrowser } from './misc';
 

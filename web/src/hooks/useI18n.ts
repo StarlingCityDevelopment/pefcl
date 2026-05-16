@@ -1,4 +1,4 @@
-import type { Language } from '@utils/i18nResourceHelpers';
+import type { Language } from "@utils/i18nResourceHelpers";
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import updateLocale from 'dayjs/plugin/updateLocale';

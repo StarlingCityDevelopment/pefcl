@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { DataTypes } from 'sequelize';
 
 export const timestamps = {

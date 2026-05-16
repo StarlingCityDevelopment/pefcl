@@ -1,9 +1,10 @@
-import type { Account } from '@typings/Account';
-import { AccountEvents } from '@typings/Events';
-import { atom } from 'jotai';
-import { mockedAccounts } from '../utils/constants';
-import { fetchNui } from '../utils/fetchNui';
-import { isEnvBrowser } from '../utils/misc';
+// web/src/data/accounts.ts
+import type { Account } from "@typings/Account";
+import { AccountEvents } from "@typings/Events";
+import { createSignal, createMemo, createResource, createRoot } from 'solid-js';
+import { mockedAccounts } from "@utils/constants";
+import { fetchNui } from "@utils/fetchNui";
+import { isEnvBrowser } from "@utils/misc";
 
 const getAccounts = async (): Promise<Account[]> => {
   try {
@@ -18,68 +19,89 @@ const getAccounts = async (): Promise<Account[]> => {
   }
 };
 
-const isLoadedAtom = atom(false);
+export const {
+  rawAccounts,
+  setRawAccounts,
+  accountsResource,
+  mutateAccounts,
+  refetchAccounts,
+  accounts,
+  totalBalance,
+  activeAccountId,
+  setActiveAccountId,
+  activeAccount,
+  defaultAccount,
+  defaultAccountBalance,
+  accountOrder,
+  setAccountOrder,
+  orderedAccounts,
+} = createRoot(() => {
+  const [rawAccounts, setRawAccounts] = createSignal<Account[]>([]);
+  const [isLoaded, setIsLoaded] = createSignal(false);
 
-export const rawAccountAtom = atom<Account[]>([]);
-export const accountsAtom = atom<Promise<Account[]>, Account[] | undefined, Promise<void>>(
-  async (get) => {
-    const isLoaded = get(isLoadedAtom);
-    const raw = get(rawAccountAtom);
-
-    if (!isLoaded && raw.length === 0) {
-      // This is only for the very first load
-      return await getAccounts();
+  const [resource, { mutate, refetch }] = createResource(async () => {
+    if (!isLoaded() && rawAccounts().length === 0) {
+      const data = await getAccounts();
+      setIsLoaded(true);
+      setRawAccounts(data);
+      return data;
     }
+    return rawAccounts();
+  });
 
-    return raw;
-  },
-  async (get, set, by) => {
-    const accounts = by ?? (await getAccounts());
-    set(rawAccountAtom, accounts);
-    set(isLoadedAtom, true);
-  },
-);
+  const accountsMemo = createMemo(() => resource() ?? []);
 
-export const totalBalanceAtom = atom((get) => get(accountsAtom).reduce((prev, curr) => prev + curr.balance, 0));
+  const totalBalanceMemo = createMemo(() =>
+    accountsMemo().reduce((prev, curr) => prev + curr.balance, 0),
+  );
 
-export const activeAccountAtomId = atom<number>(0);
-export const activeAccountAtom = atom(
-  (get) => get(accountsAtom).find((account) => account.id === get(activeAccountAtomId)),
-  (_get, set, str: number) => set(activeAccountAtomId, str),
-);
+  const [activeAccountId, setActiveAccountId] = createSignal<number>(0);
+  const activeAccountMemo = createMemo(() =>
+    accountsMemo().find((account) => account.id === activeAccountId()),
+  );
 
-export const defaultAccountAtom = atom((get) => get(accountsAtom).find((account) => account.isDefault));
+  const defaultAccountMemo = createMemo(() => accountsMemo().find((account) => account.isDefault));
+  const defaultAccountBalanceMemo = createMemo(() => defaultAccountMemo()?.balance);
 
-export const defaultAccountBalance = atom((get) => get(defaultAccountAtom)?.balance);
+  const [accountOrder, setAccountOrder] = createSignal<string>(localStorage.getItem('order') ?? '');
 
-/* Saved order for cards */
-type OrderedAccounts = Record<number, number>;
-const accountOrderAtom = atom<string>(localStorage.getItem('order') ?? '');
-
-export const orderedAccountsAtom = atom<Account[], OrderedAccounts>(
-  (get) => {
-    const accounts = get(accountsAtom);
-    const storageOrder = get(accountOrderAtom);
+  const orderedAccountsMemo = createMemo(() => {
+    const accs = [...accountsMemo()];
+    const storageOrder = accountOrder();
 
     try {
-      JSON.parse(storageOrder);
+      const order = JSON.parse(storageOrder);
+      return accs.sort((a, b) => {
+        const aIndex = order?.[a.id] ?? 0;
+        const bIndex = order?.[b.id] ?? 0;
+        return aIndex > bIndex ? 1 : -1;
+      });
     } catch {
-      return accounts;
+      return accs;
     }
+  });
 
-    const order = JSON.parse(storageOrder);
+  return {
+    rawAccounts,
+    setRawAccounts,
+    accountsResource: resource,
+    mutateAccounts: mutate,
+    refetchAccounts: refetch,
+    accounts: accountsMemo,
+    totalBalance: totalBalanceMemo,
+    activeAccountId,
+    setActiveAccountId,
+    activeAccount: activeAccountMemo,
+    defaultAccount: defaultAccountMemo,
+    defaultAccountBalance: defaultAccountBalanceMemo,
+    accountOrder,
+    setAccountOrder,
+    orderedAccounts: orderedAccountsMemo,
+  };
+});
 
-    const sorted = accounts.sort((a, b) => {
-      const aIndex = order?.[a.id] ?? 0;
-      const bIndex = order?.[b.id] ?? 0;
-
-      return aIndex > bIndex ? 1 : -1;
-    });
-
-    return sorted;
-  },
-  (_get, set, by: OrderedAccounts) => {
-    set(accountOrderAtom, JSON.stringify(by));
-    localStorage.setItem('order', JSON.stringify(by));
-  },
-);
+export const setOrderedAccounts = (order: Record<number, number>) => {
+  const orderStr = JSON.stringify(order);
+  setAccountOrder(orderStr);
+  localStorage.setItem('order', orderStr);
+};

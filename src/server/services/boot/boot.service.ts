@@ -2,14 +2,12 @@ import { GeneralEvents } from '@server/../../typings/Events';
 import { resourceName } from '@server/utils/constants';
 import { getFrameworkExports, validateResourceExports } from '@server/utils/frameworkIntegration';
 import { config } from '@server/utils/server-config';
-import { singleton } from 'tsyringe';
 import { mainLogger } from '../../sv_logger';
 import { sequelize } from '../../utils/pool';
 import { UserService } from '../user/user.service';
 
 const logger = mainLogger.child({ module: 'boot' });
 
-@singleton()
 export class BootService {
   _userService: UserService;
   isReady = false;

@@ -3,7 +3,6 @@ import { AccountErrors, BalanceErrors, GenericErrors } from '@typings/Errors';
 import { TransactionType } from '@typings/Transaction';
 import { ServerError } from '@utils/errors';
 import i18n from '@utils/i18n';
-import { singleton } from 'tsyringe';
 import {
   type CreateInvoiceInput,
   type GetInvoicesInput,
@@ -21,7 +20,6 @@ import { InvoiceDB } from './invoice.db';
 
 const logger = mainLogger.child({ module: 'invoice-service' });
 
-@singleton()
 export class InvoiceService {
   _accountDB: AccountDB;
   _invoiceDB: InvoiceDB;

@@ -1,16 +1,18 @@
-import TransactionItem from '@components/TransactionItem';
-import { useAtomValue } from 'jotai';
-import React from 'react';
-import { transactionsAtom } from '../../../data/transactions';
+// web/src/views/dashboard/components/Transactions.tsx
+import TransactionItem from "@components/TransactionItem";
+import { createMemo, For } from 'solid-js';
+import { transactions } from "@data/transactions";
 
 const Transactions = () => {
-  const transactions = useAtomValue(transactionsAtom);
+  const latestTransactions = createMemo(() => transactions().slice(0, 5));
 
   return (
-    <div className='flex flex-col gap-3'>
-      {transactions.slice(0, 5).map((transaction) => (
-        <TransactionItem key={transaction.id} transaction={transaction} isLimitedSpace />
-      ))}
+    <div class='flex flex-col gap-3'>
+      <For each={latestTransactions()}>
+        {(transaction) => (
+          <TransactionItem transaction={transaction} isLimitedSpace />
+        )}
+      </For>
     </div>
   );
 };

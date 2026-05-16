@@ -1,45 +1,49 @@
-import { cn } from '@utils/cn';
-import * as React from 'react';
+// web/src/components/ui/Typography.tsx
+import { cn } from "@utils/cn";
+import { splitProps, type JSX, type ParentProps } from 'solid-js';
+import { Dynamic } from 'solid-js/web';
 
-interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
+interface TypographyProps extends JSX.HTMLAttributes<HTMLElement>, ParentProps {
   variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'small' | 'muted' | 'pre' | 'label';
+  ref?: (el: HTMLElement) => void;
 }
 
-export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
-  ({ className, variant = 'p', ...props }, ref) => {
-    const variants = {
-      h1: 'text-3xl font-black tracking-wide uppercase text-[var(--gta-text)] leading-none',
-      h2: 'text-xl font-bold tracking-wide uppercase text-[var(--gta-text)] leading-tight',
-      h3: 'text-lg font-bold tracking-wide uppercase text-[var(--gta-text)] leading-snug',
-      h4: 'text-base font-bold tracking-wide uppercase text-[var(--gta-text)]',
-      p: 'text-sm leading-relaxed text-[var(--gta-text-muted)]',
-      small: 'text-xs font-medium leading-none text-[var(--gta-text-dim)]',
-      muted: 'text-xs font-medium text-[var(--gta-text-dim)] tracking-wide uppercase',
-      pre: 'text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gta-text-dim)]',
-      label: 'text-[10px] font-bold uppercase tracking-[0.15em] text-[var(--gta-text-dim)]',
-    };
+export const Typography = (props: TypographyProps) => {
+  const [local, others] = splitProps(props, ['class', 'variant', 'ref', 'children']);
+  const variant = () => local.variant || 'p';
 
-    const ComponentMap: Record<string, keyof React.JSX.IntrinsicElements> = {
-      h1: 'h1',
-      h2: 'h2',
-      h3: 'h3',
-      h4: 'h4',
-      p: 'p',
-      small: 'span',
-      muted: 'span',
-      pre: 'div',
-      label: 'label',
-    };
+  const variants = {
+    h1: 'text-3xl font-display font-black tracking-tight uppercase text-fg-main leading-none',
+    h2: 'text-xl font-display font-bold tracking-tight uppercase text-fg-main leading-tight',
+    h3: 'text-lg font-display font-bold tracking-tight uppercase text-fg-main leading-snug',
+    h4: 'text-base font-display font-bold tracking-tight uppercase text-fg-main',
+    p: 'text-sm font-sans leading-relaxed text-text-muted',
+    small: 'text-xs font-sans font-medium leading-none text-text-muted/80',
+    muted: 'text-xs font-sans font-medium text-text-muted tracking-wide uppercase',
+    pre: 'text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-text-muted',
+    label: 'text-[10px] font-sans font-bold uppercase tracking-[0.15em] text-text-muted',
+  };
 
-    const Component = ComponentMap[variant] || 'p';
+  const componentMap = {
+    h1: 'h1',
+    h2: 'h2',
+    h3: 'h3',
+    h4: 'h4',
+    p: 'p',
+    small: 'span',
+    muted: 'span',
+    pre: 'div',
+    label: 'label',
+  };
 
-    return (
-      <Component
-        ref={ref as any}
-        className={cn('transition-colors duration-200', variants[variant], className)}
-        {...props}
-      />
-    );
-  },
-);
-Typography.displayName = 'Typography';
+  return (
+    <Dynamic
+      component={componentMap[variant()] || 'p'}
+      ref={local.ref}
+      class={cn('transition-colors duration-200', variants[variant()], local.class)}
+      {...others}
+    >
+      {local.children}
+    </Dynamic>
+  );
+};

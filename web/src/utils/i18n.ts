@@ -1,9 +1,8 @@
 import dayjs from 'dayjs';
 import i18n from 'i18next';
 import 'dayjs/locale/sv';
-import { initReactI18next } from 'react-i18next';
 
-import { getConfig } from '@utils/api';
+import { getConfig } from "@utils/api";
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import { getI18nResourcesNamespaced } from './i18nResourceHelpers';
@@ -27,7 +26,6 @@ const load = async () => {
   const resources = getI18nResourcesNamespaced('translation');
 
   await i18n
-    .use(initReactI18next)
     .init({
       resources,
       lng: language,
@@ -55,4 +53,6 @@ load().catch((err) => {
 
 export type TranslateFunction = (typeof i18n)['t'];
 
-export default i18n;
+export default i18n as Omit<typeof i18n, 't'> & {
+  t: (key: string, options?: any) => any;
+};

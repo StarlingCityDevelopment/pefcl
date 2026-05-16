@@ -1,10 +1,8 @@
 import { type CreateInvoiceInput, type GetInvoicesInput, InvoiceStatus } from '@typings/Invoice';
 import { MS_TWO_WEEKS } from '@utils/constants';
 import type { Transaction } from 'sequelize/types';
-import { singleton } from 'tsyringe';
 import { InvoiceModel } from './invoice.model';
 
-@singleton()
 export class InvoiceDB {
   async getAllInvoices(): Promise<InvoiceModel[]> {
     return await InvoiceModel.findAll();

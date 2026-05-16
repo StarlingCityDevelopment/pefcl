@@ -4,14 +4,12 @@ import type { Cash } from '@server/../../typings/Cash';
 import { mainLogger } from '@server/sv_logger';
 import { Broadcasts } from '@typings/Events';
 import type { Transaction } from '@typings/Transaction';
-import { singleton } from 'tsyringe';
 import { AccountService } from '../account/account.service';
 import { TransactionDB } from '../transaction/transaction.db';
 import { UserService } from '../user/user.service';
 
 const logger = mainLogger.child({ module: 'broadcastService' });
 
-@singleton()
 export class BroadcastService {
   _transactionDB: TransactionDB;
   _userService: UserService;

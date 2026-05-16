@@ -1,26 +1,23 @@
+// src/server/decorators/NetPromise.ts
 import { onNetPromise } from '../lib/onNetPromise';
 
 export const NetPromise = (eventName: string) => {
-  return (target: object, key: string) => {
-    if (!Reflect.hasMetadata('promiseEvents', target)) {
-      Reflect.defineMetadata('promiseEvents', [], target);
+  return (target: any, key: string) => {
+    if (!target.__promiseEvents__) {
+      target.__promiseEvents__ = [];
     }
 
-    const promiseEvents = Reflect.getMetadata('promiseEvents', target);
-
-    promiseEvents.push({
+    target.__promiseEvents__.push({
       eventName,
       key,
     });
-
-    Reflect.defineMetadata('promiseEvents', promiseEvents, target);
   };
 };
 
 export const PromiseEventListener = () => (ctr: any) => ctr;
 
 export const registerPromiseEvents = (instance: any) => {
-  const promiseEvents: any[] = Reflect.getMetadata('promiseEvents', instance);
+  const promiseEvents: any[] = instance.__promiseEvents__ || instance.constructor.prototype.__promiseEvents__;
   if (!promiseEvents) return;
 
   for (const { eventName, key } of promiseEvents) {

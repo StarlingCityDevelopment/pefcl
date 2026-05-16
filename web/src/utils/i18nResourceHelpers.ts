@@ -1,4 +1,4 @@
-import languages from '@locales/index';
+import languages from "@locales/index";
 
 export type Namespace = 'translation' | 'pefcl';
 export type LanguageContent = (typeof languages)['en'];

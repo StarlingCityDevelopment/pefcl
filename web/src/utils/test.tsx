@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render } from "@testing-library/react";
 import { type MemoryHistory, createMemoryHistory } from 'history';
 import type { Resource } from 'i18next';
 /* eslint-disable react/display-name */

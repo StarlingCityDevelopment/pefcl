@@ -1,18 +1,20 @@
-import React from 'react';
-import { Route, Routes } from 'react-router';
-import MobileAccountsView from './views/Accounts/MobileAccountsView';
-import MobileDashboardView from './views/Dashboard/MobileDashboardView';
-import MobileInvoicesView from './views/Invoices/MobileInvoicesView';
-import MobileTransferView from './views/Transfer/MobileTransferView';
+// web/src/views/Mobile/Routes.tsx
+import { Route } from "@solidjs/router";
+import { lazy } from 'solid-js';
+
+const MobileAccountsView = lazy(() => import('./views/Accounts/MobileAccountsView'));
+const MobileDashboardView = lazy(() => import('./views/Dashboard/MobileDashboardView'));
+const MobileInvoicesView = lazy(() => import('./views/Invoices/MobileInvoicesView'));
+const MobileTransferView = lazy(() => import('./views/Transfer/MobileTransferView'));
 
 const MobileRoutes = () => {
   return (
-    <Routes>
-      <Route path='mobile/accounts' element={<MobileAccountsView />} />
-      <Route path='mobile/dashboard' element={<MobileDashboardView />} />
-      <Route path='mobile/transfer' element={<MobileTransferView />} />
-      <Route path='mobile/invoices' element={<MobileInvoicesView />} />
-    </Routes>
+    <>
+      <Route path='mobile/accounts' component={MobileAccountsView} />
+      <Route path='mobile/dashboard' component={MobileDashboardView} />
+      <Route path='mobile/transfer' component={MobileTransferView} />
+      <Route path='mobile/invoices' component={MobileInvoicesView} />
+    </>
   );
 };
 

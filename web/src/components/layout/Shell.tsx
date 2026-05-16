@@ -1,40 +1,39 @@
-import { cn } from '@utils/cn';
-import type React from 'react';
+// web/src/components/layout/Shell.tsx
+import { cn } from "@utils/cn";
+import type { ParentProps } from 'solid-js';
 import Sidebar from '../Sidebar';
 
-interface ShellProps {
-  children: React.ReactNode;
-  className?: string;
+interface ShellProps extends ParentProps {
+  class?: string;
 }
 
 /**
  * GTA V iFruit-style layout shell for the desktop bank application.
  */
-const Shell: React.FC<ShellProps> = ({ children, className }) => {
+const Shell = (props: ShellProps) => {
   return (
-    <div className='fixed inset-0 z-10 flex items-center justify-center bg-transparent pointer-events-none overflow-hidden'>
+    <div class='fixed inset-0 z-10 flex items-center justify-center bg-transparent pointer-events-none overflow-hidden'>
       <main
-        className={cn(
+        class={cn(
           'flex flex-row w-[1400px] h-[800px] max-w-[95vw] max-h-[90vh]',
-          'overflow-hidden bg-[var(--gta-dark)] gta-scanlines',
-          'border border-[var(--gta-border)] shadow-[0_0_60px_rgba(0,0,0,0.8)]',
+          'overflow-hidden bg-bg-main',
+          'border border-border-main shadow-premium',
           'relative pointer-events-auto',
-          className,
+          props.class,
         )}
       >
-        {/* GTA green top accent line */}
-        <div className='absolute top-0 left-0 right-0 h-[2px] bg-[var(--gta-green)] z-50' />
+
 
         <Sidebar aria-label='Main Navigation' />
         <section
           id='main-content'
-          className='flex-1 h-full overflow-y-auto overflow-x-hidden p-0 relative custom-scrollbar'
+          class='flex-1 h-full overflow-y-auto overflow-x-hidden p-0 relative custom-scrollbar'
         >
-          {children}
+          {props.children}
         </section>
 
         {/* Modal Portal Root - ensures modals stay within dashboard boundaries */}
-        <div id='dashboard-modal-root' className='absolute inset-0 pointer-events-none z-[100]' />
+        <div id='dashboard-modal-root' class='absolute inset-0 pointer-events-none z-[100]' />
       </main>
     </div>
   );

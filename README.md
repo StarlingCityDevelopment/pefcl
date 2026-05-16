@@ -58,6 +58,15 @@ For faster iteration, you can run a mocked version of the server and the web int
     ```
     *This command runs Nx to start both the mock server and the Vite dev server for the frontend.*
 
+## Maintenance Scripts
+
+The `scripts/` directory contains various utilities for development and release:
+
+- **`build.js`**: Core build script for compiling both client and server bundles.
+- **`generateLocales.js`**: Tool for managing and consolidating translation files.
+- **`release.sh` / `prerelease.sh`**: Shell scripts for packaging the resource into a distributable archive.
+- **`utils.js`**: Helper functions used by the build and maintenance scripts.
+
 The mock server will be listening on port `3005`, and the web interface will be available at the URL provided by Vite (usually `http://localhost:3002`).
 
 ## Additional Notes

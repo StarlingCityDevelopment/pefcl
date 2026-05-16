@@ -1,14 +1,12 @@
 import { type GetTransactionsInput, type TransactionInput, TransactionType } from '@typings/Transaction';
 import { Op } from 'sequelize';
 import type { Transaction as SequelizeTransaction } from 'sequelize/types';
-import { singleton } from 'tsyringe';
 import { AccountModel } from '../account/account.model';
 import { TransactionModel } from './transaction.model';
 
 interface GetTransactionFromAccounts extends GetTransactionsInput {
   accountIds: number[];
 }
-@singleton()
 export class TransactionDB {
   async getTransactions(): Promise<TransactionModel[]> {
     return await TransactionModel.findAll({

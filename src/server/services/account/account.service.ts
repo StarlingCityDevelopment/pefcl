@@ -25,29 +25,28 @@ import {
   GenericErrors,
   UserErrors,
 } from '@typings/Errors';
-import { TransactionType } from '@typings/Transaction';
+import { TransactionType, TransferType, type CreateTransferInput } from '@typings/Transaction';
 import type { Request } from '@typings/http';
 import { ServerError } from '@utils/errors';
 import i18next from '@utils/i18n';
 import { config } from '@utils/server-config';
 import type { Transaction } from 'sequelize/types';
-import { singleton } from 'tsyringe';
 import { mainLogger } from '../../sv_logger';
 import { sequelize } from '../../utils/pool';
-import { AuthService } from '../auth/auth.service';
+
 import { CardDB } from '../card/card.db';
 import { CashService } from '../cash/cash.service';
 import { TransactionService } from '../transaction/transaction.service';
 import { UserService } from '../user/user.service';
 import { AccountDB } from './account.db';
 import { AccountModel } from './account.model';
+import { ExternalAccountService } from '../accountExternal/externalAccount.service';
 
 const logger = mainLogger.child({ module: 'accounts' });
 const { enabled = false, syncInitialBankBalance = false, isCardsEnabled = false } = config.frameworkIntegration ?? {};
 const { firstAccountStartBalance } = config.accounts ?? {};
 const isFrameworkIntegrationEnabled = enabled;
 
-@singleton()
 export class AccountService {
   constructor(
     private readonly _accountDB: AccountDB,
@@ -56,7 +55,8 @@ export class AccountService {
     private readonly _cashService: CashService,
     private readonly _transactionService: TransactionService,
     private readonly _cardDB: CardDB,
-    private readonly _auth: AuthService,
+
+    private readonly _externalAccountService: ExternalAccountService,
   ) { }
 
   private async getMyAccounts(source: number) {
@@ -322,13 +322,7 @@ export class AccountService {
       const user = this._userService.getUser(req.source);
       const defaultAccount = await this.getDefaultAccountBySource(req.source);
 
-      // TODO #2: Is this the best we can do?
-      const deletingAccount = await this._accountDB.getAuthorizedAccountById(accountId, user.getIdentifier(), t);
-
-      // TODO: Implement smarter way of doing this check. Generally you can't access other players accounts.
-      if (!deletingAccount) {
-        throw new ServerError(GenericErrors.NotFound);
-      }
+      const deletingAccount = await this.getAuthorizedAccount(req.source, accountId, [AccountRole.Owner], t);
 
       if (!defaultAccount) {
         throw new ServerError(GenericErrors.MissingDefaultAccount);
@@ -385,7 +379,7 @@ export class AccountService {
     const t = await sequelize.transaction();
     try {
       if (req.data.accountId) {
-        await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [
+        await this.getAuthorizedAccount(req.source, req.data.accountId, [
           AccountRole.Contributor,
           AccountRole.Owner,
         ]);
@@ -440,7 +434,7 @@ export class AccountService {
     const t = await sequelize.transaction();
     try {
       if (accountId) {
-        await this._auth.isAuthorizedAccount(accountId, req.source, [AccountRole.Contributor, AccountRole.Owner]);
+        await this.getAuthorizedAccount(req.source, accountId, [AccountRole.Contributor, AccountRole.Owner]);
       }
 
       /* If framework is enabled, do a card check, otherwise continue. */
@@ -539,8 +533,7 @@ export class AccountService {
 
   async handleRenameAccount(req: Request<RenameAccountInput>) {
     logger.info(`Updating name for accountID: ${req.data.accountId} to: ${req.data.name}`);
-
-    await this._auth.isAuthorizedAccount(req.data.accountId, req.source, [AccountRole.Owner]);
+    await this.getAuthorizedAccount(req.source, req.data.accountId, [AccountRole.Owner]);
 
     const account = await this._accountDB.getAccountById(req.data.accountId);
     if (!account) {
@@ -561,9 +554,18 @@ export class AccountService {
     }));
   }
 
-  async getAuthorizedAccount(source: number, accountId: number): Promise<AccountModel | null> {
+  async getAuthorizedAccount(
+    source: number,
+    accountId: number,
+    roles?: AccountRole[],
+    t?: Transaction,
+  ): Promise<AccountModel> {
     const user = this._userService.getUser(source);
-    const account = await this._accountDB.getAuthorizedAccountById(accountId, user.getIdentifier());
+    const identifier = user.getIdentifier();
+
+    const account =
+      (await this._accountDB.getAuthorizedAccountById(accountId, identifier, t)) ??
+      (await this._sharedAccountDB.getAuthorizedSharedAccountById(accountId, identifier, roles ?? [], t));
 
     if (!account) {
       throw new ServerError(AuthorizationErrors.Forbidden);
@@ -800,13 +802,112 @@ export class AccountService {
       );
       await t.commit();
       logger.info(
-        `Successfully removed ${amount} from identifier ${identifier} (account ${account.getDataValue('id')})`,
+        `Successfully removed ${amount} from account ${account.getDataValue('id')} (identifier: ${identifier})`,
       );
     } catch (err) {
       logger.error(`Failed to remove money by identifier. Error: ${err.message}`);
       await t.rollback();
       throw err;
     }
+  }
+
+  private async handleInternalTransfer(req: Request<CreateTransferInput>) {
+    logger.silly('Creating internal transfer');
+    logger.silly(req);
+
+    const user = this._userService.getUser(req.source);
+    const identifier = user.getIdentifier();
+    const { fromAccountId, toAccountId, amount, message } = req.data;
+
+    if (amount <= 0) {
+      throw new ServerError(GenericErrors.BadInput);
+    }
+
+    const t = await sequelize.transaction();
+    try {
+      const fromAccount = await this.getAuthorizedAccount(req.source, fromAccountId, [AccountRole.Admin], t);
+      const toAccount = await this._accountDB.getAccountById(toAccountId);
+
+      if (!toAccount || !fromAccount) {
+        throw new ServerError(GenericErrors.NotFound);
+      }
+
+      if (fromAccount.getDataValue('balance') < amount) {
+        throw new ServerError(BalanceErrors.InsufficentFunds);
+      }
+
+      await this._accountDB.transfer({ amount, fromAccount, toAccount, transaction: t });
+      await this._transactionService.handleCreateTransaction(
+        {
+          amount: amount,
+          message: message,
+          toAccount: toAccount.toJSON(),
+          type: TransactionType.Transfer,
+          fromAccount: fromAccount.toJSON(),
+        },
+        t,
+      );
+
+      await t.commit();
+    } catch (e) {
+      await t.rollback();
+      logger.silly('Failed to create internal transfer');
+      logger.silly(e);
+      throw e;
+    }
+  }
+
+  private async handleExternalTransfer(req: Request<CreateTransferInput>) {
+    const amount = req.data.amount;
+
+    if (amount <= 0) {
+      throw new ServerError(GenericErrors.BadInput);
+    }
+
+    const t = await sequelize.transaction();
+    try {
+      const fromAccount = await this._accountDB.getAccountById(req.data.fromAccountId, t);
+      const toAccount = await this._externalAccountService.getAccountFromExternalAccount(req.data.toAccountId, t);
+
+      if (!toAccount || !fromAccount) {
+        throw new ServerError(GenericErrors.NotFound);
+      }
+
+      if (fromAccount.getDataValue('balance') < amount) {
+        throw new ServerError(BalanceErrors.InsufficentFunds);
+      }
+
+      await this._accountDB.transfer({ amount, fromAccount, toAccount, transaction: t });
+
+      const data = {
+        amount: req.data.amount,
+        message: req.data.message,
+        toAccount: toAccount.toJSON(),
+        fromAccount: fromAccount.toJSON(),
+      };
+      await this._transactionService.handleCreateTransaction({ ...data, type: TransactionType.Outgoing }, t);
+      await this._transactionService.handleCreateTransaction({ ...data, type: TransactionType.Incoming }, t);
+
+      await t.commit();
+    } catch (e) {
+      await t.rollback();
+      logger.silly('Failed to create external transfer');
+      logger.silly(e);
+      throw e;
+    }
+  }
+
+  async handleTransfer(req: Request<CreateTransferInput>) {
+    logger.debug(
+      `Transfering ${req.data.amount} from account ${req.data.fromAccountId} to ${req.data.toAccountId} ...`,
+    );
+
+    const isExternalTransfer = req.data.type === TransferType.External;
+    if (isExternalTransfer) {
+      return await this.handleExternalTransfer(req);
+    }
+
+    return await this.handleInternalTransfer(req);
   }
 
   async removeMoneyByAccountNumber(req: Request<UpdateBankBalanceByNumberInput>) {
@@ -861,7 +962,7 @@ export class AccountService {
   async createUniqueAccount(req: Request<CreateBasicAccountInput>) {
     logger.debug('Creating unique account ..');
 
-    const { identifier, name } = req.data;
+    const { identifier, name, type } = req.data;
 
     const existingAccount = await this._accountDB.getAccountsByIdentifier(req.data.identifier);
 

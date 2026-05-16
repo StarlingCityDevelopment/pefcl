@@ -1,151 +1,148 @@
-import Layout from '@components/Layout';
-import TransactionItem, { TransactionSkeleton } from '@components/TransactionItem';
-import Button from '@components/ui/Button';
-import Count from '@components/ui/Count';
-import { Typography } from '@components/ui/Typography';
-import { TransactionEvents } from '@typings/Events';
-import type { GetTransactionsResponse, Transaction } from '@typings/Transaction';
-import { cn } from '@utils/cn';
-import { DEFAULT_PAGINATION_LIMIT } from '@utils/constants';
-import { fetchNui } from '@utils/fetchNui';
-import { ChevronLeft, ChevronRight, History } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+// web/src/views/transactions/Transactions.tsx
+import Layout from "@components/Layout";
+import TransactionItem, { TransactionSkeleton } from "@components/TransactionItem";
+import Button from "@components/ui/Button";
+import Count from "@components/ui/Count";
+import { Typography } from "@ui/Typography";
+import { TransactionEvents } from "@typings/Events";
+import type { GetTransactionsResponse } from "@typings/Transaction";
+import { cn } from "@utils/cn";
+import { DEFAULT_PAGINATION_LIMIT } from "@utils/constants";
+import { fetchNui } from "@utils/fetchNui";
+import { ChevronLeft, ChevronRight, History } from 'lucide-solid';
+import { createSignal, createResource, Show, For, createMemo } from 'solid-js';
+import i18n from "@utils/i18n";
 
 const Transactions = () => {
-  const { t } = useTranslation();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [total, setTotal] = useState(0);
-  const [limit, setLimit] = useState(DEFAULT_PAGINATION_LIMIT);
-  const pages = Math.ceil(total / limit);
-  const [page, setPage] = useState(1);
+  const [limit, setLimit] = createSignal(DEFAULT_PAGINATION_LIMIT);
+  const [page, setPage] = createSignal(1);
+  
+  const offset = () => limit() * (page() - 1);
 
-  const offset = limit * (page - 1);
-  const to = offset + transactions.length;
+  const [data] = createResource(
+    () => ({ limit: limit(), offset: offset() }),
+    async ({ limit, offset }) => {
+      const res = await fetchNui<GetTransactionsResponse>(TransactionEvents.Get, {
+        limit,
+        offset,
+      });
+      return res;
+    }
+  );
+
+  const transactions = () => data()?.transactions || [];
+  const total = () => data()?.total || 0;
+  const pages = () => Math.ceil(total() / limit());
+  const to = () => offset() + transactions().length;
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= pages) {
+    if (newPage >= 1 && newPage <= pages()) {
       setPage(newPage);
     }
   };
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetchNui<GetTransactionsResponse>(TransactionEvents.Get, {
-      limit,
-      offset,
-    })
-      .then((res) => {
-        if (!res) {
-          setIsLoading(false);
-          return;
-        }
-
-        setLimit(res.limit);
-        setTotal(res.total);
-        setTransactions(res.transactions);
-        setIsLoading(false);
-      })
-      .catch(() => setIsLoading(false));
-  }, [offset, limit]);
-
   return (
-    <Layout title={t('Ledger History')}>
-      <div className='flex flex-col h-full overflow-hidden'>
-        <div className='flex items-center justify-between mb-5 px-0.5'>
-          <div className='flex items-center gap-3'>
-            <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
-              {t('Total Records')}
+    <Layout title={i18n.t('Ledger History')}>
+      <div class='flex flex-col h-full overflow-hidden'>
+        <div class='flex items-center justify-between mb-5 px-0.5'>
+          <div class='flex items-center gap-3'>
+            <Typography variant='pre' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
+              {i18n.t('Total Records')}
             </Typography>
-            <Count amount={total} />
+            <Count amount={total()} />
           </div>
         </div>
 
-        <div className='flex-1 overflow-y-auto pr-1 custom-scrollbar flex flex-col gap-1.5 min-h-0'>
-          {isLoading ? (
-            /* biome-ignore lint/suspicious/noArrayIndexKey: indices are stable for static skeleton list */
-            Array.from({ length: 8 }).map((_, i) => <TransactionSkeleton key={i} />)
-          ) : transactions.length > 0 ? (
-            transactions.map((transaction) => <TransactionItem transaction={transaction} key={transaction.id} />)
-          ) : (
-            <div className='flex flex-col items-center justify-center py-32 bg-[var(--gta-panel)] border border-dashed border-[var(--gta-border)] opacity-50 gap-3'>
-              <History className='w-10 h-10 text-[var(--gta-text-dim)]' />
-              <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
-                {t('Archive empty. No activity detected.')}
-              </Typography>
-            </div>
-          )}
+        <div class='flex-1 overflow-y-auto pr-1 custom-scrollbar flex flex-col gap-1.5 min-h-0'>
+          <Show 
+            when={!data.loading} 
+            fallback={
+                <For each={Array.from({ length: 8 })}>
+                    {() => <TransactionSkeleton />}
+                </For>
+            }
+          >
+            <Show 
+                when={transactions().length > 0} 
+                fallback={
+                    <div class='flex flex-col items-center justify-center py-32 bg-[var(--gta-panel)] border border-dashed border-[var(--gta-border)] opacity-50 gap-3'>
+                        <History size={40} class='text-[var(--gta-text-dim)]' />
+                        <Typography variant='pre' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
+                            {i18n.t('Archive empty. No activity detected.')}
+                        </Typography>
+                    </div>
+                }
+            >
+                <For each={transactions()}>
+                    {(transaction) => <TransactionItem transaction={transaction} />}
+                </For>
+            </Show>
+          </Show>
         </div>
 
-        <div className='mt-6 py-5 flex flex-row items-center justify-between border-t border-[var(--gta-border)]'>
-          <div className='flex flex-col'>
-            <Typography variant='pre' className='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
-              {t('Registry Pagination')}
+        <div class='mt-6 py-5 flex flex-row items-center justify-between border-t border-[var(--gta-border)]'>
+          <div class='flex flex-col'>
+            <Typography variant='pre' class='text-[var(--gta-text-dim)] font-bold uppercase tracking-[0.15em] text-[10px]'>
+              {i18n.t('Registry Pagination')}
             </Typography>
-            <Typography className='text-xs font-bold text-[var(--gta-text)] tracking-wide'>
-              {t('Showing {{from}}-{{to}} of {{total}} results', { from: offset + 1, to, total })}
+            <Typography class='text-xs font-bold text-[var(--gta-text)] tracking-wide'>
+              {i18n.t('Showing {{from}}-{{to}} of {{total}} results', { from: offset() + 1, to: to(), total: total() })}
             </Typography>
           </div>
 
-          <div className='flex items-center gap-2'>
+          <div class='flex items-center gap-2'>
             <Button
               variant='secondary'
               size='icon'
-              disabled={page === 1}
-              onClick={() => handlePageChange(page - 1)}
-              className='h-8 w-8'
+              disabled={page() === 1}
+              onClick={() => handlePageChange(page() - 1)}
+              class='h-8 w-8'
             >
-              <ChevronLeft className='w-4 h-4 opacity-60' />
+              <ChevronLeft size={16} class='opacity-60' />
             </Button>
 
-            <div className='flex items-center gap-1 px-3 py-1.5 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
-              {[...Array(pages)].map((_, i) => {
-                // Only show current, first, last, and neighbors if many pages
-                const isNear = Math.abs(page - (i + 1)) <= 1;
-                const isEnd = i === 0 || i === pages - 1;
+            <div class='flex items-center gap-1 px-3 py-1.5 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
+              <For each={Array.from({ length: pages() })}>
+                {(_, i) => {
+                  const isNear = () => Math.abs(page() - (i() + 1)) <= 1;
+                  const isEnd = () => i() === 0 || i() === pages() - 1;
+                  const shouldShow = () => isNear() || isEnd() || pages() <= 5;
 
-                if (!isNear && !isEnd && pages > 5) {
-                  if (i === 1 || i === pages - 2)
-                    return (
-                      <span
-                        // biome-ignore lint/suspicious/noArrayIndexKey: stable list
-                        key={`tx-page-ellipsis-${i}`}
-                        className='text-(--gta-text-dim) font-bold text-xs'
-                      >
-                        ..
-                      </span>
-                    );
-                  return null;
-                }
-
-                return (
-                  <button
-                    type='button'
-                    // biome-ignore lint/suspicious/noArrayIndexKey: stable list
-                    key={`tx-page-${i}`}
-                    onClick={() => handlePageChange(i + 1)}
-                    className={cn(
-                      'w-7 h-7 text-[10px] font-bold tracking-wide transition-all uppercase',
-                      page === i + 1
-                        ? 'bg-(--gta-green) text-black'
-                        : 'text-(--gta-text-dim) hover:text-(--gta-text) hover:bg-(--gta-surface)',
-                    )}
-                  >
-                    {i + 1}
-                  </button>
-                );
-              })}
+                  return (
+                    <Show 
+                        when={shouldShow()} 
+                        fallback={
+                            <Show when={i() === 1 || i() === pages() - 2}>
+                                <span class='text-(--gta-text-dim) font-bold text-xs'>..</span>
+                            </Show>
+                        }
+                    >
+                        <button
+                            type='button'
+                            onClick={() => handlePageChange(i() + 1)}
+                            class={cn(
+                            'w-7 h-7 text-[10px] font-bold tracking-wide transition-all uppercase',
+                            page() === i() + 1
+                                ? 'bg-(--gta-green) text-black'
+                                : 'text-(--gta-text-dim) hover:text-(--gta-text) hover:bg-(--gta-surface)',
+                            )}
+                        >
+                            {i() + 1}
+                        </button>
+                    </Show>
+                  );
+                }}
+              </For>
             </div>
 
             <Button
               variant='secondary'
               size='icon'
-              disabled={page === pages || pages === 0}
-              onClick={() => handlePageChange(page + 1)}
-              className='h-8 w-8'
+              disabled={page() === pages() || pages() === 0}
+              onClick={() => handlePageChange(page() + 1)}
+              class='h-8 w-8'
             >
-              <ChevronRight className='w-4 h-4 opacity-60' />
+              <ChevronRight size={16} class='opacity-60' />
             </Button>
           </div>
         </div>

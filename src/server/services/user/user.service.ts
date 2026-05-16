@@ -3,14 +3,12 @@ import { UserEvents } from '@server/../../typings/Events';
 import { mainLogger } from '@server/sv_logger';
 import { GenericErrors } from '@typings/Errors';
 import { ServerError } from '@utils/errors';
-import { singleton } from 'tsyringe';
 import type { OnlineUser, UserDTO } from '../../../../typings/user';
 import { getPlayerIdentifier, getPlayerName } from '../../utils/misc';
 import { UserModule } from './user.module';
 
 const logger = mainLogger.child({ module: 'user' });
 
-@singleton()
 export class UserService {
   private readonly usersBySource = new Map<number, UserModule>();
   private loadedSources: number[] = [];

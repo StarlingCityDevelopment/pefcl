@@ -1,34 +1,37 @@
-import { cn } from '@utils/cn';
-import type React from 'react';
+// web/src/components/ui/Status.tsx
+import { cn } from "@utils/cn";
+import { type Component, splitProps } from 'solid-js';
 
 type StatusColor = 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 
 interface StatusProps {
   label: string;
   color: StatusColor;
-  className?: string;
+  class?: string;
 }
 
 const colorMap: Record<StatusColor, string> = {
-  default: 'text-[var(--gta-text-muted)] bg-[var(--gta-surface)] border-[var(--gta-border)]',
-  primary: 'text-[var(--gta-green)] bg-[var(--gta-green)]/10 border-[var(--gta-green)]/30',
-  secondary: 'text-[var(--gta-text-muted)] bg-[var(--gta-surface)] border-[var(--gta-border)]',
-  error: 'text-[var(--gta-red)] bg-[var(--gta-red)]/10 border-[var(--gta-red)]/30',
-  info: 'text-[var(--gta-cyan)] bg-[var(--gta-cyan)]/10 border-[var(--gta-cyan)]/30',
-  success: 'text-[var(--gta-green)] bg-[var(--gta-green)]/10 border-[var(--gta-green)]/30',
-  warning: 'text-[var(--gta-yellow)] bg-[var(--gta-yellow)]/10 border-[var(--gta-yellow)]/30',
+  default: 'text-text-muted bg-bg-surface border-border-main',
+  primary: 'text-primary bg-primary/10 border-primary/20',
+  secondary: 'text-text-muted bg-bg-surface border-border-main',
+  error: 'text-red-400 bg-red-400/10 border-red-400/20',
+  info: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
+  success: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
+  warning: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
 };
 
-const Status: React.FC<StatusProps> = ({ label, color, className }) => {
+const Status: Component<StatusProps> = (props) => {
+  const [local] = splitProps(props, ['label', 'color', 'class']);
+  
   return (
     <div
-      className={cn(
-        'inline-flex items-center px-2.5 py-1 border text-[10px] font-bold uppercase tracking-[0.15em] leading-none transition-all',
-        colorMap[color],
-        className,
+      class={cn(
+        'inline-flex items-center px-2.5 py-1 border text-[10px] font-black uppercase tracking-[0.1em] leading-none transition-all font-mono',
+        colorMap[local.color],
+        local.class,
       )}
     >
-      {label}
+      {local.label}
     </div>
   );
 };

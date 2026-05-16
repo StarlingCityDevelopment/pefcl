@@ -1,5 +1,6 @@
-import { fetchNui } from '@utils/fetchNui';
-import { useState } from 'react';
+// web/src/hooks/useMutation.ts
+import { fetchNui } from "@utils/fetchNui";
+import { createSignal } from 'solid-js';
 
 interface MutationOptions<T> {
   onSuccess?: (data: T) => void;
@@ -10,10 +11,9 @@ interface MutationOptions<T> {
 /**
  * A hook for handling NUI mutations (POST requests with side effects).
  * Manages loading state and error handling.
- * TODO: Implement a custom monochrome notification system to replace notistack.
  */
 export const useMutation = <T = unknown, I = unknown>(event: string, options?: MutationOptions<T>) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = createSignal(false);
 
   const mutate = async (data?: I) => {
     setIsLoading(true);

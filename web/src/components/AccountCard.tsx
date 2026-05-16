@@ -1,11 +1,12 @@
-import { type Account, AccountType } from '@typings/Account';
-import { cn } from '@utils/cn';
+// web/src/components/AccountCard.tsx
+import { type Account, AccountType } from "@typings/Account";
+import { cn } from "@utils/cn";
 import copy from 'copy-to-clipboard';
-import { Copy, Star } from 'lucide-react';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useConfig } from '../hooks/useConfig';
-import { formatMoney } from '../utils/currency';
+import { Copy, Star } from 'lucide-solid';
+import { Show } from 'solid-js';
+import i18n from "@utils/i18n";
+import { useConfig } from "@hooks/useConfig";
+import { formatMoney } from "@utils/currency";
 import { Skeleton } from './ui/Base';
 import { Typography } from './ui/Typography';
 
@@ -16,81 +17,79 @@ type AccountCardProps = {
   isDisabled?: boolean;
 };
 
-export const AccountCard = ({ account, selected = false, withCopy = false, isDisabled = false }: AccountCardProps) => {
-  const { type, balance, isDefault, accountName, number } = account;
-  const { t } = useTranslation();
+export const AccountCard = (props: AccountCardProps) => {
   const config = useConfig();
 
   return (
     <div
-      className={cn(
-        'group relative flex flex-col justify-between h-[130px] w-full p-4',
-        'bg-[var(--gta-panel)] border border-[var(--gta-border)]',
-        'transition-all duration-150 cursor-pointer select-none',
-        'hover:border-[var(--gta-green)]/50 hover:bg-[var(--gta-surface)]',
-        selected && 'border-[var(--gta-green)] bg-[var(--gta-green)]/5 shadow-[0_0_15px_var(--gta-green-glow)]',
-        isDisabled && 'opacity-30 grayscale pointer-events-none',
+      class={cn(
+        'group relative flex flex-col justify-between h-[130px] w-full p-5',
+        'bg-bg-panel border border-border-main',
+        'transition-all duration-200 cursor-pointer select-none shadow-sm',
+        'hover:border-primary/40 hover:bg-bg-surface hover:shadow-premium',
+        props.selected && 'border-primary bg-primary/5 shadow-premium',
+        props.isDisabled && 'opacity-30 grayscale pointer-events-none',
       )}
     >
-      {/* GTA accent line */}
+      {/* Active indicator */}
       <div
-        className={cn(
-          'absolute top-0 left-0 right-0 h-[2px] transition-all',
-          selected ? 'bg-[var(--gta-green)]' : 'bg-[var(--gta-border)] group-hover:bg-[var(--gta-green)]/40',
+        class={cn(
+          'absolute top-0 left-0 right-0 h-[2px] transition-all duration-300',
+          props.selected ? 'bg-primary' : 'bg-transparent group-hover:bg-primary/30',
         )}
       />
 
-      <div className='relative z-10 flex justify-between items-start gap-4'>
-        <div className='flex flex-col gap-0.5 min-w-0'>
-          <Typography variant='label' className='text-[9px] text-[var(--gta-text-dim)] group-hover:text-[var(--gta-text-muted)]'>
-            {t('Balance')}
+      <div class='relative z-10 flex justify-between items-start gap-4'>
+        <div class='flex flex-col gap-1 min-w-0'>
+          <Typography variant='label' class='text-[9px] text-text-muted font-sans font-bold'>
+            {i18n.t('Balance')}
           </Typography>
-          <Typography variant='h3' className='text-xl font-bold leading-none text-[var(--gta-green)]'>
-            {formatMoney(balance, config.general)}
+          <Typography variant='h3' class='text-2xl font-display font-black leading-none text-primary'>
+            {formatMoney(props.account.balance, config()?.general)}
           </Typography>
         </div>
-        <div className='flex flex-wrap justify-end gap-1.5 shrink-0'>
-          {isDefault && (
-            <div className='flex items-center gap-1 px-2 py-0.5 bg-[var(--gta-yellow)] text-black'>
-              <Star className='w-2 h-2 fill-black' />
-              <Typography variant='pre' className='text-[7px] font-bold tracking-[0.1em] text-black'>
-                {t('DEFAULT')}
+        <div class='flex flex-wrap justify-end gap-2 shrink-0'>
+          <Show when={props.account.isDefault}>
+            <div class='flex items-center gap-1 px-2 py-0.5 bg-amber-400 text-black'>
+              <Star size={8} class='fill-black' />
+              <Typography variant='pre' class='text-[7px] font-black tracking-[0.1em] text-black'>
+                {i18n.t('DEFAULT')}
               </Typography>
             </div>
-          )}
-          <div className='flex items-center gap-1 px-2 py-0.5 bg-[var(--gta-surface)] border border-[var(--gta-border)]'>
-            <div className={cn('w-1 h-1', type === AccountType.Shared ? 'bg-[var(--gta-cyan)]' : 'bg-[var(--gta-text-dim)]')} />
-            <Typography variant='pre' className='text-[7px] text-[var(--gta-text-dim)] font-bold tracking-[0.15em]'>
-              {type === AccountType.Shared ? t('SHARED') : t('PERSONAL')}
+          </Show>
+          <div class='flex items-center gap-1.5 px-2 py-1 bg-bg-surface border border-border-main'>
+            <div class={cn('w-1.5 h-1.5 rounded-full', props.account.type === AccountType.Shared ? 'bg-blue-500' : 'bg-slate-400')} />
+            <Typography variant='pre' class='text-[7px] text-text-muted font-bold tracking-[0.15em] font-mono'>
+              {props.account.type === AccountType.Shared ? i18n.t('SHARED') : i18n.t('PERSONAL')}
             </Typography>
           </div>
         </div>
       </div>
 
-      <div className='relative z-10 flex justify-between items-end'>
-        <div className='flex flex-col gap-1'>
-          <div className='flex items-center gap-2'>
+      <div class='relative z-10 flex justify-between items-end'>
+        <div class='flex flex-col gap-1.5 min-w-0'>
+          <div class='flex items-center gap-2'>
             <Typography
               variant='pre'
-              className='text-[9px] text-[var(--gta-text-dim)] font-medium tracking-[0.15em] font-mono opacity-70 group-hover:opacity-100 group-hover:text-[var(--gta-text-muted)] transition-all'
+              class='text-[9px] text-text-muted font-bold tracking-[0.2em] font-mono group-hover:text-primary/70 transition-all'
             >
-              {number}
+              {props.account.number}
             </Typography>
-            {withCopy && (
+            <Show when={props.withCopy}>
               <button
                 type='button'
                 onClick={(e) => {
                   e.stopPropagation();
-                  copy(number);
+                  copy(props.account.number);
                 }}
-                className='p-0.5 text-[var(--gta-text-dim)] hover:text-[var(--gta-green)] transition-all active:scale-90'
+                class='p-1 text-text-muted hover:text-primary transition-all active:scale-90'
               >
-                <Copy className='w-2.5 h-2.5' />
+                <Copy size={10} />
               </button>
-            )}
+            </Show>
           </div>
-          <Typography className='text-sm font-bold text-[var(--gta-text)] tracking-wide uppercase truncate max-w-[160px]'>
-            {accountName}
+          <Typography class='text-sm font-sans font-black text-fg-main tracking-tight uppercase truncate max-w-[200px]'>
+            {props.account.accountName}
           </Typography>
         </div>
       </div>
@@ -100,18 +99,18 @@ export const AccountCard = ({ account, selected = false, withCopy = false, isDis
 
 export const LoadingAccountCard = () => {
   return (
-    <div className='flex flex-col justify-between h-[130px] w-full p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)] animate-pulse'>
-      <div className='space-y-3'>
-        <div className='flex justify-between'>
-          <Skeleton className='w-24 h-3' />
-          <Skeleton className='w-16 h-4' />
+    <div class='flex flex-col justify-between h-[130px] w-full p-4 bg-[var(--gta-panel)] border border-[var(--gta-border)] animate-pulse'>
+      <div class='space-y-3'>
+        <div class='flex justify-between'>
+          <Skeleton class='w-24 h-3' />
+          <Skeleton class='w-16 h-4' />
         </div>
-        <Skeleton className='w-[60%] h-6' />
+        <Skeleton class='w-[60%] h-6' />
       </div>
-      <div className='flex justify-between items-end'>
-        <div className='space-y-1'>
-          <Skeleton className='w-32 h-3' />
-          <Skeleton className='w-24 h-4' />
+      <div class='flex justify-between items-end'>
+        <div class='space-y-1'>
+          <Skeleton class='w-32 h-3' />
+          <Skeleton class='w-24 h-4' />
         </div>
       </div>
     </div>

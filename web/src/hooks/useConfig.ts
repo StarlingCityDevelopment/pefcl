@@ -1,8 +1,8 @@
-import { useAtom } from 'jotai';
+// web/src/hooks/useConfig.ts
+import type { Resource } from 'solid-js';
 import type { ResourceConfig } from '../../../typings/config';
-import { configAtom } from '../data/resourceConfig';
+import { configResource } from "@data/resourceConfig";
 
-export const useConfig = (): ResourceConfig => {
-  const [config] = useAtom(configAtom);
-  return config;
+export const useConfig = (): Resource<ResourceConfig> => {
+  return configResource;
 };

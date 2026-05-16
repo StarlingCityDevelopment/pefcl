@@ -1,43 +1,37 @@
+// src/server/decorators/Event.ts
+
 export const OnEvent = (eventName: string) => {
-  return (target: object, key: string): void => {
-    if (!Reflect.hasMetadata('events', target)) {
-      Reflect.defineMetadata('events', [], target);
+  return (target: any, key: string): void => {
+    if (!target.__events__) {
+      target.__events__ = [];
     }
 
-    const netEvents = Reflect.getMetadata('events', target) as Array<any>;
-
-    netEvents.push({
+    target.__events__.push({
       eventName,
       key: key,
       net: false,
     });
-
-    Reflect.defineMetadata('events', netEvents, target);
   };
 };
 
 export const NetEvent = (eventName: string) => {
   return (target: any, key: string): void => {
-    if (!Reflect.hasMetadata('events', target)) {
-      Reflect.defineMetadata('events', [], target);
+    if (!target.__events__) {
+      target.__events__ = [];
     }
 
-    const netEvents = Reflect.getMetadata('events', target) as Array<any>;
-
-    netEvents.push({
+    target.__events__.push({
       eventName,
       key: key,
       net: true,
     });
-
-    Reflect.defineMetadata('events', netEvents, target);
   };
 };
 
 export const EventListener = () => (ctor: any) => ctor;
 
 export const registerEvents = (instance: any) => {
-  const events = Reflect.getMetadata('events', instance) as Array<any>;
+  const events = instance.__events__ || instance.constructor.prototype.__events__;
   if (!events) return;
 
   for (const { net, eventName, key } of events) {

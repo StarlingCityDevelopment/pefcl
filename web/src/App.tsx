@@ -1,69 +1,55 @@
-import Devbar from '@components/DebugBar';
-import { accountsAtom, rawAccountAtom } from '@data/accounts';
-import { transactionBaseAtom, transactionInitialState } from '@data/transactions';
-import { BroadcastsWrapper } from '@hooks/useBroadcasts';
-import { useExitListener } from '@hooks/useExitListener';
-import { useNuiEvent } from '@hooks/useNuiEvent';
-import { GeneralEvents, NUIEvents, UserEvents } from '@typings/Events';
-import { fetchNui } from '@utils/fetchNui';
+// web/src/App.tsx
+import Devbar from "@components/DebugBar";
+import Shell from "@components/layout/Shell";
+import { setRawAccounts, refetchAccounts } from "@data/accounts";
+import { refetchTransactions } from "@data/transactions";
+import { BroadcastsWrapper } from "@hooks/useBroadcasts";
+import { useExitListener } from "@hooks/useExitListener";
+import { useGlobalSettings } from "@hooks/useGlobalSettings";
+import { useLBPhoneSettings } from "@hooks/useLBPhoneSettings";
+import { useLBTabletSettings } from "@hooks/useLBTabletSettings";
+import { useNuiEvent } from "@hooks/useNuiEvent";
+import { GeneralEvents, NUIEvents, UserEvents } from "@typings/Events";
+import { fetchNui } from "@utils/fetchNui";
 import dayjs from 'dayjs';
 import 'dayjs/locale/sv';
 import updateLocale from 'dayjs/plugin/updateLocale';
-import { useSetAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Route, Routes } from 'react-router';
-import './App.css';
-import Shell from '@components/layout/Shell';
-import { useGlobalSettings } from '@hooks/useGlobalSettings';
-import { useLBPhoneSettings } from '@hooks/useLBPhoneSettings';
-import { useLBTabletSettings } from '@hooks/useLBTabletSettings';
-import { useConfig } from './hooks/useConfig';
-import ATM from './views/ATM/ATM';
-import CardsView from './views/Cards/CardsView';
-import Deposit from './views/Deposit/Deposit';
-import Invoices from './views/Invoices/Invoices';
-import MobileApp from './views/Mobile/Mobile';
-import Withdraw from './views/Withdraw/Withdraw';
-import Accounts from './views/accounts/Accounts';
-import Dashboard from './views/dashboard/Dashboard';
-import Transactions from './views/transactions/Transactions';
-import Transfer from './views/transfer/Transfer';
-import { t } from 'i18next';
 
 dayjs.extend(updateLocale);
+import { createSignal, onMount, onCleanup, createEffect, Suspense, Show, lazy } from 'solid-js';
+import { Route, useNavigate, useLocation, type RouteSectionProps } from "@solidjs/router";
+import i18n from "@utils/i18n";
+import { useConfig } from "@hooks/useConfig";
+import './App.css';
 
-// Layout moved to @components/layout/Shell
+const ATM = lazy(() => import('./views/ATM/ATM'));
+const MobileApp = lazy(() => import('./views/Mobile/Mobile'));
 
-const App: React.FC = () => {
+const App = (props: RouteSectionProps) => {
   const config = useConfig();
-  const setRawAccounts = useSetAtom(rawAccountAtom);
-  const setAccounts = useSetAtom(accountsAtom);
-  const setTransactions = useSetAtom(transactionBaseAtom);
-  const [isAtmVisible, setIsAtmVisible] = useState(false);
-  const [isVisible, setIsVisible] = useState(process.env.NODE_ENV === 'development');
+  const [isAtmVisible, setIsAtmVisible] = createSignal(false);
+  const [isVisible, setIsVisible] = createSignal(process.env.NODE_ENV === 'development');
   const { isMobile } = useGlobalSettings();
   const LBPhoneSettings = useLBPhoneSettings();
   const LBTabletSettings = useLBTabletSettings();
 
-  const [hasLoaded, setHasLoaded] = useState(process.env.NODE_ENV === 'development' || isMobile);
+  const [hasLoaded, setHasLoaded] = createSignal(process.env.NODE_ENV === 'development' || isMobile());
 
   useNuiEvent(UserEvents.Loaded, () => setHasLoaded(true));
   useNuiEvent(UserEvents.Unloaded, () => {
     setHasLoaded(false);
-    setAccounts([]);
     setRawAccounts([]);
-    setTransactions();
+    refetchAccounts();
+    refetchTransactions();
     fetchNui(GeneralEvents.CloseUI);
-    setTransactions(transactionInitialState);
   });
 
-  useEffect(() => {
+  onMount(() => {
     fetchNui(NUIEvents.Loaded);
-    return () => {
+    onCleanup(() => {
       fetchNui(NUIEvents.Unloaded);
-    };
-  }, []);
+    });
+  });
 
   useNuiEvent('setVisible', (data) => {
     setIsVisible(data as boolean);
@@ -74,61 +60,38 @@ const App: React.FC = () => {
     if (data) setHasLoaded(true);
   });
 
-  const { i18n } = useTranslation();
   useExitListener(isVisible);
 
-  useEffect(() => {
-    i18n
-      .changeLanguage(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language)
-      .catch((e) => console.error(e));
-  }, [i18n, config, LBPhoneSettings, LBTabletSettings]);
-
-  useEffect(() => {
-    dayjs.locale(LBPhoneSettings?.locale ?? LBTabletSettings?.locale ?? config?.general?.language ?? 'en');
-  }, [config, LBPhoneSettings, LBTabletSettings]);
-
-  if (!hasLoaded) {
-    return null;
-  }
+  createEffect(() => {
+    const lang = LBPhoneSettings()?.locale ?? LBTabletSettings()?.locale ?? config()?.general?.language;
+    if (lang && i18n.isInitialized && i18n.language !== lang) {
+      i18n.changeLanguage(lang).catch((e) => console.error(e));
+      dayjs.locale(lang);
+    }
+  });
 
   return (
-    <>
-      {process.env.NODE_ENV === 'development' && <Devbar />}
+    <Show when={hasLoaded()}>
+      <Show when={process.env.NODE_ENV === 'development'}>
+        <Devbar />
+      </Show>
 
-      <React.Suspense fallback={t('Loading bank')}>
-        {!isAtmVisible && isVisible && !isMobile && (
-          <Shell>
-            <Routes>
-              <Route path='/' element={<Dashboard />} />
-              <Route path='accounts' element={<Accounts />} />
-              <Route path='transactions' element={<Transactions />} />
-              <Route path='invoices' element={<Invoices />} />
-              <Route path='transfer' element={<Transfer />} />
-              <Route path='deposit' element={<Deposit />} />
-              <Route path='withdraw' element={<Withdraw />} />
-              <Route path='cards' element={<CardsView />} />
-            </Routes>
-          </Shell>
-        )}
-      </React.Suspense>
+      <Suspense fallback={<div class='flex items-center justify-center min-h-screen bg-black text-white font-bold uppercase tracking-widest text-[10px]'>Initializing...</div>}>
+        <Show when={isAtmVisible()}>
+          <ATM />
+        </Show>
 
-      <React.Suspense fallback={null}>
-        <ATM />
-      </React.Suspense>
+        <Show when={!isAtmVisible() && isMobile()}>
+           <MobileApp>{props.children}</MobileApp>
+        </Show>
 
-      {!isAtmVisible && isMobile && (
-        <React.Suspense fallback={null}>
-          <Routes>
-            <Route path='*' element={<MobileApp />} />
-          </Routes>
-        </React.Suspense>
-      )}
+        <Show when={!isAtmVisible() && isVisible() && !isMobile()}>
+          <Shell>{props.children}</Shell>
+        </Show>
+      </Suspense>
 
-      {/* No fallback needed for BroadcastsWrapper as it renders nothing visible */}
-      <React.Suspense fallback={null}>
-        <BroadcastsWrapper />
-      </React.Suspense>
-    </>
+      <BroadcastsWrapper />
+    </Show>
   );
 };
 

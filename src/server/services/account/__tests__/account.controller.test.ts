@@ -1,3 +1,5 @@
+// src/server/services/account/__tests__/account.controller.test.ts
+/// <reference types="jest" />
 import {
   type ATMInput,
   AccountRole,
@@ -6,15 +8,18 @@ import {
   type ExternalAccount,
 } from '@server/../../typings/Account';
 import { AccountEvents, ExternalAccountEvents, SharedAccountEvents } from '@server/../../typings/Events';
-import { container } from 'tsyringe';
 import { AccountController } from '../account.controller';
 import type { RemoveFromSharedAccountInput } from '../account.db';
+import { AccountService } from '../account.service';
+
+import { ExternalAccountService } from '../../accountExternal/externalAccount.service';
 
 jest.mock('../account.service');
-jest.mock('../../auth/auth.service');
+
 jest.mock('../../accountExternal/externalAccount.service');
 
-const controller = container.resolve(AccountController);
+const accountService = new AccountService({} as any, {} as any, {} as any, {} as any, {} as any, {} as any, {} as any);
+const controller = new AccountController(accountService, externalAccountService);
 
 const src = 80085;
 beforeEach(() => {
@@ -23,7 +28,7 @@ beforeEach(() => {
 });
 
 const auth = async () => {
-  expect(controller._auth.isAuthorizedAccount).toHaveBeenCalledTimes(1);
+  expect(controller._accountService.getAuthorizedAccount).toHaveBeenCalledTimes(1);
 };
 
 describe('Controller: account', () => {
@@ -155,7 +160,7 @@ describe('Controller: account', () => {
 
       emitNet(SharedAccountEvents.GetUsers, 'resp', payload);
 
-      expect(await controller._auth.isAuthorizedAccount).toHaveBeenCalledWith(4, src, [
+      expect(await controller._accountService.getAuthorizedAccount).toHaveBeenCalledWith(src, 4, [
         AccountRole.Admin,
         AccountRole.Contributor,
       ]);

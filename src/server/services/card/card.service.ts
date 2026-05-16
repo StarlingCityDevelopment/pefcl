@@ -21,7 +21,6 @@ import { sequelize } from '@server/utils/pool';
 import type { Request } from '@typings/http';
 import i18next from '@utils/i18n';
 import { config } from '@utils/server-config';
-import { singleton } from 'tsyringe';
 import { mainLogger } from '../../sv_logger';
 import { AccountDB } from '../account/account.db';
 import { AccountService } from '../account/account.service';
@@ -31,7 +30,6 @@ import { CardDB } from './card.db';
 const logger = mainLogger.child({ module: 'card' });
 const isFrameworkIntegrationEnabled = config?.frameworkIntegration?.enabled;
 
-@singleton()
 export class CardService {
   cardDB: CardDB;
   accountDB: AccountDB;

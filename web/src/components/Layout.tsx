@@ -1,40 +1,38 @@
-import { cn } from '@utils/cn';
-import { Loader2 } from 'lucide-react';
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+// web/src/components/Layout.tsx
+import { cn } from "@utils/cn";
+import { Loader2 } from 'lucide-solid';
+import { type ParentProps, Show, Suspense } from 'solid-js';
+import i18n from "@utils/i18n";
 import { Typography } from './ui/Typography';
 
-interface LayoutProps {
+interface LayoutProps extends ParentProps {
   title?: string;
-  children: React.ReactNode;
-  className?: string;
+  class?: string;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, title, className }) => {
-  const { t } = useTranslation();
-
+const Layout = (props: LayoutProps) => {
   return (
-    <div className={cn('relative p-5 w-full h-full flex flex-col', className)}>
-      {title && (
-        <div className='mb-4 pb-3 border-b border-[var(--gta-border)]'>
-          <Typography variant='h2' className='text-[var(--gta-text)] font-bold tracking-[0.15em] text-base'>
-            {title}
+    <div class={cn('relative p-5 w-full h-full flex flex-col', props.class)}>
+      <Show when={props.title}>
+        <div class='mb-6 pb-4 border-b border-border-main'>
+          <Typography variant='h2' class='text-fg-main font-display font-black tracking-[0.1em] text-lg'>
+            {props.title}
           </Typography>
         </div>
-      )}
+      </Show>
 
-      <React.Suspense
+      <Suspense
         fallback={
-          <div className='flex flex-col items-center justify-center h-full gap-3 text-[var(--gta-text-dim)]'>
-            <Loader2 className='w-5 h-5 animate-spin text-[var(--gta-green)] opacity-60' />
-            <Typography variant='pre' className='text-[var(--gta-text-dim)]'>
-              {t('Securely loading {{name}}', { name: title || '' })}
+          <div class='flex flex-col items-center justify-center h-full gap-4 text-text-muted'>
+            <Loader2 size={24} class='animate-spin text-primary opacity-80' />
+            <Typography variant='pre' class='text-text-muted font-mono'>
+              {i18n.t('ESTABLISHING SECURE LINK...', { name: props.title || '' })}
             </Typography>
           </div>
         }
       >
-        {children}
-      </React.Suspense>
+        {props.children}
+      </Suspense>
     </div>
   );
 };

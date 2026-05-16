@@ -19,7 +19,8 @@
     "strictNullChecks": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "baseUrl": ".",
     "types": ["node", "jest"],
     "paths": {
