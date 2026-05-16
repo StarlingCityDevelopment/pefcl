@@ -49,7 +49,9 @@ const load = async () => {
   });
 };
 
-load();
+load().catch((err) => {
+  console.error('Failed to initialize i18n:', err);
+});
 
 export type TranslateFunction = (typeof i18n)['t'];
 

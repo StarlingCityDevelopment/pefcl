@@ -107,13 +107,13 @@ const addMobileApp = async (lbProduct: string) => {
       defaultApp: false, // OPTIONAL if set to true, app should be added without having to download it,
       size: 59812, // OPTIONAL in kb
       images: [
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_1.png`,
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_2.png`,
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_3.png`,
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/tablet_4.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/tablet_1.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/tablet_2.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/tablet_3.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/tablet_4.png`,
       ], // OPTIONAL array of images for the app on the app store
-      ui: `https://cfx-nui-${resourceName}/web/dist/index.html#/mobile/dashboard`, // -- this is the path to the HTML file
-      icon: `https://cfx-nui-${resourceName}/web/dist/media/app.png`, // -- OPTIONAL app icon
+      ui: `https://cfx-nui-${resourceName}/web/index.html#/mobile/dashboard`, // -- this is the path to the HTML file
+      icon: `https://cfx-nui-${resourceName}/web/assets/media/app.png`, // -- OPTIONAL app icon
     });
   } else if (lbProduct === 'lb-phone') {
     const lbPhoneExports = global.exports['lb-phone'];
@@ -126,13 +126,13 @@ const addMobileApp = async (lbProduct: string) => {
       defaultApp: false, // OPTIONAL if set to true, app should be added without having to download it,
       size: 59812, // OPTIONAL in kb
       images: [
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_1.png`,
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_2.png`,
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_3.png`,
-        `https://cfx-nui-${resourceName}/web/dist/media/appstore/phone_4.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/phone_1.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/phone_2.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/phone_3.png`,
+        `https://cfx-nui-${resourceName}/web/assets/media/appstore/phone_4.png`,
       ], // OPTIONAL array of images for the app on the app store
-      ui: `https://cfx-nui-${resourceName}/web/dist/index.html#/mobile/dashboard`, // -- this is the path to the HTML file
-      icon: `https://cfx-nui-${resourceName}/web/dist/media/app.png`, // -- OPTIONAL app icon
+      ui: `https://cfx-nui-${resourceName}/web/index.html#/mobile/dashboard`, // -- this is the path to the HTML file
+      icon: `https://cfx-nui-${resourceName}/web/assets/media/app.png`, // -- OPTIONAL app icon
     });
   }
 };

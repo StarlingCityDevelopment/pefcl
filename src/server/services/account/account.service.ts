@@ -57,7 +57,7 @@ export class AccountService {
     private readonly _transactionService: TransactionService,
     private readonly _cardDB: CardDB,
     private readonly _auth: AuthService,
-  ) {}
+  ) { }
 
   private async getMyAccounts(source: number) {
     const user = this._userService.getUser(source);

@@ -1,4 +1,4 @@
-import { Event, EventListener } from '@decorators/Event';
+import { EventListener, OnEvent } from '@decorators/Event';
 import { Export, ExportListener } from '@decorators/Export';
 import type { OnlineUser } from '@server/../../typings/user';
 import { ExternalAccountService } from '@services/accountExternal/externalAccount.service';
@@ -343,7 +343,7 @@ export class AccountController {
   }
 
   /* When starting the resource / new player joining. We should handle the default account. */
-  @Event(UserEvents.Loaded)
+  @OnEvent(UserEvents.Loaded)
   async onUserLoaded(user: OnlineUser) {
     const src = user.source;
     this._accountService.createInitialAccount(src);

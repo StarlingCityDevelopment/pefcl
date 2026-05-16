@@ -18,7 +18,17 @@ export const fetchNui = async <T = object, I = object>(eventName: string, data?:
   };
 
   const res = await fetch(url, options);
-  const response: ServerPromiseResp<T> = await res.json();
+
+  if (!res.ok) {
+    throw new Error(`NUI fetch failed with status ${res.status}: ${res.statusText}`);
+  }
+
+  let response: ServerPromiseResp<T>;
+  try {
+    response = await res.json();
+  } catch (err) {
+    throw new Error(`Failed to parse NUI response as JSON for event ${eventName}. The server may have returned an empty response.`);
+  }
 
   if (response.status === 'error') {
     throw new Error(response.errorMsg);

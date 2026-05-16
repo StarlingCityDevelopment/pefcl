@@ -7,7 +7,7 @@ import { CashEvents, UserEvents } from '@typings/Events';
 import { ServerExports } from '@typings/exports/server';
 import type { Request, Response } from '@typings/http';
 import { Controller } from '../../decorators/Controller';
-import { Event, EventListener } from '../../decorators/Event';
+import { EventListener, OnEvent } from '../../decorators/Event';
 import { CashService } from './cash.service';
 
 @Controller('Cash')
@@ -59,7 +59,7 @@ export class CashController {
   }
 
   /* When starting the resource / new player joining. We should handle the default account. */
-  @Event(UserEvents.Loaded)
+  @OnEvent(UserEvents.Loaded)
   async onUserLoaded(user: OnlineUser) {
     if (config.frameworkIntegration?.enabled) return;
     this._cashService.createInitialCash(user.source);

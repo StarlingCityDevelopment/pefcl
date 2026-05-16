@@ -1,4 +1,4 @@
-export const Event = (eventName: string) => {
+export const OnEvent = (eventName: string) => {
   return (target: object, key: string): void => {
     if (!Reflect.hasMetadata('events', target)) {
       Reflect.defineMetadata('events', [], target);

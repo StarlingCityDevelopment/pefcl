@@ -8,7 +8,19 @@ export const getConfig = async (): Promise<ResourceConfig> => {
   }
 
   const resourceName = getResourceName();
-  const config = await fetch(`https://cfx-nui-${resourceName}/static/config.json`).then((res) => res.json());
+  try {
+    let res = await fetch(`https://${resourceName}/config.json`);
 
-  return config;
+    if (!res.ok && res.status === 404) {
+      res = await fetch(`https://${resourceName}/static/config.json`);
+    }
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch config: ${res.statusText}`);
+    }
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to fetch config, falling back to default', err);
+    return defaultConfig;
+  }
 };

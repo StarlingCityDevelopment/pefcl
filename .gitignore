@@ -5,3 +5,5 @@ sv_pefcl.log
 locales
 temp
 bun-error.log
+.yarn.installed
+.nx

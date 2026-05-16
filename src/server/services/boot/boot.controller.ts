@@ -1,5 +1,5 @@
 import { Controller } from '../../decorators/Controller';
-import { Event, EventListener } from '../../decorators/Event';
+import { EventListener, OnEvent } from '../../decorators/Event';
 import { BootService } from './boot.service';
 
 @Controller('Boot')
@@ -10,7 +10,7 @@ export class BootController {
     this._bootService = bootService;
   }
 
-  @Event('onServerResourceStart')
+  @OnEvent('onServerResourceStart')
   async onServerResourceStart(resource: string) {
     if (resource !== GetCurrentResourceName()) {
       return;

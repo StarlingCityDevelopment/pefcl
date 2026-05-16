@@ -1,5 +1,5 @@
 import { Controller } from '@decorators/Controller';
-import { Event, EventListener, NetEvent } from '@decorators/Event';
+import { EventListener, NetEvent, OnEvent } from '@decorators/Event';
 import { NetPromise, PromiseEventListener } from '@decorators/NetPromise';
 import { ServerExports } from '@server/../../typings/exports/server';
 import { Export, ExportListener } from '@server/decorators/Export';
@@ -70,21 +70,21 @@ export class UserController {
     this._userService.loadClient(src);
   }
 
-  @Event('playerJoining')
+  @OnEvent('playerJoining')
   playerJoining() {
     if (config.frameworkIntegration?.enabled) return;
     const _source = global.source;
     this._userService.loadStandalonePlayer({ source: _source });
   }
 
-  @Event('playerDropped')
+  @OnEvent('playerDropped')
   playerDropped() {
     if (config.frameworkIntegration?.enabled) return;
     const _source = global.source;
     this._userService.deletePlayer(_source);
   }
 
-  @Event(GeneralEvents.ResourceStarted)
+  @OnEvent(GeneralEvents.ResourceStarted)
   async onServerResourceStart() {
     if (config.frameworkIntegration?.enabled) return;
 

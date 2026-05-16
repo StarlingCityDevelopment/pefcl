@@ -3,7 +3,7 @@ import type { Card } from '@server/../../typings/BankCard';
 import type { Cash } from '@server/../../typings/Cash';
 import type { Transaction } from '@server/../../typings/Transaction';
 import { Controller } from '@server/decorators/Controller';
-import { Event, EventListener } from '@server/decorators/Event';
+import { EventListener, OnEvent } from '@server/decorators/Event';
 import { BroadcastService } from './broadcast.service';
 
 import { AccountEvents, CardEvents, CashEvents, TransactionEvents } from '@server/../../typings/Events';
@@ -16,37 +16,37 @@ export class BroadcastController {
     this.broadcastService = broadcastService;
   }
 
-  @Event(AccountEvents.NewBalance)
+  @OnEvent(AccountEvents.NewBalance)
   async onNewBalance(account: Account) {
     this.broadcastService.broadcastNewDefaultAccountBalance(account);
   }
 
-  @Event(AccountEvents.NewBalance)
+  @OnEvent(AccountEvents.NewBalance)
   async onNewAccountBalance(account: Account) {
     this.broadcastService.broadcastNewAccountBalance(account);
   }
 
-  @Event(AccountEvents.NewAccountCreated)
+  @OnEvent(AccountEvents.NewAccountCreated)
   async onNewAccountCreation(account: Account) {
     this.broadcastService.broadcastUpdatedAccount(account);
   }
 
-  @Event(AccountEvents.AccountDeleted)
+  @OnEvent(AccountEvents.AccountDeleted)
   async onAccountDeleted(account: Account) {
     this.broadcastService.broadcastUpdatedAccount(account);
   }
 
-  @Event(CashEvents.NewCash)
+  @OnEvent(CashEvents.NewCash)
   async onNewCash(cash: Cash) {
     this.broadcastService.broadcastNewCash(cash);
   }
 
-  @Event(TransactionEvents.NewTransaction)
+  @OnEvent(TransactionEvents.NewTransaction)
   async onNewTransaction(transaction: Transaction) {
     this.broadcastService.broadcastTransaction(transaction);
   }
 
-  @Event(CardEvents.NewCard)
+  @OnEvent(CardEvents.NewCard)
   async onNewCard(card: Card) {
     this.broadcastService.broadcastNewCard(card);
   }

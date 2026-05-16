@@ -10,7 +10,7 @@ declare global {
 
 // and not CEF
 export const isEnvBrowser = (): boolean => !window.invokeNative;
-export const getResourceName = () => 'pefcl';
+export const getResourceName = () => (window as any).GetParentResourceName ? (window as any).GetParentResourceName() : 'pefcl';
 
 // Basic no operation function
 export const noop = () => {};
