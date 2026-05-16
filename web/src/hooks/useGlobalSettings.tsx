@@ -12,14 +12,11 @@ interface GlobalSettingsProviderProps {
 }
 
 export const GlobalSettingsProvider = ({ children }: GlobalSettingsProviderProps) => {
-  // Mobile mode is active if either:
-  // 1. The URL hash contains '/mobile' (explicit force)
-  // 2. The screen width is less than 768px (responsive detection)
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768 || window.location.hash.includes('/mobile'));
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 768 || window.location.hash.includes('/mobile'));
     };
 
     window.addEventListener('resize', handleResize);

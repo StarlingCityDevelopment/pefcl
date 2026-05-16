@@ -70,12 +70,12 @@ createBuilder(
     },
   ],
   async (outfiles) => {
-    const files = await getFiles('../dist/web', 'locales');
+    const files = await getFiles('dist/web', 'web/media', 'static');
     await createFxmanifest({
       client_scripts: [outfiles.client, 'interaction.lua'],
       server_scripts: [outfiles.server],
-      files: ['static/**/*', 'locales/*.json', ...files],
-      dependencies: ['/server:13068', '/onesync'],
+      files: [...files],
+      dependencies: ['/server:13068', '/onesync', 'qbx_pefcl'],
       metadata: {
         ui_page: 'dist/web/index.html',
         node_version: '22'

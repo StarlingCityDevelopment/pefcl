@@ -116,7 +116,7 @@ const App: React.FC = () => {
         <ATM />
       </React.Suspense>
 
-      {!isAtmVisible && isVisible && isMobile && (
+      {!isAtmVisible && isMobile && (
         <React.Suspense fallback={null}>
           <Routes>
             <Route path='*' element={<MobileApp />} />

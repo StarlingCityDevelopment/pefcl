@@ -8,34 +8,27 @@ ui_page 'dist/web/index.html'
 node_version '22'
 
 files {
-	'static/**/*',
-	'locales/*.json',
-	'locales/bg/default.json',
-	'locales/cs/default.json',
-	'locales/da/default.json',
-	'locales/de/default.json',
-	'locales/en/default.json',
-	'locales/es/default.json',
-	'locales/fi/default.json',
-	'locales/fr/default.json',
-	'locales/hr/default.json',
-	'locales/hu/default.json',
-	'locales/index.ts',
-	'locales/it/default.json',
-	'locales/it-MT/default.json',
-	'locales/lt/default.json',
-	'locales/nb/default.json',
-	'locales/nl/default.json',
-	'locales/pl/default.json',
-	'locales/pt/default.json',
-	'locales/pt-BR/default.json',
-	'locales/sv/default.json',
-	'locales/tr/default.json',
+	'dist/web/assets/index.css',
+	'dist/web/assets/index.js',
+	'dist/web/assets/vendor.js',
+	'dist/web/assets/vendor_ui.js',
+	'dist/web/index.html',
+	'web/media/app.png',
+	'web/media/appstore/phone_1.png',
+	'web/media/appstore/phone_2.png',
+	'web/media/appstore/phone_3.png',
+	'web/media/appstore/phone_4.png',
+	'web/media/appstore/tablet_1.png',
+	'web/media/appstore/tablet_2.png',
+	'web/media/appstore/tablet_3.png',
+	'web/media/appstore/tablet_4.png',
+	'static/config.json',
 }
 
 dependencies {
 	'/server:13068',
 	'/onesync',
+	'qbx_pefcl',
 }
 
 client_scripts {
